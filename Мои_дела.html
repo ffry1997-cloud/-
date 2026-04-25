@@ -1,97 +1,378 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover,maximum-scale=1">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<title>Мои планы</title>
-<style>
-:root{--bg:#faf7f5;--card:#fff;--text:#3a3340;--text-secondary:#9a8f9f;--accent:#c8957c;--accent-light:#faf0eb;--border:#ede6e0;--radius:18px;--font:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif}
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;display:flex;justify-content:center;padding:8px}
-.app-container{width:100%;max-width:620px;display:flex;flex-direction:column;gap:10px;padding:4px 2px}
-.app-title{text-align:center;font-size:24px;font-weight:700;padding:10px 0 0}
-.sync-bar{text-align:center;font-size:11px;color:var(--text-secondary);margin-bottom:2px}
-.tabs{display:flex;background:var(--card);border-radius:28px;padding:4px;box-shadow:0 2px 16px rgba(180,160,150,0.08);gap:1px;overflow-x:auto}
-.tab{flex:1;text-align:center;padding:10px 8px;border-radius:24px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text-secondary);white-space:nowrap}
-.tab.active{background:var(--accent-light);color:var(--accent)}
-.section{display:none;flex-direction:column;gap:10px}
-.section.active{display:flex}
-.card{background:var(--card);border-radius:var(--radius);padding:14px 16px;box-shadow:0 2px 16px rgba(180,160,150,0.08);display:flex;flex-direction:column;gap:8px}
-.btn-sm{padding:7px 14px;border-radius:20px;border:none;font-size:12px;font-weight:600;cursor:pointer;background:var(--accent-light);color:var(--accent);margin:2px}
-.btn-danger{background:#f7f0f2;color:#b8a0a8}
-.input{flex:1;min-width:80px;padding:10px 14px;border-radius:22px;border:2px solid var(--border);font-size:14px;font-family:var(--font);background:var(--card);color:var(--text);outline:none}
-.input-time{padding:10px 12px;border-radius:22px;border:2px solid var(--border);font-size:13px;font-family:var(--font);background:var(--card);color:var(--text);outline:none;cursor:pointer;max-width:110px}
-.client-card{background:var(--card);border-radius:12px;padding:12px;box-shadow:0 1px 4px rgba(0,0,0,.03);display:flex;flex-direction:column;gap:4px}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#4a3f50;color:#fff;padding:10px 20px;border-radius:24px;font-size:13px;z-index:200;opacity:0;pointer-events:none}
-.toast.show{opacity:1}
-.task-item{display:flex;align-items:center;gap:8px;padding:10px;background:var(--card);border-radius:12px;margin:4px 0;font-size:14px}
-.task-checkbox{width:20px;height:20px;border-radius:50%;border:2px solid #d5ccc5;flex-shrink:0;cursor:pointer}
-.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
-.calendar-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:12px;cursor:pointer}
-.calendar-day.today{background:var(--accent-light);color:var(--accent);font-weight:700}
-.calendar-day.has-tasks::after{content:'';width:4px;height:4px;background:var(--accent);border-radius:50%;position:absolute;bottom:2px}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Мои планы</title>
+    <style>
+        :root {
+            --bg: #faf7f5; --card: #ffffff; --text: #3a3340; --text-secondary: #9a8f9f;
+            --accent: #c8957c; --accent-light: #faf0eb; --danger: #b8a0a8; --danger-light: #f7f0f2;
+            --border: #ede6e0; --shadow: 0 2px 16px rgba(180, 160, 150, 0.08);
+            --radius: 18px; --radius-sm: 12px;
+            --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            --urgent: #f5e8e2; --warning: #faf0e8; --gentle: #eef2f0;
+        }
+        .dark { --bg:#2a2528; --card:#383438; --text:#e8e0e5; --text-secondary:#a098a5; --accent:#d4a590; --accent-light:#3d3538; --border:#4a4448; }
+        * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+        body { font-family:var(--font); background:var(--bg); color:var(--text); min-height:100vh; display:flex; justify-content:center; padding:8px; -webkit-font-smoothing:antialiased; user-select:none; }
+        .app-container { width:100%; max-width:620px; display:flex; flex-direction:column; gap:10px; padding:4px 2px; }
+        .app-title { text-align:center; font-size:24px; font-weight:700; padding:10px 0 0; }
+        .bg-quote { text-align:center; font-style:italic; color:var(--text-secondary); padding:4px 0; font-size:13px; opacity:0.7; }
+        .sync-bar { text-align:center; font-size:11px; color:var(--text-secondary); margin-bottom:2px; }
+        .header-actions { display:flex; justify-content:center; gap:10px; padding:2px 0 6px; flex-wrap:wrap; }
+        .icon-btn { width:40px; height:40px; border-radius:50%; border:none; background:var(--card); font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow); color:var(--text); }
+        .tabs { display:flex; background:var(--card); border-radius:28px; padding:4px; box-shadow:var(--shadow); gap:1px; overflow-x:auto; }
+        .tab { flex:1; text-align:center; padding:10px 8px; border-radius:24px; font-size:13px; font-weight:600; cursor:pointer; color:var(--text-secondary); white-space:nowrap; min-width:fit-content; }
+        .tab.active { background:var(--accent-light); color:var(--accent); font-weight:700; }
+        .section { display:none; flex-direction:column; gap:10px; }
+        .section.active { display:flex; }
+        .card { background:var(--card); border-radius:var(--radius); padding:14px 16px; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:8px; }
+        .folder-card { background:var(--card); border-radius:var(--radius); padding:12px 14px; display:flex; align-items:center; gap:10px; cursor:pointer; }
+        .btn-sm { padding:7px 14px; border-radius:20px; border:none; font-size:12px; font-weight:600; cursor:pointer; }
+        .btn-add { background:var(--accent-light); color:var(--accent); }
+        .btn-danger { background:var(--danger-light); color:var(--danger); }
+        .btn-email { background:#e8f0fe; color:#1a73e8; }
+        .btn-outline { background:transparent; border:2px solid var(--border); color:var(--text); }
+        .input { flex:1; min-width:80px; padding:10px 14px; border-radius:22px; border:2px solid var(--border); font-size:14px; font-family:var(--font); background:var(--card); color:var(--text); outline:none; }
+        .input:focus { border-color:var(--accent); }
+        .input-time { padding:10px 12px; border-radius:22px; border:2px solid var(--border); font-size:13px; font-family:var(--font); background:var(--card); color:var(--text); outline:none; cursor:pointer; max-width:110px; }
+        .client-card { background:var(--card); border-radius:var(--radius-sm); padding:12px; box-shadow:0 1px 4px rgba(0,0,0,.03); display:flex; flex-direction:column; gap:4px; }
+        .task-item { display:flex; align-items:center; gap:8px; padding:10px; background:var(--card); border-radius:var(--radius-sm); font-size:14px; margin:4px 0; border:1px solid var(--border); }
+        .task-checkbox { width:20px; height:20px; border-radius:50%; border:2px solid #d5ccc5; flex-shrink:0; cursor:pointer; }
+        .task-item.completed { opacity:0.5; }
+        .task-item.completed .task-text { text-decoration:line-through; }
+        .task-item.completed .task-checkbox { background:var(--accent); border-color:var(--accent); }
+        .calendar-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; text-align:center; }
+        .calendar-day-name { font-size:10px; font-weight:700; color:var(--text-secondary); padding:2px 0; }
+        .calendar-day { aspect-ratio:1; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:12px; cursor:pointer; position:relative; }
+        .calendar-day.today { background:var(--accent-light); color:var(--accent); font-weight:700; }
+        .calendar-day.has-tasks::after { content:''; width:4px; height:4px; background:var(--accent); border-radius:50%; position:absolute; bottom:2px; }
+        .calendar-day.other-month { color:#ccc; pointer-events:none; }
+        .calendar-day.selected { outline:2px solid var(--accent); outline-offset:2px; }
+        .recommendation { padding:10px 14px; border-radius:var(--radius-sm); font-size:13px; display:flex; align-items:flex-start; gap:8px; }
+        .recommendation.urgent { background:var(--urgent); }
+        .recommendation.warning { background:var(--warning); }
+        .recommendation.gentle { background:var(--gentle); }
+        .note-card { background:var(--card); border-left:3px solid #f0c8a0; border-radius:var(--radius-sm); padding:12px; }
+        .note-textarea { width:100%; border:none; background:transparent; font-family:var(--font); font-size:14px; resize:vertical; min-height:50px; outline:none; color:var(--text); }
+        .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:#4a3f50; color:#fff; padding:10px 20px; border-radius:24px; font-size:13px; z-index:200; opacity:0; pointer-events:none; transition:opacity .3s; }
+        .toast.show { opacity:1; }
+    </style>
 </head>
 <body>
-<div class="app-container">
-<div class="app-title">Мои планы</div>
-<div class="sync-bar" id="syncStatus">⚡ Загрузка...</div>
-<div class="tabs">
-<div class="tab active" data-tab="clients">👥 Клиенты</div>
-<div class="tab" data-tab="tasks">📂 Папки</div>
-<div class="tab" data-tab="calendar">📅 Календарь</div>
-<div class="tab" data-tab="ideas">💡 Идеи</div>
-</div>
-<div class="section active" id="section-clients">
-<div class="card"><h3>👥 Клиенты</h3>
-<div style="display:flex;gap:6px;flex-wrap:wrap"><input type="text" class="input" id="clientName" placeholder="ФИО" style="flex:2"><input type="tel" class="input" id="clientPhone" placeholder="Телефон" style="flex:1"><input type="date" class="input-time" id="clientDate" style="max-width:140px"><button class="btn-sm" id="btnAddClient">+</button></div>
-<div id="clientList"></div></div>
-</div>
-<div class="section" id="section-tasks">
-<button class="btn-sm" id="btnAddFolder">+ Папка</button>
-<div id="folderList"></div>
-</div>
-<div class="section" id="section-calendar">
-<div class="card"><h3 id="calendarTitle"></h3><div class="calendar-grid" id="calendarGrid"></div><div id="calendarTasks" style="margin-top:8px"></div></div>
-</div>
-<div class="section" id="section-ideas">
-<textarea class="input" id="noteText" placeholder="Заметка..." style="min-height:80px"></textarea>
-<button class="btn-sm" id="btnAddNote">+ Заметка</button>
-<div id="notesList"></div>
-</div>
+<div class="app-container" id="appContainer">
+    <div class="app-title">Мои планы</div>
+    <div class="bg-quote" id="bgQuote"></div>
+    <div class="sync-bar" id="syncStatus">⚡ Загрузка...</div>
+    <div class="header-actions">
+        <button class="icon-btn" id="btnNewFolder">📁</button>
+        <button class="icon-btn" id="btnNewNote">💡</button>
+        <button class="icon-btn" id="btnSync">🔄</button>
+        <button class="icon-btn" id="btnTheme">🌓</button>
+    </div>
+    <div class="tabs">
+        <div class="tab active" data-tab="tasks">📂 Папки</div>
+        <div class="tab" data-tab="calendar">📅 Календарь</div>
+        <div class="tab" data-tab="ai">🧠 ИИ</div>
+        <div class="tab" data-tab="clients">👥 Клиенты</div>
+        <div class="tab" data-tab="ideas">💡 Идеи</div>
+    </div>
+    <div class="section active" id="section-tasks">
+        <button class="btn-sm btn-add" id="btnAddFolder">+ Папка</button>
+        <div id="folderList"></div>
+        <div class="card" id="taskContainer" style="display:none;">
+            <div style="display:flex;justify-content:space-between;"><span id="currentFolderName" style="font-weight:700;"></span></div>
+            <div class="input-row" style="display:flex;gap:6px;flex-wrap:wrap;">
+                <input type="text" class="input" id="taskInput" placeholder="Задача..." autocomplete="off">
+                <input type="date" class="input-time" id="taskDate" style="max-width:120px;">
+                <button class="btn-sm btn-add" id="btnAddTask">+</button>
+            </div>
+            <div id="taskList"></div>
+            <button class="btn-sm btn-outline" id="btnBackToFolders">← Назад</button>
+        </div>
+    </div>
+    <div class="section" id="section-calendar">
+        <div class="card">
+            <div style="display:flex;justify-content:space-between;">
+                <button class="btn-sm btn-outline" id="btnPrevMonth">←</button>
+                <h3 id="calendarTitle"></h3>
+                <button class="btn-sm btn-outline" id="btnNextMonth">→</button>
+            </div>
+            <div class="calendar-grid" id="calendarGrid"></div>
+            <div id="calendarTasks" style="margin-top:8px;"></div>
+        </div>
+    </div>
+    <div class="section" id="section-ai">
+        <div class="card"><h3>🧠 Рекомендации</h3><div id="aiContent"></div></div>
+    </div>
+    <div class="section" id="section-clients">
+        <div class="card"><h3>👥 Клиенты</h3>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                <input type="text" class="input" id="clientName" placeholder="ФИО" style="flex:2;">
+                <input type="tel" class="input" id="clientPhone" placeholder="Телефон" style="flex:1;">
+                <input type="date" class="input-time" id="clientDate" style="max-width:140px;">
+                <button class="btn-sm btn-add" id="btnAddClient">+</button>
+            </div>
+            <div id="clientList"></div>
+            <small id="clientStats" style="color:var(--text-secondary);"></small>
+        </div>
+    </div>
+    <div class="section" id="section-ideas">
+        <textarea class="input" id="noteText" placeholder="Заметка..." style="min-height:80px;"></textarea>
+        <button class="btn-sm btn-add" id="btnAddNote">+ Заметка</button>
+        <div id="notesList"></div>
+    </div>
 </div>
 <div class="toast" id="toast"></div>
 <script>
-const GIST_ID='eff796c63b675f3690608f10f218135a';
-const GITHUB_TOKEN='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';
-let data={folders:[],notes:[],clients:[]};
-function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2000)}
-function escapeHtml(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
-function formatDate(s){if(!s)return'';const p=s.split('-');return p.length===3?p[2]+'.'+p[1]+'.'+p[0]:s}
-function formatDateISO(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
-function gid(){return'id_'+Date.now().toString(36)+'_'+Math.random().toString(36).substr(2,6)}
-function getNextBirthday(ds){const p=ds.split('-').map(Number);const now=new Date();const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());let bd=new Date(now.getFullYear(),p[1]-1,p[2]);if(bd<today)bd.setFullYear(now.getFullYear()+1);return bd}
-function getAge(bds,on){const p=bds.split('-').map(Number);let a=on.getFullYear()-p[0];const bd=new Date(on.getFullYear(),p[1]-1,p[2]);if(on<bd)a--;return a}
-function getAgeWord(a){if(a%10===1&&a%100!==11)return'год';if([2,3,4].includes(a%10)&&![12,13,14].includes(a%100))return'года';return'лет'}
-async function loadFromGist(){try{const r=await fetch('https://api.github.com/gists/'+GIST_ID);const g=await r.json();const f=g.files['data.json'];if(f&&f.content){data=JSON.parse(f.content);document.getElementById('syncStatus').textContent='✅ Загружено'}}catch(e){document.getElementById('syncStatus').textContent='⚠️ Офлайн'};if(!data.clients)data.clients=[];renderAll()}
-async function saveToGist(){try{await fetch('https://api.github.com/gists/'+GIST_ID,{method:'PATCH',headers:{'Authorization':'token '+GITHUB_TOKEN,'Content-Type':'application/json'},body:JSON.stringify({files:{'data.json':{content:JSON.stringify(data)}}})});document.getElementById('syncStatus').textContent='✅ Сохранено'}catch(e){console.log('Save error:',e)}}
-function addClient(){const n=document.getElementById('clientName').value.trim();const p=document.getElementById('clientPhone').value.trim();const d=document.getElementById('clientDate').value;if(!n||!d)return showToast('Введите ФИО и дату');data.clients.push({id:gid(),name:n,phone:p,date:d});document.getElementById('clientName').value='';document.getElementById('clientPhone').value='';document.getElementById('clientDate').value='';saveToGist();renderClients()}
-function renderClients(){const c=document.getElementById('clientList');if(!data.clients.length){c.innerHTML='<p style="color:var(--text-secondary);text-align:center;padding:20px">Нет клиентов</p>';return}const now=new Date();const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());c.innerHTML=data.clients.sort(function(a,b){return getNextBirthday(a.date)-getNextBirthday(b.date)}).map(function(cl){const bd=getNextBirthday(cl.date);const age=getAge(cl.date,bd);const days=Math.ceil((bd-today)/86400000);const ds=bd.getDate()+' '+bd.toLocaleDateString('ru-RU',{month:'long'})+' '+bd.getFullYear();let st=days===0?'🎂 Сегодня!':days===1?'🎂 Завтра!':'📅 '+ds+' (через '+days+' дн.)';return'<div class="client-card"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px"><span><strong>'+escapeHtml(cl.name)+'</strong> — '+formatDate(cl.date)+' ('+age+' '+getAgeWord(age)+')</span><div><button class="btn-sm" data-action="edit-client" data-client-id="'+cl.id+'">✏️</button><button class="btn-sm btn-danger" data-action="delete-client" data-client-id="'+cl.id+'">✕</button></div></div>'+(cl.phone?'<span>📱 '+escapeHtml(cl.phone)+'</span>':'')+'<span style="font-size:12px;color:var(--accent)">'+st+'</span></div>'}).join('')}
-function editClient(id){const cl=data.clients.find(function(c){return c.id===id});if(!cl)return;const nn=prompt('ФИО:',cl.name);if(nn===null)return;if(!nn.trim()){alert('Имя обязательно');return}const np=prompt('Телефон:',cl.phone||'');if(np===null)return;const nd=prompt('Дата (ГГГГ-ММ-ДД):',cl.date);if(nd===null)return;cl.name=nn.trim();cl.phone=np.trim();cl.date=nd;saveToGist();renderClients();showToast('✅ Обновлено!')}
-function deleteClient(id){if(!confirm('Удалить?'))return;data.clients=data.clients.filter(function(c){return c.id!==id});saveToGist();renderClients()}
-function addFolder(){const n=prompt('Название папки:');if(!n)return;data.folders.push({id:gid(),name:n,icon:'📁',tasks:[]});saveToGist();renderFolders()}
-function renderFolders(){const c=document.getElementById('folderList');if(!data.folders.length){c.innerHTML='<p style="color:var(--text-secondary)">Нет папок</p>';return}c.innerHTML=data.folders.map(function(f){return'<div class="card">'+(f.icon||'📁')+' '+escapeHtml(f.name)+'</div>'}).join('')}
-function addNote(){const t=document.getElementById('noteText').value.trim();if(!t)return;data.notes.unshift({id:gid(),text:t,updatedAt:Date.now()});document.getElementById('noteText').value='';saveToGist();renderNotes()}
-function renderNotes(){const c=document.getElementById('notesList');if(!data.notes.length){c.innerHTML='<p style="color:var(--text-secondary)">Нет заметок</p>';return}c.innerHTML=data.notes.map(function(n){return'<div class="card">'+escapeHtml(n.text)+'</div>'}).join('')}
-function renderCalendar(){const now=new Date();const cy=now.getFullYear();const cm=now.getMonth();document.getElementById('calendarTitle').textContent=new Date(cy,cm).toLocaleDateString('ru-RU',{month:'long',year:'numeric'});const grid=document.getElementById('calendarGrid');grid.innerHTML=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].map(function(d){return'<div class="calendar-day-name">'+d+'</div>'}).join('');const fd=new Date(cy,cm,1);let sd=fd.getDay();if(sd===0)sd=7;sd--;const dim=new Date(cy,cm+1,0).getDate();const todayStr=formatDateISO(now);for(let i=sd-1;i>=0;i--)grid.innerHTML+='<div class="calendar-day other-month">'+(new Date(cy,cm,0).getDate()-i)+'</div>';for(let d=1;d<=dim;d++){const ds=formatDateISO(new Date(cy,cm,d));const hasTasks=data.clients.some(function(c){return c.date.slice(5)===ds.slice(5)});grid.innerHTML+='<div class="calendar-day '+(ds===todayStr?'today':'')+' '+(hasTasks?'has-tasks':'')+'" style="position:relative">'+d+'</div>'}}
-function renderAll(){renderFolders();renderClients();renderNotes();renderCalendar()}
-document.addEventListener('click',function(e){const t=e.target.closest('[data-action]');if(!t)return;const a=t.dataset.action;const cid=t.dataset.clientId;if(a==='edit-client')editClient(cid);if(a==='delete-client')deleteClient(cid)});
-document.getElementById('btnAddClient').addEventListener('click',addClient);
-document.getElementById('btnAddFolder').addEventListener('click',addFolder);
-document.getElementById('btnAddNote').addEventListener('click',addNote);
-document.querySelectorAll('.tab').forEach(function(tab){tab.addEventListener('click',function(){document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});this.classList.add('active');document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active')});document.getElementById('section-'+this.dataset.tab).classList.add('active');if(this.dataset.tab==='calendar')renderCalendar()})});
+const GIST_ID = 'eff796c63b675f3690608f10f218135a';
+const GITHUB_TOKEN = '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';
+let data = { folders: [], notes: [], clients: [], currentFolderId: null, currentSubtab: 'active', focusTasks: [], journal: {}, letters: [] };
+let calendarYear, calendarMonth, selectedDate = null;
+
+const quotes = ['Через год, когда посмотришь в зеркало, ты будешь благодарен себе за то, что начал.','Маленький шаг сегодня — большой результат завтра.'];
+
+function showToast(m) { const t = document.getElementById('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(t._t); t._t = setTimeout(function() { t.classList.remove('show'); }, 2000); }
+function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function formatDate(s) { if (!s) return ''; const p = s.split('-'); return p.length === 3 ? p[2] + '.' + p[1] + '.' + p[0] : s; }
+function formatDateISO(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function gid() { return 'id_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 6); }
+function getNextBirthday(ds) { const p = ds.split('-').map(Number); const now = new Date(); const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()); let bd = new Date(now.getFullYear(), p[1] - 1, p[2]); if (bd < today) bd.setFullYear(now.getFullYear() + 1); return bd; }
+function getAge(bds, on) { const p = bds.split('-').map(Number); let a = on.getFullYear() - p[0]; const bd = new Date(on.getFullYear(), p[1] - 1, p[2]); if (on < bd) a--; return a; }
+function getAgeWord(a) { if (a % 10 === 1 && a % 100 !== 11) return 'год'; if ([2, 3, 4].includes(a % 10) && ![12, 13, 14].includes(a % 100)) return 'года'; return 'лет'; }
+function updateQuote() { const e = document.getElementById('bgQuote'); e.style.opacity = '0'; setTimeout(function() { e.textContent = '«' + quotes[Math.floor(Math.random() * quotes.length)] + '»'; e.style.opacity = '0.7'; }, 1000); }
+updateQuote(); setInterval(updateQuote, 30000);
+
+async function loadFromGist() {
+    try {
+        const r = await fetch('https://api.github.com/gists/' + GIST_ID);
+        const g = await r.json();
+        const f = g.files['data.json'];
+        if (f && f.content) {
+            data = JSON.parse(f.content);
+            document.getElementById('syncStatus').textContent = '✅ Загружено';
+        }
+    } catch (e) {
+        document.getElementById('syncStatus').textContent = '⚠️ Офлайн';
+    }
+    if (!data.clients) data.clients = [];
+    if (!data.folders) data.folders = [];
+    if (!data.notes) data.notes = [];
+    renderAll();
+}
+async function saveToGist() {
+    try {
+        await fetch('https://api.github.com/gists/' + GIST_ID, {
+            method: 'PATCH',
+            headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ files: { 'data.json': { content: JSON.stringify(data) } } })
+        });
+        document.getElementById('syncStatus').textContent = '✅ Сохранено';
+    } catch (e) { console.log(e); }
+}
+
+// === КЛИЕНТЫ ===
+function addClient() {
+    const n = document.getElementById('clientName').value.trim();
+    const p = document.getElementById('clientPhone').value.trim();
+    const d = document.getElementById('clientDate').value;
+    if (!n || !d) return showToast('Введите ФИО и дату');
+    data.clients.push({ id: gid(), name: n, phone: p, date: d });
+    document.getElementById('clientName').value = '';
+    document.getElementById('clientPhone').value = '';
+    document.getElementById('clientDate').value = '';
+    saveToGist(); renderClients(); showToast('Клиент добавлен!');
+}
+function renderClients() {
+    const c = document.getElementById('clientList');
+    if (!data.clients.length) { c.innerHTML = '<p style="color:var(--text-secondary);text-align:center;padding:20px;">Нет клиентов</p>'; document.getElementById('clientStats').textContent = ''; return; }
+    const now = new Date(); const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    c.innerHTML = data.clients.sort(function(a, b) { return getNextBirthday(a.date) - getNextBirthday(b.date); }).map(function(cl) {
+        const bd = getNextBirthday(cl.date); const age = getAge(cl.date, bd);
+        const days = Math.ceil((bd - today) / 86400000);
+        const ds = bd.getDate() + ' ' + bd.toLocaleDateString('ru-RU', { month: 'long' }) + ' ' + bd.getFullYear();
+        let st = days === 0 ? '🎂 Сегодня!' : days === 1 ? '🎂 Завтра!' : '📅 ' + ds + ' (через ' + days + ' дн.)';
+        return '<div class="client-card"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;"><span><strong>' + escapeHtml(cl.name) + '</strong> — ' + formatDate(cl.date) + ' (' + age + ' ' + getAgeWord(age) + ')</span><div><button class="btn-sm btn-add" data-action="edit-client" data-client-id="' + cl.id + '">✏️</button><button class="btn-sm btn-email" data-action="email-client" data-client-id="' + cl.id + '">📧</button><button class="btn-sm btn-danger" data-action="delete-client" data-client-id="' + cl.id + '">✕</button></div></div>' + (cl.phone ? '<span>📱 ' + escapeHtml(cl.phone) + '</span>' : '') + '<span style="font-size:12px;color:var(--accent);">' + st + '</span></div>';
+    }).join('');
+    const tm = data.clients.filter(function(cl) { const bd = getNextBirthday(cl.date); return bd.getMonth() === now.getMonth(); }).length;
+    document.getElementById('clientStats').textContent = 'В этом месяце: ' + tm + ' дн. рожд. · Всего: ' + data.clients.length;
+}
+function editClient(id) {
+    const cl = data.clients.find(function(c) { return c.id === id; }); if (!cl) return;
+    const nn = prompt('ФИО:', cl.name); if (nn === null) return; if (!nn.trim()) { alert('Имя обязательно'); return; }
+    const np = prompt('Телефон:', cl.phone || ''); if (np === null) return;
+    const nd = prompt('Дата (ГГГГ-ММ-ДД):', cl.date); if (nd === null) return;
+    cl.name = nn.trim(); cl.phone = np.trim(); cl.date = nd;
+    saveToGist(); renderClients(); showToast('✅ Обновлено!');
+}
+function deleteClient(id) { if (!confirm('Удалить?')) return; data.clients = data.clients.filter(function(c) { return c.id !== id; }); saveToGist(); renderClients(); }
+function emailClient(cid) {
+    const cl = data.clients.find(function(c) { return c.id === cid; }); if (!cl) return;
+    const bd = getNextBirthday(cl.date); const age = getAge(cl.date, bd);
+    window.open('mailto:fry1997@mail.ru?subject=' + encodeURIComponent('ДР: ' + cl.name) + '&body=' + encodeURIComponent('Клиент: ' + cl.name + '\nДата рождения: ' + formatDate(cl.date) + '\nБлижайший ДР: ' + bd.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }) + '\nВозраст: ' + age + ' ' + getAgeWord(age) + '\nТелефон: ' + (cl.phone || '—')));
+}
+
+// === ПАПКИ И ЗАДАЧИ ===
+function addFolder() { const n = prompt('Название папки:'); if (!n) return; data.folders.push({ id: gid(), name: n, icon: '📁', tasks: [] }); saveToGist(); renderFolders(); }
+function renderFolders() {
+    const c = document.getElementById('folderList');
+    if (!data.folders.length) { c.innerHTML = '<p style="color:var(--text-secondary);text-align:center;">Нет папок</p>'; return; }
+    c.innerHTML = data.folders.map(function(f) { return '<div class="folder-card" data-action="open-folder" data-folder-id="' + f.id + '"><span style="font-size:30px;">' + (f.icon || '📁') + '</span><div><div style="font-weight:600;">' + escapeHtml(f.name) + '</div><div style="font-size:11px;color:var(--text-secondary);">' + (f.tasks ? f.tasks.length : 0) + ' задач</div></div></div>'; }).join('');
+}
+function openFolder(id) { data.currentFolderId = id; saveToGist(); renderTasks(); }
+function addTask() {
+    const text = document.getElementById('taskInput').value.trim();
+    const date = document.getElementById('taskDate').value;
+    if (!text) return;
+    const folder = data.folders.find(function(f) { return f.id === data.currentFolderId; });
+    if (!folder) return;
+    if (!folder.tasks) folder.tasks = [];
+    folder.tasks.push({ id: gid(), text: text, date: date, completed: false });
+    document.getElementById('taskInput').value = '';
+    document.getElementById('taskDate').value = '';
+    saveToGist(); renderTasks();
+}
+function renderTasks() {
+    const folder = data.folders.find(function(f) { return f.id === data.currentFolderId; });
+    const tc = document.getElementById('taskContainer');
+    const fl = document.getElementById('folderList');
+    const btn = document.getElementById('btnAddFolder');
+    if (!folder) { tc.style.display = 'none'; fl.style.display = 'block'; btn.style.display = 'block'; return; }
+    tc.style.display = 'flex'; fl.style.display = 'none'; btn.style.display = 'none';
+    document.getElementById('currentFolderName').textContent = (folder.icon || '📁') + ' ' + folder.name;
+    const list = document.getElementById('taskList');
+    if (!folder.tasks || !folder.tasks.length) { list.innerHTML = '<p style="color:var(--text-secondary);text-align:center;">Нет задач</p>'; return; }
+    list.innerHTML = folder.tasks.map(function(t) {
+        return '<div class="task-item ' + (t.completed ? 'completed' : '') + '"><div class="task-checkbox" data-action="toggle-task" data-task-id="' + t.id + '">' + (t.completed ? '✓' : '') + '</div><span class="task-text">' + escapeHtml(t.text) + '</span>' + (t.date ? '<span style="font-size:10px;color:var(--text-secondary);">📅' + formatDate(t.date) + '</span>' : '') + '<button class="btn-sm btn-danger" data-action="delete-task" data-task-id="' + t.id + '" style="margin-left:auto;">✕</button></div>';
+    }).join('');
+}
+function toggleTask(tid) {
+    const folder = data.folders.find(function(f) { return f.id === data.currentFolderId; });
+    if (!folder) return;
+    const t = folder.tasks.find(function(t) { return t.id === tid; });
+    if (t) { t.completed = !t.completed; saveToGist(); renderTasks(); }
+}
+function deleteTask(tid) {
+    const folder = data.folders.find(function(f) { return f.id === data.currentFolderId; });
+    if (!folder) return;
+    folder.tasks = folder.tasks.filter(function(t) { return t.id !== tid; });
+    saveToGist(); renderTasks();
+}
+
+// === ЗАМЕТКИ ===
+function addNote() { const t = document.getElementById('noteText').value.trim(); if (!t) return; data.notes.unshift({ id: gid(), text: t, updatedAt: Date.now() }); document.getElementById('noteText').value = ''; saveToGist(); renderNotes(); }
+function renderNotes() { const c = document.getElementById('notesList'); if (!data.notes.length) { c.innerHTML = '<p style="color:var(--text-secondary);text-align:center;">Нет заметок</p>'; return; } c.innerHTML = data.notes.map(function(n) { return '<div class="note-card"><textarea class="note-textarea" data-note-id="' + n.id + '">' + escapeHtml(n.text) + '</textarea></div>'; }).join(''); }
+
+// === КАЛЕНДАРЬ ===
+function getAllTasksForDate(dateStr) {
+    const tasks = [];
+    data.folders.forEach(function(f) {
+        if (f.tasks) f.tasks.forEach(function(t) {
+            if (t.date === dateStr && !t.completed) tasks.push({ text: t.text, type: 'task', folder: f.name });
+        });
+    });
+    data.clients.forEach(function(c) {
+        if (c.date.slice(5) === dateStr.slice(5)) tasks.push({ text: '🎂 ' + c.name, type: 'birthday' });
+    });
+    return tasks;
+}
+function renderCalendar() {
+    const now = new Date(); if (!calendarYear) calendarYear = now.getFullYear(); if (!calendarMonth && calendarMonth !== 0) calendarMonth = now.getMonth();
+    document.getElementById('calendarTitle').textContent = new Date(calendarYear, calendarMonth).toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' });
+    const grid = document.getElementById('calendarGrid');
+    grid.innerHTML = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].map(function(d) { return '<div class="calendar-day-name">' + d + '</div>'; }).join('');
+    const fd = new Date(calendarYear, calendarMonth, 1); let sd = fd.getDay(); if (sd === 0) sd = 7; sd--;
+    const dim = new Date(calendarYear, calendarMonth + 1, 0).getDate();
+    const pd = new Date(calendarYear, calendarMonth, 0).getDate();
+    const todayStr = formatDateISO(now);
+    for (let i = sd - 1; i >= 0; i--) grid.innerHTML += '<div class="calendar-day other-month">' + (pd - i) + '</div>';
+    for (let d = 1; d <= dim; d++) {
+        const ds = formatDateISO(new Date(calendarYear, calendarMonth, d));
+        const dayTasks = getAllTasksForDate(ds);
+        const hasTasks = dayTasks.length > 0;
+        const isToday = ds === todayStr;
+        const isSel = selectedDate === ds;
+        grid.innerHTML += '<div class="calendar-day ' + (isToday ? 'today' : '') + ' ' + (hasTasks ? 'has-tasks' : '') + ' ' + (isSel ? 'selected' : '') + '" style="position:relative;" data-action="select-date" data-date="' + ds + '">' + d + '</div>';
+    }
+    const tc = sd + dim, rem = tc % 7 === 0 ? 0 : 7 - (tc % 7);
+    for (let d = 1; d <= rem; d++) grid.innerHTML += '<div class="calendar-day other-month">' + d + '</div>';
+    renderCalendarTasks();
+}
+function renderCalendarTasks() {
+    const c = document.getElementById('calendarTasks');
+    if (!selectedDate) { c.innerHTML = '<p style="color:var(--text-secondary);text-align:center;">Выберите день</p>'; return; }
+    const tasks = getAllTasksForDate(selectedDate);
+    if (!tasks.length) { c.innerHTML = '<p style="color:var(--text-secondary);text-align:center;padding:10px;">Задач и событий нет 🎉</p>'; return; }
+    c.innerHTML = '<h4 style="margin-bottom:6px;">📅 ' + formatDate(selectedDate) + '</h4>' + tasks.map(function(t) {
+        return '<div class="task-item"><span>' + (t.type === 'birthday' ? '🎂' : '📌') + '</span><span>' + escapeHtml(t.text) + '</span>' + (t.folder ? '<span style="font-size:10px;color:var(--text-secondary);">' + escapeHtml(t.folder) + '</span>' : '') + '</div>';
+    }).join('');
+}
+
+// === ИИ ===
+function renderAI() {
+    const c = document.getElementById('aiContent');
+    const today = new Date(); const todayStr = formatDateISO(today);
+    let h = '';
+    const allTasks = []; data.folders.forEach(function(f) { if (f.tasks) f.tasks.forEach(function(t) { if (!t.completed) allTasks.push({ text: t.text, date: t.date, folder: f.name }); }); });
+    const urgent = allTasks.filter(function(t) { return t.date && t.date <= todayStr; });
+    const soon = data.clients.filter(function(cl) { const bd = getNextBirthday(cl.date); const days = Math.ceil((bd - today) / 86400000); return days <= 7 && days >= 0; });
+    if (urgent.length) h += '<div class="recommendation urgent"><span>🔴</span><div><strong>Просрочено/сегодня:</strong><br>' + urgent.slice(0, 5).map(function(t) { return '• ' + escapeHtml(t.text) + ' (' + escapeHtml(t.folder) + ')'; }).join('<br>') + '</div></div>';
+    if (soon.length) h += '<div class="recommendation warning"><span>🎂</span><div><strong>Дни рождения скоро:</strong><br>' + soon.slice(0, 5).map(function(cl) { const bd = getNextBirthday(cl.date); const days = Math.ceil((bd - today) / 86400000); return '• ' + escapeHtml(cl.name) + ' — через ' + days + ' дн.'; }).join('<br>') + '</div></div>';
+    if (!h) h = '<p style="color:var(--text-secondary);">🎉 Всё под контролем!</p>';
+    c.innerHTML = h;
+}
+
+// === СОБЫТИЯ ===
+document.addEventListener('click', function(e) {
+    const t = e.target.closest('[data-action]'); if (!t) return;
+    const a = t.dataset.action;
+    if (a === 'open-folder') openFolder(t.dataset.folderId);
+    if (a === 'toggle-task') toggleTask(t.dataset.taskId);
+    if (a === 'delete-task') deleteTask(t.dataset.taskId);
+    if (a === 'edit-client') editClient(t.dataset.clientId);
+    if (a === 'email-client') emailClient(t.dataset.clientId);
+    if (a === 'delete-client') deleteClient(t.dataset.clientId);
+    if (a === 'select-date') { selectedDate = t.dataset.date; renderCalendar(); }
+});
+document.getElementById('btnAddClient').addEventListener('click', addClient);
+document.getElementById('btnAddFolder').addEventListener('click', addFolder);
+document.getElementById('btnAddTask').addEventListener('click', addTask);
+document.getElementById('btnAddNote').addEventListener('click', addNote);
+document.getElementById('btnNewFolder').addEventListener('click', addFolder);
+document.getElementById('btnNewNote').addEventListener('click', addNote);
+document.getElementById('btnBackToFolders').addEventListener('click', function() { data.currentFolderId = null; saveToGist(); renderFolders(); document.getElementById('taskContainer').style.display = 'none'; document.getElementById('folderList').style.display = 'block'; document.getElementById('btnAddFolder').style.display = 'block'; });
+document.getElementById('btnSync').addEventListener('click', function() { loadFromGist(); showToast('Синхронизировано!'); });
+document.getElementById('btnTheme').addEventListener('click', function() { document.getElementById('appContainer').classList.toggle('dark'); });
+document.getElementById('btnPrevMonth').addEventListener('click', function() { calendarMonth--; if (calendarMonth < 0) { calendarMonth = 11; calendarYear--; } selectedDate = null; renderCalendar(); });
+document.getElementById('btnNextMonth').addEventListener('click', function() { calendarMonth++; if (calendarMonth > 11) { calendarMonth = 0; calendarYear++; } selectedDate = null; renderCalendar(); });
+document.querySelectorAll('.tab').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+        document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+        this.classList.add('active');
+        document.querySelectorAll('.section').forEach(function(s) { s.classList.remove('active'); });
+        document.getElementById('section-' + this.dataset.tab).classList.add('active');
+        if (this.dataset.tab === 'calendar') renderCalendar();
+        if (this.dataset.tab === 'ai') renderAI();
+    });
+});
+let noteTimeout;
+document.addEventListener('input', function(e) {
+    if (e.target.classList.contains('note-textarea')) {
+        clearTimeout(noteTimeout);
+        const nid = e.target.dataset.noteId;
+        noteTimeout = setTimeout(function() {
+            const n = data.notes.find(function(n) { return n.id === nid; });
+            if (n) { n.text = e.target.value; n.updatedAt = Date.now(); saveToGist(); }
+        }, 600);
+    }
+});
+const now = new Date(); calendarYear = now.getFullYear(); calendarMonth = now.getMonth();
 loadFromGist();
+setInterval(function() { loadFromGist(); }, 30000);
+
+function renderAll() { renderFolders(); renderClients(); renderNotes(); renderCalendar(); renderAI(); }
 </script>
 </body>
 </html>
