@@ -128,9 +128,10 @@
 <div class="toast" id="toast"></div>
 <script>
 const GIST_ID = 'eff796c63b675f3690608f10f218135a';
-const GITHUB_TOKEN = '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';
+const GITHUB_TOKEN = 'ТОКЕН_СЮДА';
 let data = { folders: [], notes: [], clients: [], currentFolderId: null, currentSubtab: 'active', focusTasks: [], journal: {}, letters: [] };
 let calendarYear, calendarMonth, selectedDate = null;
+let saveTimer = null;
 
 const quotes = ['Через год, когда посмотришь в зеркало, ты будешь благодарен себе за то, что начал.','Маленький шаг сегодня — большой результат завтра.'];
 
@@ -151,7 +152,12 @@ async function loadFromGist() {
         const g = await r.json();
         const f = g.files['data.json'];
         if (f && f.content) {
-            data = JSON.parse(f.content);
+            const newData = JSON.parse(f.content);
+            // Сливаем данные: оставляем локальные, если Gist пустой
+            if (newData.clients && newData.clients.length > 0) data.clients = newData.clients;
+            if (newData.folders && newData.folders.length > 0) data.folders = newData.folders;
+            if (newData.notes && newData.notes.length > 0) data.notes = newData.notes;
+            data.currentFolderId = newData.currentFolderId || data.currentFolderId;
             document.getElementById('syncStatus').textContent = '✅ Загружено';
         }
     } catch (e) {
@@ -162,18 +168,24 @@ async function loadFromGist() {
     if (!data.notes) data.notes = [];
     renderAll();
 }
-async function saveToGist() {
-    try {
-        await fetch('https://api.github.com/gists/' + GIST_ID, {
-            method: 'PATCH',
-            headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ files: { 'data.json': { content: JSON.stringify(data) } } })
-        });
-        document.getElementById('syncStatus').textContent = '✅ Сохранено';
-    } catch (e) { console.log(e); }
+
+function saveToGistNow() {
+    clearTimeout(saveTimer);
+    document.getElementById('syncStatus').textContent = '💾 Сохранение...';
+    fetch('https://api.github.com/gists/' + GIST_ID, {
+        method: 'PATCH',
+        headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ files: { 'data.json': { content: JSON.stringify(data) } } })
+    })
+    .then(function() { document.getElementById('syncStatus').textContent = '✅ Сохранено'; })
+    .catch(function() { document.getElementById('syncStatus').textContent = '⚠️ Ошибка сохранения'; });
 }
 
-// === КЛИЕНТЫ ===
+function saveToGist() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveToGistNow, 500);
+}
+
 function addClient() {
     const n = document.getElementById('clientName').value.trim();
     const p = document.getElementById('clientPhone').value.trim();
@@ -214,14 +226,18 @@ function emailClient(cid) {
     window.open('mailto:fry1997@mail.ru?subject=' + encodeURIComponent('ДР: ' + cl.name) + '&body=' + encodeURIComponent('Клиент: ' + cl.name + '\nДата рождения: ' + formatDate(cl.date) + '\nБлижайший ДР: ' + bd.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }) + '\nВозраст: ' + age + ' ' + getAgeWord(age) + '\nТелефон: ' + (cl.phone || '—')));
 }
 
-// === ПАПКИ И ЗАДАЧИ ===
-function addFolder() { const n = prompt('Название папки:'); if (!n) return; data.folders.push({ id: gid(), name: n, icon: '📁', tasks: [] }); saveToGist(); renderFolders(); }
+function addFolder() {
+    const n = prompt('Название папки:');
+    if (!n) return;
+    data.folders.push({ id: gid(), name: n, icon: '📁', tasks: [] });
+    saveToGist(); renderFolders(); showToast('Папка создана!');
+}
 function renderFolders() {
     const c = document.getElementById('folderList');
     if (!data.folders.length) { c.innerHTML = '<p style="color:var(--text-secondary);text-align:center;">Нет папок</p>'; return; }
     c.innerHTML = data.folders.map(function(f) { return '<div class="folder-card" data-action="open-folder" data-folder-id="' + f.id + '"><span style="font-size:30px;">' + (f.icon || '📁') + '</span><div><div style="font-weight:600;">' + escapeHtml(f.name) + '</div><div style="font-size:11px;color:var(--text-secondary);">' + (f.tasks ? f.tasks.length : 0) + ' задач</div></div></div>'; }).join('');
 }
-function openFolder(id) { data.currentFolderId = id; saveToGist(); renderTasks(); }
+function openFolder(id) { data.currentFolderId = id; renderTasks(); }
 function addTask() {
     const text = document.getElementById('taskInput').value.trim();
     const date = document.getElementById('taskDate').value;
@@ -261,21 +277,13 @@ function deleteTask(tid) {
     saveToGist(); renderTasks();
 }
 
-// === ЗАМЕТКИ ===
 function addNote() { const t = document.getElementById('noteText').value.trim(); if (!t) return; data.notes.unshift({ id: gid(), text: t, updatedAt: Date.now() }); document.getElementById('noteText').value = ''; saveToGist(); renderNotes(); }
 function renderNotes() { const c = document.getElementById('notesList'); if (!data.notes.length) { c.innerHTML = '<p style="color:var(--text-secondary);text-align:center;">Нет заметок</p>'; return; } c.innerHTML = data.notes.map(function(n) { return '<div class="note-card"><textarea class="note-textarea" data-note-id="' + n.id + '">' + escapeHtml(n.text) + '</textarea></div>'; }).join(''); }
 
-// === КАЛЕНДАРЬ ===
 function getAllTasksForDate(dateStr) {
     const tasks = [];
-    data.folders.forEach(function(f) {
-        if (f.tasks) f.tasks.forEach(function(t) {
-            if (t.date === dateStr && !t.completed) tasks.push({ text: t.text, type: 'task', folder: f.name });
-        });
-    });
-    data.clients.forEach(function(c) {
-        if (c.date.slice(5) === dateStr.slice(5)) tasks.push({ text: '🎂 ' + c.name, type: 'birthday' });
-    });
+    data.folders.forEach(function(f) { if (f.tasks) f.tasks.forEach(function(t) { if (t.date === dateStr && !t.completed) tasks.push({ text: t.text, type: 'task', folder: f.name }); }); });
+    data.clients.forEach(function(c) { if (c.date.slice(5) === dateStr.slice(5)) tasks.push({ text: '🎂 ' + c.name, type: 'birthday' }); });
     return tasks;
 }
 function renderCalendar() {
@@ -305,12 +313,8 @@ function renderCalendarTasks() {
     if (!selectedDate) { c.innerHTML = '<p style="color:var(--text-secondary);text-align:center;">Выберите день</p>'; return; }
     const tasks = getAllTasksForDate(selectedDate);
     if (!tasks.length) { c.innerHTML = '<p style="color:var(--text-secondary);text-align:center;padding:10px;">Задач и событий нет 🎉</p>'; return; }
-    c.innerHTML = '<h4 style="margin-bottom:6px;">📅 ' + formatDate(selectedDate) + '</h4>' + tasks.map(function(t) {
-        return '<div class="task-item"><span>' + (t.type === 'birthday' ? '🎂' : '📌') + '</span><span>' + escapeHtml(t.text) + '</span>' + (t.folder ? '<span style="font-size:10px;color:var(--text-secondary);">' + escapeHtml(t.folder) + '</span>' : '') + '</div>';
-    }).join('');
+    c.innerHTML = '<h4 style="margin-bottom:6px;">📅 ' + formatDate(selectedDate) + '</h4>' + tasks.map(function(t) { return '<div class="task-item"><span>' + (t.type === 'birthday' ? '🎂' : '📌') + '</span><span>' + escapeHtml(t.text) + '</span>' + (t.folder ? '<span style="font-size:10px;color:var(--text-secondary);">' + escapeHtml(t.folder) + '</span>' : '') + '</div>'; }).join('');
 }
-
-// === ИИ ===
 function renderAI() {
     const c = document.getElementById('aiContent');
     const today = new Date(); const todayStr = formatDateISO(today);
@@ -324,7 +328,6 @@ function renderAI() {
     c.innerHTML = h;
 }
 
-// === СОБЫТИЯ ===
 document.addEventListener('click', function(e) {
     const t = e.target.closest('[data-action]'); if (!t) return;
     const a = t.dataset.action;
@@ -342,7 +345,7 @@ document.getElementById('btnAddTask').addEventListener('click', addTask);
 document.getElementById('btnAddNote').addEventListener('click', addNote);
 document.getElementById('btnNewFolder').addEventListener('click', addFolder);
 document.getElementById('btnNewNote').addEventListener('click', addNote);
-document.getElementById('btnBackToFolders').addEventListener('click', function() { data.currentFolderId = null; saveToGist(); renderFolders(); document.getElementById('taskContainer').style.display = 'none'; document.getElementById('folderList').style.display = 'block'; document.getElementById('btnAddFolder').style.display = 'block'; });
+document.getElementById('btnBackToFolders').addEventListener('click', function() { data.currentFolderId = null; renderFolders(); document.getElementById('taskContainer').style.display = 'none'; document.getElementById('folderList').style.display = 'block'; document.getElementById('btnAddFolder').style.display = 'block'; });
 document.getElementById('btnSync').addEventListener('click', function() { loadFromGist(); showToast('Синхронизировано!'); });
 document.getElementById('btnTheme').addEventListener('click', function() { document.getElementById('appContainer').classList.toggle('dark'); });
 document.getElementById('btnPrevMonth').addEventListener('click', function() { calendarMonth--; if (calendarMonth < 0) { calendarMonth = 11; calendarYear--; } selectedDate = null; renderCalendar(); });
@@ -370,7 +373,7 @@ document.addEventListener('input', function(e) {
 });
 const now = new Date(); calendarYear = now.getFullYear(); calendarMonth = now.getMonth();
 loadFromGist();
-setInterval(function() { loadFromGist(); }, 30000);
+setInterval(function() { loadFromGist(); }, 60000);
 
 function renderAll() { renderFolders(); renderClients(); renderNotes(); renderCalendar(); renderAI(); }
 </script>
