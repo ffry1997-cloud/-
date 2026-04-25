@@ -150,23 +150,22 @@ async function loadFromGist() {
         const r = await fetch('https://api.github.com/gists/' + GIST_ID);
         const g = await r.json();
         const f = g.files['data.json'];
-        if (f && f.content) {
-            const newData = JSON.parse(f.content);
-            // Сливаем данные: оставляем локальные, если Gist пустой
-            if (newData.clients && newData.clients.length > 0) data.clients = newData.clients;
-            if (newData.folders && newData.folders.length > 0) data.folders = newData.folders;
-            if (newData.notes && newData.notes.length > 0) data.notes = newData.notes;
-            data.currentFolderId = newData.currentFolderId || data.currentFolderId;
-            document.getElementById('syncStatus').textContent = '✅ Загружено';
-        }
+if (f && f.content && f.content.trim() !== '') {
+    try {
+        const newData = JSON.parse(f.content);
+        if (newData.clients && newData.clients.length > 0) data.clients = newData.clients;
+        if (newData.folders && newData.folders.length > 0) data.folders = newData.folders;
+        if (newData.notes && newData.notes.length > 0) data.notes = newData.notes;
+        if (newData.currentFolderId) data.currentFolderId = newData.currentFolderId;
+        document.getElementById('syncStatus').textContent = '✅ Загружено';
     } catch (e) {
-        document.getElementById('syncStatus').textContent = '⚠️ Офлайн';
+        document.getElementById('syncStatus').textContent = '⚠️ Ошибка данных';
     }
-    if (!data.clients) data.clients = [];
-    if (!data.folders) data.folders = [];
-    if (!data.notes) data.notes = [];
-    renderAll();
 }
+if (!data.clients) data.clients = [];
+if (!data.folders) data.folders = [];
+if (!data.notes) data.notes = [];
+renderAll();
 
 
 
