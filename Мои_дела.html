@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Мои планы</title>
+    <style>
+        :root { --bg:#faf7f5; --card:#fff; --text:#3a3340; --text-secondary:#9a8f9f; --accent:#c8957c; --accent-light:#faf0eb; --border:#ede6e0; --radius:18px; --font:-apple-system,sans-serif; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:var(--font); background:var(--bg); color:var(--text); padding:10px; min-height:100vh; }
+        .app-title { text-align:center; font-size:22px; font-weight:700; padding:10px 0; }
+        .sync-bar { text-align:center; font-size:11px; color:var(--text-secondary); margin-bottom:6px; }
+        .tabs { display:flex; background:var(--card); border-radius:24px; padding:4px; gap:2px; margin-bottom:12px; }
+        .tab { flex:1; text-align:center; padding:10px 6px; border-radius:20px; font-size:12px; font-weight:600; cursor:pointer; color:var(--text-secondary); }
+        .tab.active { background:var(--accent-light); color:var(--accent); }
+        .section { display:none; }
+        .section.active { display:block; }
+        .card { background:var(--card); border-radius:var(--radius); padding:14px; margin-bottom:10px; }
+        .btn-sm { padding:8px 14px; border-radius:18px; border:none; font-size:13px; font-weight:600; cursor:pointer; background:var(--accent-light); color:var(--accent); margin:2px; }
+        .input { width:100%; padding:10px; border-radius:18px; border:2px solid var(--border); font-size:14px; font-family:var(--font); margin:4px 0; }
+        .client-card { background:var(--card); border-radius:14px; padding:12px; margin-bottom:6px; }
+        .toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#4a3f50; color:#fff; padding:10px 20px; border-radius:20px; font-size:13px; z-index:200; opacity:0; }
+        .toast.show { opacity:1; }
+    </style>
+</head>
+<body>
+<div class="app-title">Мои планы</div>
+<div class="sync-bar" id="syncStatus">⚡ Загрузка...</div>
+<div class="tabs">
+    <div class="tab active" data-tab="clients">👥 Клиенты</div>
+    <div class="tab" data-tab="tasks">📂 Папки</div>
+    <div class="tab" data-tab="ideas">💡 Идеи</div>
+</div>
+<div class="section active" id="section-clients">
+    <input type="text" class="input" id="clientName" placeholder="ФИО">
+    <input type="tel" class="input" id="clientPhone" placeholder="Телефон">
+    <input type="date" class="input" id="clientDate">
+    <button class="btn-sm" id="btnAddClient">+ Клиент</button>
+    <div id="clientList" style="margin-top:10px;"></div>
+</div>
+<div class="section" id="section-tasks">
+    <button class="btn-sm" id="btnAddFolder">+ Папка</button>
+    <div id="folderList"></div>
+</div>
+<div class="section" id="section-ideas">
+    <textarea class="input" id="noteText" placeholder="Заметка..." style="min-height:80px;"></textarea>
+    <button class="btn-sm" id="btnAddNote">+ Заметка</button>
+    <div id="notesList"></div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const GIST_ID = '9df60d13d24c13541606cd2e54c025b';
+const GITHUB_TOKEN = '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';
+
+let data = { folders: [], notes: [], clients: [] };
+
+function showToast(m) {
+    const t = document.getElementById('toast');
+    t.textContent = m;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2000);
+}
+function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function formatDate(s) { if (!s) return ''; const p = s.split('-'); return p.length === 3 ? p[2] + '.' + p[1] + '.' + p[0] : s; }
+function gid() { return 'id_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 6); }
+
+async function loadFromGist() {
+    try {
+        const r = await fetch('https://api.github.com/gists/' + GIST_ID);
+        const g = await r.json();
+        const f = g.files['data.json'];
+        if (f && f.content) {
+            data = JSON.parse(f.content);
+            document.getElementById('syncStatus').textContent = '✅ Загружено';
+        }
+    } catch (e) {
+        document.getElementById('syncStatus').textContent = '⚠️ Офлайн';
+    }
+    renderAll();
+}
+
+async function saveToGist() {
+    try {
+        await fetch('https://api.github.com/gists/' + GIST_ID, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': 'token ' + GITHUB_TOKEN,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ files: { 'data.json': { content: JSON.stringify(data) } } })
+        });
+        document.getElementById('syncStatus').textContent = '✅ Сохранено';
+    } catch (e) {
+        document.getElementById('syncStatus').textContent = '⚠️ Ошибка';
+    }
+}
+
+function addClient() {
+    const n = document.getElementById('clientName').value.trim();
+    const p = document.getElementById('clientPhone').value.trim();
+    const d = document.getElementById('clientDate').value;
+    if (!n || !d) return showToast('Введите имя и дату');
+    data.clients.push({ id: gid(), name: n, phone: p, date: d });
+    document.getElementById('clientName').value = '';
+    document.getElementById('clientPhone').value = '';
+    document.getElementById('clientDate').value = '';
+    saveToGist();
+    renderClients();
+}
+
+function renderClients() {
+    const c = document.getElementById('clientList');
+    if (!data.clients.length) {
+        c.innerHTML = '<p style="color:var(--text-secondary);text-align:center;">Нет клиентов</p>';
+        return;
+    }
+    c.innerHTML = data.clients.map(cl => {
+        const age = new Date().getFullYear() - parseInt(cl.date.split('-')[0]);
+        return '<div class="client-card"><strong>' + escapeHtml(cl.name) + '</strong> — ' + formatDate(cl.date) + ' (' + age + ' лет)' + (cl.phone ? '<br>📱 ' + escapeHtml(cl.phone) : '') + '</div>';
+    }).join('');
+}
+
+function addFolder() {
+    const n = prompt('Название папки:');
+    if (!n) return;
+    data.folders.push({ id: gid(), name: n, icon: '📁', tasks: [] });
+    saveToGist();
+    renderFolders();
+}
+
+function renderFolders() {
+    const c = document.getElementById('folderList');
+    if (!data.folders.length) {
+        c.innerHTML = '<p style="color:var(--text-secondary);">Нет папок</p>';
+        return;
+    }
+    c.innerHTML = data.folders.map(f => '<div class="card">' + (f.icon || '📁') + ' ' + escapeHtml(f.name) + '</div>').join('');
+}
+
+function addNote() {
+    const t = document.getElementById('noteText').value.trim();
+    if (!t) return;
+    data.notes.unshift({ id: gid(), text: t, updatedAt: Date.now() });
+    document.getElementById('noteText').value = '';
+    saveToGist();
+    renderNotes();
+}
+
+function renderNotes() {
+    const c = document.getElementById('notesList');
+    if (!data.notes.length) {
+        c.innerHTML = '<p style="color:var(--text-secondary);">Нет заметок</p>';
+        return;
+    }
+    c.innerHTML = data.notes.map(n => '<div class="card">' + escapeHtml(n.text) + '</div>').join('');
+}
+
+function renderAll() { renderFolders(); renderClients(); renderNotes(); }
+
+document.getElementById('btnAddClient').addEventListener('click', addClient);
+document.getElementById('btnAddFolder').addEventListener('click', addFolder);
+document.getElementById('btnAddNote').addEventListener('click', addNote);
+
+document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById('section-' + this.dataset.tab).classList.add('active');
+    });
+});
+
+loadFromGist();
+setInterval(function() { loadFromGist(); }, 30000);
+</script>
+</body>
+</html>
