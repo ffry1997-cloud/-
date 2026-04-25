@@ -131,7 +131,6 @@ const GIST_ID = 'eff796c63b675f3690608f10f218135a';
 const GITHUB_TOKEN = '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';
 let data = { folders: [], notes: [], clients: [], currentFolderId: null, currentSubtab: 'active', focusTasks: [], journal: {}, letters: [] };
 let calendarYear, calendarMonth, selectedDate = null;
-let saveTimer = null;
 
 const quotes = ['Через год, когда посмотришь в зеркало, ты будешь благодарен себе за то, что начал.','Маленький шаг сегодня — большой результат завтра.'];
 
@@ -169,21 +168,17 @@ async function loadFromGist() {
     renderAll();
 }
 
-function saveToGistNow() {
-    clearTimeout(saveTimer);
-    document.getElementById('syncStatus').textContent = '💾 Сохранение...';
+
+
+function saveToGist() {
+    document.getElementById('syncStatus').textContent = '💾...';
     fetch('https://api.github.com/gists/' + GIST_ID, {
         method: 'PATCH',
         headers: { 'Authorization': 'token ' + GITHUB_TOKEN, 'Content-Type': 'application/json' },
         body: JSON.stringify({ files: { 'data.json': { content: JSON.stringify(data) } } })
     })
     .then(function() { document.getElementById('syncStatus').textContent = '✅ Сохранено'; })
-    .catch(function() { document.getElementById('syncStatus').textContent = '⚠️ Ошибка сохранения'; });
-}
-
-function saveToGist() {
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(saveToGistNow, 500);
+    .catch(function() { document.getElementById('syncStatus').textContent = '⚠️ Ошибка'; });
 }
 
 function addClient() {
