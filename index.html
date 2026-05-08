@@ -770,8 +770,7 @@
             border-left: 4px solid var(--overdue);
             background: #fef8f8;
         }
-        
-                 /* ============== ИСПРАВЛЕНИЯ ДЛЯ iOS ============== */
+         /* ============== ИСПРАВЛЕНИЯ ДЛЯ iOS ============== */
         @supports (-webkit-touch-callout: none) {
             .app-container {
                 -webkit-overflow-scrolling: touch;
@@ -2222,9 +2221,8 @@
             }
 
             // НАЙДИТЕ ПРОБЛЕМНЫЙ МЕТОД toggleTask В ОБЪЕКТЕ Actions И ЗАМЕНИТЕ ЕГО НА ЭТОТ
-            function toggleTask(taskId) {
+            function toggleTask(taskId) {    // ← нет отступа
                 const currentFolderId = State.getCurrentFolderId();
-
                 if (Utils.isSmartFolder(currentFolderId)) {
                     const result = Utils.findTaskById(taskId);
                 if (!result) {
