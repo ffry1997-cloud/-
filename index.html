@@ -1330,22 +1330,7 @@
                     });
                 });
 
-                State.getClients().forEach(client => {
-                    if (client && client.date && client.date.slice(5) === todayStr.slice(5)) {
-                        tasks.push({
-                            id: `bd_${client.id}`,
-                            text: `🎂 ${client.name}`,
-                            date: client.date,
-                            completed: false,
-                            subtasks: [],
-                            priority: 3,
-                            folderId: 'birthdays',
-                            folderName: 'Дни рождения',
-                            folderIcon: '🎂',
-                            type: TASK_TYPES.BIRTHDAY
-                        });
-                    }
-                });
+                // Дни рождения показываются только в разделе Клиенты
 
                 // Сортировка: приоритет, затем время
                 tasks.sort((a, b) => {
