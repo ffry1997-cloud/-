@@ -1005,7 +1005,8 @@
             DELETE_CLIENT: 'delete-client',
             SELECT_DATE: 'select-date',
             EDIT_CUSTOM_QUOTE: 'edit-custom-quote',
-            DELETE_NOTE: 'delete-note'
+            DELETE_NOTE: 'delete-note',
+            DELETE_FOLDER: 'delete-folder'
         });
         
         const REPEAT_LABELS = Object.freeze({
@@ -1731,6 +1732,7 @@
                             <div class="folder-name">${Utils.escapeHtml(folder.name)}</div>
                             <div class="folder-stats">${statsHtml}</div>
                         </div>
+                        <button class="btn-sm btn-danger" data-action="${ACTIONS.DELETE_FOLDER}" data-folder-id="${folder.id}" style="font-size:11px;padding:4px 8px;">🗑️</button>
                     </div>`;
             }
 
@@ -2642,6 +2644,15 @@
                 UI.showToast('🗑️ Заметка удалена');
             }
 
+            function deleteFolder(folderId) {
+                if (!confirm('Удалить папку и все задачи в ней?')) return;
+                State.removeFolder(folderId);
+                if (State.getCurrentFolderId() === folderId) State.setCurrentFolderId(null);
+                State.save();
+                UI.renderAll();
+                UI.showToast('🗑️ Папка удалена');
+            },
+
             function editCustomQuote(side) {
                 if (!['left', 'center', 'right'].includes(side)) return;
                 
@@ -2837,6 +2848,7 @@
                 emailClient,
                 addNote,
                 deleteNote,
+                deleteFolder,
                 editCustomQuote,
                 toggleSearch,
                 updateSearchResults,
@@ -2980,6 +2992,7 @@
                     break;
                 case ACTIONS.EDIT_CUSTOM_QUOTE: Actions.editCustomQuote(dataset.side); break;
                 case ACTIONS.DELETE_NOTE: Actions.deleteNote(dataset.noteId); break;
+                case ACTIONS.DELETE_FOLDER: Actions.deleteFolder(dataset.folderId); break;
                 default: console.warn('Неизвестное действие:', action);
             }
         }
