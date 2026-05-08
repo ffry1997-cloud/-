@@ -816,14 +816,12 @@
 
     <!-- Регистрация Service Worker -->
     <script>
+        
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(() => console.log('Service Worker зарегистрирован'))
-                    .catch((err) => console.log('Ошибка SW:', err));
-            });
-        }
+            navigator.serviceWorker.getRegistrations().then(r => r.forEach(x => x.unregister()));
+    }
     </script>
+    
 </head>
 <body>
     <div class="app-container" id="appContainer">
