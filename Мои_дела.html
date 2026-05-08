@@ -267,6 +267,55 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
 'use strict';
 
 // ============================
+// FIREBASE
+// ============================
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBtrXbMw0clnyWKdnndM6ThsxOcbqxyIo8",
+  authDomain: "moi-plany-sync.firebaseapp.com",
+  projectId: "moi-plany-sync",
+  storageBucket: "moi-plany-sync.firebasestorage.app",
+  messagingSenderId: "638054747636",
+  appId: "1:638054747636:web:5d35e9bbdba246fd653da1"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+function syncToCloud() {
+    try {
+        setDoc(doc(db, "sync", "data"), {
+            folders: data.folders,
+            notes: data.notes,
+            clients: data.clients,
+            customQuotes: data.customQuotes,
+            updatedAt: new Date().toISOString()
+        });
+    } catch(e) {}
+}
+
+function autoSync() {
+    onSnapshot(doc(db, "sync", "data"), (docSnap) => {
+        if (docSnap.exists()) {
+            const cloud = docSnap.data();
+            if (cloud && cloud.folders && cloud.updatedAt) {
+                const localTime = localStorage.getItem('lastSyncTime') || '0';
+                if (cloud.updatedAt > localTime) {
+                    data.folders = cloud.folders || [];
+                    data.notes = cloud.notes || [];
+                    data.clients = cloud.clients || [];
+                    data.customQuotes = cloud.customQuotes || { left: '', center: '', right: '' };
+                    localStorage.setItem('lastSyncTime', cloud.updatedAt);
+                    renderAll();
+                }
+            }
+        }
+    });
+}
+
+// ============================
 // КОНСТАНТЫ
 // ============================
 const STORAGE_KEY = 'my_plans_v14';
@@ -497,6 +546,8 @@ function saveData() {
 try {
 localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 Utils.updateTabCounter();
+localStorage.setItem('lastSyncTime', new Date().toISOString());
+syncToCloud();
 } catch (error) {
 console.error('Ошибка сохранения данных:', error);
 showToast('❌ Ошибка сохранения данных');
@@ -1604,6 +1655,7 @@ if (savedTheme === 'dark') document.body.classList.add('dark');
 function initialize() {
 try {
 loadData(); processRepeats();
+autoSync();
 const now = new Date(); calendarYear = now.getFullYear(); calendarMonth = now.getMonth();
 setupEventListeners(); renderAll(); Utils.updateTabCounter();
 updateQuote(); setInterval(updateQuote, 30000);
