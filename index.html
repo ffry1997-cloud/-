@@ -977,17 +977,17 @@
         // ========================================
         // 1. КОНСТАНТЫ
         // ========================================
-        const STORAGE_KEY = 'my_plans_v14';
+        const STORAGE_KEY = 'my_plans_v15';
         const TOAST_DURATION = 2500;
         
         const FILTERS = Object.freeze({
             ACTIVE: 'active',
             COMPLETED: 'completed'
         });
-        
         const SMART_FOLDERS = Object.freeze({
             TODAY: 'smart-today',
-            OVERDUE: 'smart-overdue'
+            OVERDUE: 'smart-overdue',
+            TRASH: 'smart-trash'
         });
         
         const ACTIONS = Object.freeze({
@@ -2367,26 +2367,17 @@
             }
 
             function deleteTask(taskId) {
-                if (Utils.isSmartFolder(State.getCurrentFolderId())) {
-                    UI.showToast('❌ В этой папке нельзя удалять задачи.');
-                    return;
-                }
-
-                if (!confirm('Удалить задачу?')) return;
-
+                if (!confirm('Переместить задачу в корзину?')) return;
                 const result = Utils.findTaskById(taskId);
-                if (!result) {
-                    UI.showToast('❌ Задача не найдена');
-                    return;
-                }
-
-                const { folder } = result;
-                folder.tasks = folder.tasks.filter(t => t && t.id !== taskId);
-                
-                State.save();
-                UI.renderAll();
-                UI.showToast('🗑️ Задача удалена');
-            }
+                if (!result) { UI.showToast('❌ Задача не найдена'); return; }
+                const { task, folder } = result;
+                folder.tasks = folder.tasks.filter(t => t.id !== taskId);
+                let trash = State.getFolders().find(f => f.id === SMART_FOLDERS.TRASH);
+                if (!trash) { trash = { id: SMART_FOLDERS.TRASH, name: '🗑️ Корзина', icon: '🗑️', tasks: [] }; State.getFolders().push(trash); }
+                trash.tasks.push(task);
+                State.save(); UI.renderAll();
+                UI.showToast('🗑️ В корзине');
+            };
 
             function setPriority(taskId, priority) {
                 const result = Utils.findTaskById(taskId);
@@ -2652,7 +2643,7 @@
                 State.save();
                 UI.renderAll();
                 UI.showToast('🗑️ Папка удалена');
-            };
+            },
 
             function editCustomQuote(side) {
                 if (!['left', 'center', 'right'].includes(side)) return;
@@ -3180,5 +3171,6 @@
         }
     })();
     </script>
+    <button onclick="window.scrollTo({top:0,behavior:'smooth'})" style="position:fixed;bottom:20px;right:20px;z-index:999;width:44px;height:44px;border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:20px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.2);">⬆</button>
 </body>
 </html>
