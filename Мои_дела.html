@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -909,58 +910,14 @@
 
     <div class="toast" id="toast"></div>
 
-   <script type="module">
+  <script>
     (function() {
     'use strict';
 
     // ============================
     // FIREBASE
     // ============================
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBtrXbMw0clnyWKdnndM6ThsxOcbqxyIo8",
-      authDomain: "moi-plany-sync.firebaseapp.com",
-      projectId: "moi-plany-sync",
-      storageBucket: "moi-plany-sync.firebasestorage.app",
-      messagingSenderId: "638054747636",
-      appId: "1:638054747636:web:5d35e9bbdba246fd653da1"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    function syncToCloud() {
-        try {
-            setDoc(doc(db, "sync", "data"), {
-                folders: data.folders,
-                notes: data.notes,
-                clients: data.clients,
-                customQuotes: data.customQuotes,
-                updatedAt: new Date().toISOString()
-            });
-        } catch(e) {}
-    }
-
-    function autoSync() {
-        onSnapshot(doc(db, "sync", "data"), (docSnap) => {
-            if (docSnap.exists()) {
-                const cloud = docSnap.data();
-                if (cloud && cloud.folders && cloud.updatedAt) {
-                    const localTime = localStorage.getItem('lastSyncTime') || '0';
-                    if (cloud.updatedAt > localTime) {
-                        data.folders = cloud.folders || [];
-                        data.notes = cloud.notes || [];
-                        data.clients = cloud.clients || [];
-                        data.customQuotes = cloud.customQuotes || { left: '', center: '', right: '' };
-                        localStorage.setItem('lastSyncTime', cloud.updatedAt);
-                        renderAll();
-                    }
-                }
-            }
-        });
-    }
+  
 
     // ============================
     // КОНСТАНТЫ
@@ -1189,17 +1146,14 @@
     }
     }
 
-    function saveData() {
+   function saveData() {
     try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    Utils.updateTabCounter();
-    localStorage.setItem('lastSyncTime', new Date().toISOString());
-    syncToCloud();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        Utils.updateTabCounter();
     } catch (error) {
-    console.error('Ошибка сохранения данных:', error);
-    showToast('❌ Ошибка сохранения данных');
+        console.error('Ошибка сохранения данных:', error);
     }
-    }
+}
 
     // ============================
     // UI-УТИЛИТЫ
@@ -2299,16 +2253,15 @@
     // ============================
     // ИНИЦИАЛИЗАЦИЯ
     // ============================
-    function initialize() {
+  function initialize() {
     try {
-    loadData(); processRepeats();
-    autoSync();
-    const now = new Date(); calendarYear = now.getFullYear(); calendarMonth = now.getMonth();
-    setupEventListeners(); renderAll(); Utils.updateTabCounter();
-    updateQuote(); setInterval(updateQuote, 30000);
-    console.log('✅ Приложение готово');
-    } catch(e) { console.error('Init error:', e); showToast('❌ Ошибка загрузки'); }
-    }
+        loadData(); processRepeats();
+        const now = new Date(); calendarYear = now.getFullYear(); calendarMonth = now.getMonth();
+        setupEventListeners(); renderAll(); Utils.updateTabCounter();
+        updateQuote(); setInterval(updateQuote, 30000);
+        console.log('✅ Приложение готово');
+    } catch(e) { console.error('Init error:', e); }
+}
 
     window.App = { handleDragStart, handleDragEnd, handleDragOver, handleDragLeave, handleDrop };
     window.debugApp = { getData: () => data, resetData: () => { localStorage.removeItem(STORAGE_KEY); location.reload(); } };
