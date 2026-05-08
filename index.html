@@ -2244,14 +2244,16 @@
                     const result = Utils.findTaskById(taskId);
                     if (!result) return;
                     
-                    const { task } = result;
-                    task.completed = !task.completed;
+                    const { task: t } = result;
+                    t.completed = !t.completed;
                     Services.processRepeats();
                 }
                 
                 State.save();
                 UI.renderAll();
-                UI.showToast(task.completed ? '✅ Задача выполнена!' : '🔄 Задача восстановлена');
+                const found = Utils.findTaskById(taskId);
+                UI.showToast(found && found.task.completed ? '✅ Задача выполнена!' : '🔄 Задача восстановлена');
+                
             }
 
             function addTask() {
