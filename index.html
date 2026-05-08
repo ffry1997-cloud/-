@@ -1335,7 +1335,7 @@
                         tasks.push({
                             id: `bd_${client.id}`,
                             text: `🎂 ${client.name}`,
-                            date: todayStr,
+                            date: client.date,
                             completed: false,
                             subtasks: [],
                             priority: 3,
@@ -1950,7 +1950,12 @@
                 }
                 
                 if (task.date) {
-                    const daysInfo = Utils.getDaysText(task.date);
+                    let dateToCheck = task.date;
+                    if (task.type === TASK_TYPES.BIRTHDAY) {
+                        const nextBd = Utils.getNextBirthday(task.date);
+                        if (nextBd) dateToCheck = Utils.formatDateISO(nextBd);
+                    }
+                    const daysInfo = Utils.getDaysText(dateToCheck);
                     if (daysInfo) {
                         html += `<span class="days-badge ${daysInfo.className}">${daysInfo.text}</span>`;
                     } else {
@@ -1959,6 +1964,7 @@
                 }
                 
                 return html;
+                   
             }
 
             function buildTaskActionsHTML(task) {
