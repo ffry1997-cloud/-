@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, maximum-scale=1.0">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <title>Все хорошо</title>
+    <title>Мои планы</title>
     <meta name="apple-mobile-web-app-title" content="Мои планы">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#f5f3f0">
@@ -670,6 +670,56 @@
             opacity: 0.7;
         }
 
+        /* Сетка для папок */
+        .folder-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+        }
+        
+        .folder-grid .folder-card {
+            flex-direction: column;
+            text-align: center;
+            padding: 16px 10px;
+            gap: 8px;
+        }
+        
+        .folder-grid .folder-icon {
+            font-size: 40px;
+        }
+        
+        .folder-grid .folder-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .folder-grid .folder-stats {
+            justify-content: center;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+        
+        .view-toggle-btn {
+            padding: 6px 12px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .view-toggle-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -793,19 +843,16 @@
             }
         }
 
-        /* Улучшенные тач-таргеты (рекомендация Apple: минимум 44x44px) */
         button, [role="button"], .clickable, .icon-btn {
             min-height: 44px;
             min-width: 44px;
         }
 
-        /* Разрешаем выделение текста только в полях ввода */
         input, textarea, [contenteditable] {
             -webkit-user-select: text;
             user-select: text;
         }
 
-        /* Предотвращаем мерцание при прокрутке */
         .app-container {
             -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
@@ -813,7 +860,6 @@
     </style>
     <link rel="manifest" href="data:application/json;charset=utf-8,%7B%22name%22%3A%22%D0%9C%D0%BE%D0%B8%20%D0%BF%D0%BB%D0%B0%D0%BD%D1%8B%22%2C%22short_name%22%3A%22%D0%9F%D0%BB%D0%B0%D0%BD%D1%8B%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20100%20100'%3E%3Ctext%20y%3D'.9em'%20font-size%3D'90'%3E%F0%9F%93%85%3C%2Ftext%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22any%22%5D%7D%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f5f3f0%22%2C%22theme_color%22%3A%22%234a90d9%22%7D">
 
-    <!-- Регистрация Service Worker -->
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations().then(r => r.forEach(x => x.unregister()));
@@ -835,6 +881,7 @@
             <button class="icon-btn" id="btnNewFolder" title="Новая папка">📁</button>
             <button class="icon-btn" id="btnNewNote" title="Новая заметка">💡</button>
             <button class="icon-btn" id="btnSearch" title="Поиск">🔍</button>
+            <button class="icon-btn" id="btnNotify" title="Уведомления">🔔</button>
             <button class="icon-btn" id="btnSync" title="Синхронизировать">🔄</button>
             <button class="icon-btn" id="btnTheme" title="Сменить тему">🌓</button>
             <button class="icon-btn" id="btnExport" title="Экспорт">📤</button>
@@ -850,7 +897,6 @@
             <div class="tab" data-tab="ideas">💡 Идеи</div>
         </div>
 
-        <!-- Секция задач -->
         <div class="section active" id="section-tasks">
             <div class="search-container" id="searchContainer" style="display:none;">
                 <input type="text" class="search-input" id="searchInput" placeholder="🔍 Поиск по всем задачам..." autocomplete="off">
@@ -893,7 +939,6 @@
             </div>
         </div>
 
-        <!-- Секция календаря -->
         <div class="section" id="section-calendar">
             <div class="card">
                 <div style="display:flex;justify-content:space-between;align-items:center;">
@@ -906,7 +951,6 @@
             </div>
         </div>
 
-        <!-- Секция статистики -->
         <div class="section" id="section-stats">
             <div class="stats-card">
                 <h3 style="margin-bottom:12px;">📊 Статистика выполнения</h3>
@@ -931,7 +975,6 @@
             </div>
         </div>
 
-        <!-- Секция ИИ -->
         <div class="section" id="section-ai">
             <div class="card">
                 <h3>🧠 Рекомендации</h3>
@@ -939,7 +982,6 @@
             </div>
         </div>
 
-        <!-- Секция клиентов -->
         <div class="section" id="section-clients">
             <div class="card">
                 <h3>👥 Клиенты</h3>
@@ -954,7 +996,6 @@
             </div>
         </div>
 
-        <!-- Секция идей -->
         <div class="section" id="section-ideas">
             <textarea class="input" id="noteText" placeholder="Заметка..." style="min-height:80px;"></textarea>
             <button class="btn-sm btn-add" id="btnAddNote">+ Добавить заметку</button>
@@ -968,10 +1009,7 @@
     (function() {
         'use strict';
 
-        // ========================================
-        // 1. КОНСТАНТЫ
-        // ========================================
-        const STORAGE_KEY = 'my_plans_v15';
+        const STORAGE_KEY = 'my_plans_v16';
         const TOAST_DURATION = 2500;
         
         const FILTERS = Object.freeze({
@@ -1041,9 +1079,6 @@
             BIRTHDAY: 'birthday'
         });
 
-        // ========================================
-        // 2. УТИЛИТЫ (Чистые функции)
-        // ========================================
         const Utils = Object.freeze({
             generateId() {
                 return 'id_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 6);
@@ -1191,9 +1226,6 @@
             }
         });
 
-        // ========================================
-        // 3. СОСТОЯНИЕ (State Management)
-        // ========================================
         const State = (() => {
             let data = {
                 folders: [],
@@ -1201,7 +1233,8 @@
                 clients: [],
                 currentFolderId: null,
                 customQuotes: { left: '', center: '', right: '' },
-                currentTaskFilter: FILTERS.ACTIVE
+                currentTaskFilter: FILTERS.ACTIVE,
+                folderViewMode: 'list'
             };
 
             function load() {
@@ -1217,15 +1250,14 @@
                     console.error('Ошибка загрузки данных:', error);
                 }
 
-                // Нормализация данных
                 data.folders = Array.isArray(data.folders) ? data.folders : [];
                 data.notes = Array.isArray(data.notes) ? data.notes : [];
                 data.clients = Array.isArray(data.clients) ? data.clients : [];
                 data.customQuotes = data.customQuotes || { left: '', center: '', right: '' };
                 data.currentTaskFilter = data.currentTaskFilter === FILTERS.COMPLETED ? FILTERS.COMPLETED : FILTERS.ACTIVE;
                 data.currentFolderId = data.currentFolderId || null;
+                data.folderViewMode = data.folderViewMode || 'list';
 
-                // Нормализация папок и задач
                 data.folders.forEach(folder => {
                     if (!folder.icon) folder.icon = DEFAULT_FOLDER_ICON;
                     folder.tasks = Utils.getValidTasksArray(folder.tasks);
@@ -1235,7 +1267,6 @@
                     });
                 });
 
-                // Валидация текущей папки
                 if (!data.currentFolderId && data.folders.length > 0) {
                     data.currentFolderId = data.folders[0].id;
                 } else if (data.currentFolderId && 
@@ -1267,99 +1298,67 @@
             return {
                 load,
                 save,
-                
                 getFolders: () => data.folders,
                 getNotes: () => data.notes,
                 getClients: () => data.clients,
                 getCurrentFolderId: () => data.currentFolderId,
                 getCustomQuotes: () => ({ ...data.customQuotes }),
                 getCurrentTaskFilter: () => data.currentTaskFilter,
-                
+                getFolderViewMode: () => data.folderViewMode,
                 setCurrentFolderId: (id) => { data.currentFolderId = id; },
                 setCurrentTaskFilter: (filter) => { 
                     if (filter === FILTERS.ACTIVE || filter === FILTERS.COMPLETED) {
                         data.currentTaskFilter = filter;
                     }
                 },
+                setFolderViewMode: (mode) => { data.folderViewMode = mode; },
                 setCustomQuote: (side, text) => {
                     if (['left', 'center', 'right'].includes(side)) {
                         data.customQuotes[side] = text;
                     }
                 },
-                
                 getFolderById: (id) => data.folders.find(f => f.id === id),
                 addFolder: (folder) => { data.folders.push(folder); },
-                removeFolder: (id) => {
-                    data.folders = data.folders.filter(f => f.id !== id);
-                },
-                
+                removeFolder: (id) => { data.folders = data.folders.filter(f => f.id !== id); },
                 getClientById: (id) => data.clients.find(c => c.id === id),
                 addClient: (client) => { data.clients.push(client); },
-                removeClient: (id) => {
-                    data.clients = data.clients.filter(c => c.id !== id);
-                },
-                
+                removeClient: (id) => { data.clients = data.clients.filter(c => c.id !== id); },
                 addNote: (note) => { data.notes.unshift(note); },
-                removeNote: (id) => {
-                    data.notes = data.notes.filter(n => n.id !== id);
-                },
+                removeNote: (id) => { data.notes = data.notes.filter(n => n.id !== id); },
                 getNoteById: (id) => data.notes.find(n => n.id === id)
             };
         })();
 
-        // ========================================
-        // 4. БИЗНЕС-ЛОГИКА (Services)
-        // ========================================
         const Services = (() => {
             function getTodayTasks() {
                 const todayStr = Utils.getTodayISO();
                 const tasks = [];
-
                 State.getFolders().forEach(folder => {
                     Utils.getValidTasksArray(folder.tasks).forEach(task => {
                         if (!task.completed && task.date === todayStr) {
-                            tasks.push({
-                                ...task,
-                                folderId: folder.id,
-                                folderName: folder.name,
-                                folderIcon: folder.icon,
-                                type: TASK_TYPES.TASK
-                            });
+                            tasks.push({...task, folderId: folder.id, folderName: folder.name, folderIcon: folder.icon, type: TASK_TYPES.TASK});
                         }
                     });
                 });
-
-                // Дни рождения показываются только в разделе Клиенты
-
-                // Сортировка: приоритет, затем время
                 tasks.sort((a, b) => {
                     const priorityDiff = (b.priority || 0) - (a.priority || 0);
                     if (priorityDiff !== 0) return priorityDiff;
                     if (a.time && b.time) return a.time.localeCompare(b.time);
                     return a.time ? -1 : b.time ? 1 : 0;
                 });
-
                 return tasks;
             }
 
             function getOverdueTasks() {
                 const todayStr = Utils.getTodayISO();
                 const overdueTasks = [];
-
                 State.getFolders().forEach(folder => {
                     Utils.getValidTasksArray(folder.tasks).forEach(task => {
                         if (!task.completed && task.date && task.date < todayStr) {
-                            overdueTasks.push({
-                                ...task,
-                                folderId: folder.id,
-                                folderName: folder.name,
-                                folderIcon: folder.icon,
-                                type: TASK_TYPES.TASK
-                            });
+                            overdueTasks.push({...task, folderId: folder.id, folderName: folder.name, folderIcon: folder.icon, type: TASK_TYPES.TASK});
                         }
                     });
                 });
-
                 overdueTasks.sort((a, b) => a.date.localeCompare(b.date));
                 return overdueTasks;
             }
@@ -1374,79 +1373,51 @@
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
                 let hasChanges = false;
-
                 State.getFolders().forEach(folder => {
                     const tasksSnapshot = [...folder.tasks];
                     tasksSnapshot.forEach(task => {
                         if (!task || !task.completed || !task.repeat || !task.date) return;
-                        
                         try {
                             const nextDate = calculateNextRepeatDate(task);
                             if (!nextDate) return;
-                            
                             const nextDateStr = Utils.formatDateISO(nextDate);
                             if (!nextDateStr) return;
-                            
-                            const duplicateExists = folder.tasks.some(t => 
-                                t && t.text === task.text && t.date === nextDateStr && !t.completed
-                            );
+                            const duplicateExists = folder.tasks.some(t => t && t.text === task.text && t.date === nextDateStr && !t.completed);
                             if (duplicateExists) return;
-                            
                             folder.tasks.push(createRepeatedTask(task, nextDateStr));
-                            
-                            // Очищаем повтор у исходной задачи
                             const originalTask = folder.tasks.find(t => t && t.id === task.id);
-                            if (originalTask) {
-                                originalTask.repeat = '';
-                                originalTask.repeatDays = 0;
-                            }
+                            if (originalTask) { originalTask.repeat = ''; originalTask.repeatDays = 0; }
                             hasChanges = true;
-                        } catch (error) {
-                            console.error('Repeat error:', task.id, error);
-                        }
+                        } catch (error) { console.error('Repeat error:', task.id, error); }
                     });
                 });
-
                 if (hasChanges) State.save();
             }
 
             function calculateNextRepeatDate(task) {
                 const taskDate = Utils.parseDate(task.date);
                 if (!taskDate) return null;
-                
                 const nextDate = new Date(taskDate);
-                
                 switch (task.repeat) {
                     case 'daily': nextDate.setDate(nextDate.getDate() + 1); break;
                     case 'weekly': nextDate.setDate(nextDate.getDate() + 7); break;
                     case 'monthly': nextDate.setMonth(nextDate.getMonth() + 1); break;
                     case 'yearly': nextDate.setFullYear(nextDate.getFullYear() + 1); break;
                     case 'custom': 
-                        if (task.repeatDays && task.repeatDays > 0) {
-                            nextDate.setDate(nextDate.getDate() + task.repeatDays);
-                        } else return null;
+                        if (task.repeatDays && task.repeatDays > 0) nextDate.setDate(nextDate.getDate() + task.repeatDays);
+                        else return null;
                         break;
                     default: return null;
                 }
-                
                 return nextDate <= taskDate ? null : nextDate;
             }
 
             function createRepeatedTask(originalTask, nextDateStr) {
                 return {
-                    id: Utils.generateId(),
-                    text: originalTask.text,
-                    date: nextDateStr,
-                    time: originalTask.time,
+                    id: Utils.generateId(), text: originalTask.text, date: nextDateStr, time: originalTask.time,
                     completed: false,
-                    subtasks: Utils.getValidTasksArray(originalTask.subtasks).map(st => ({
-                        id: Utils.generateId(),
-                        text: st.text,
-                        completed: false
-                    })),
-                    repeat: originalTask.repeat,
-                    repeatDays: originalTask.repeatDays,
-                    priority: originalTask.priority || 0
+                    subtasks: Utils.getValidTasksArray(originalTask.subtasks).map(st => ({id: Utils.generateId(), text: st.text, completed: false})),
+                    repeat: originalTask.repeat, repeatDays: originalTask.repeatDays, priority: originalTask.priority || 0
                 };
             }
 
@@ -1454,7 +1425,6 @@
                 if (!query) return [];
                 const lowerQuery = query.toLowerCase().trim();
                 const allTasks = Utils.getAllTasksWithFolders();
-                
                 return allTasks.filter(task =>
                     task.text.toLowerCase().includes(lowerQuery) ||
                     (task.folderName && task.folderName.toLowerCase().includes(lowerQuery))
@@ -1465,72 +1435,39 @@
                 const firstDay = new Date(year, month, 1);
                 let startOffset = firstDay.getDay() || 7;
                 startOffset -= 1;
-                
                 const daysInMonth = new Date(year, month + 1, 0).getDate();
                 const todayStr = Utils.getTodayISO();
                 const days = [];
-                
                 for (let day = 1; day <= daysInMonth; day++) {
                     const dateStr = Utils.formatDateISO(new Date(year, month, day));
-                    days.push({
-                        day,
-                        dateStr,
-                        isToday: dateStr === todayStr,
-                        hasTasks: checkDateHasTasks(dateStr)
-                    });
+                    days.push({day, dateStr, isToday: dateStr === todayStr, hasTasks: checkDateHasTasks(dateStr)});
                 }
-                
                 return { startOffset, days, daysInMonth };
             }
 
             function checkDateHasTasks(dateStr) {
-                // Проверяем в папках
                 const hasTaskInFolders = State.getFolders().some(folder =>
-                    Utils.getValidTasksArray(folder.tasks).some(task =>
-                        task && task.date === dateStr && !task.completed
-                    )
+                    Utils.getValidTasksArray(folder.tasks).some(task => task && task.date === dateStr && !task.completed)
                 );
-                
-                // Проверяем дни рождения
-                const hasBirthday = State.getClients().some(client =>
-                    client && client.date && client.date.slice(5) === dateStr.slice(5)
-                );
-                
+                const hasBirthday = State.getClients().some(client => client && client.date && client.date.slice(5) === dateStr.slice(5));
                 return hasTaskInFolders || hasBirthday;
             }
 
             function getTasksForDate(dateStr) {
                 const tasks = [];
                 const seen = new Set();
-
                 State.getFolders().forEach(folder => {
                     Utils.getValidTasksArray(folder.tasks).forEach(task => {
                         if (!task || task.date !== dateStr || task.completed) return;
                         const key = `task_${task.id}`;
-                        if (!seen.has(key)) {
-                            seen.add(key);
-                            tasks.push({
-                                text: task.text,
-                                type: TASK_TYPES.TASK,
-                                folder: folder.name,
-                                icon: folder.icon
-                            });
-                        }
+                        if (!seen.has(key)) { seen.add(key); tasks.push({text: task.text, type: TASK_TYPES.TASK, folder: folder.name, icon: folder.icon}); }
                     });
                 });
-
                 State.getClients().forEach(client => {
                     if (!client || !client.date || client.date.slice(5) !== dateStr.slice(5)) return;
                     const key = `bd_${client.name.toLowerCase()}_${client.date}`;
-                    if (!seen.has(key)) {
-                        seen.add(key);
-                        tasks.push({
-                            text: client.name,
-                            type: TASK_TYPES.BIRTHDAY
-                        });
-                    }
+                    if (!seen.has(key)) { seen.add(key); tasks.push({text: client.name, type: TASK_TYPES.BIRTHDAY}); }
                 });
-
                 return tasks;
             }
 
@@ -1539,24 +1476,16 @@
                 const total = allTasks.length;
                 const completed = allTasks.filter(t => t.completed).length;
                 const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
-                
                 const folderStats = State.getFolders().map(folder => {
                     const stats = Utils.getFolderStats(folder);
-                    return {
-                        icon: folder.icon || DEFAULT_FOLDER_ICON,
-                        name: folder.name,
-                        completed: stats.completed,
-                        total: stats.total
-                    };
+                    return {icon: folder.icon || DEFAULT_FOLDER_ICON, name: folder.name, completed: stats.completed, total: stats.total};
                 });
-
                 return { total, completed, percent, folderStats };
             }
 
             function getUpcomingBirthdays(days = 7) {
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
-                
                 return State.getClients()
                     .filter(client => {
                         if (!client || !client.date) return false;
@@ -1568,17 +1497,13 @@
                     .map(client => {
                         const birthday = Utils.getNextBirthday(client.date);
                         const diffDays = Math.ceil((birthday - today) / 86400000);
-                        return {
-                            name: client.name,
-                            daysUntil: diffDays
-                        };
+                        return {name: client.name, daysUntil: diffDays};
                     });
             }
 
             function getClientsSorted() {
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
-                
                 return [...State.getClients()]
                     .sort((a, b) => {
                         const bdA = Utils.getNextBirthday(a.date);
@@ -1589,37 +1514,38 @@
                     .map(client => {
                         const birthday = Utils.getNextBirthday(client.date);
                         if (!birthday) return null;
-                        
                         const age = Utils.getAge(client.date, birthday);
                         const daysUntil = Math.ceil((birthday - today) / 86400000);
-                        
-                        return {
-                            ...client,
-                            birthday,
-                            age,
-                            daysUntil
-                        };
+                        return {...client, birthday, age, daysUntil};
                     })
                     .filter(client => client !== null);
             }
 
+            function getTasksForNotification() {
+                const now = new Date();
+                const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
+                const tasksToNotify = [];
+                
+                State.getFolders().forEach(folder => {
+                    Utils.getValidTasksArray(folder.tasks).forEach(task => {
+                        if (!task || task.completed || !task.date || !task.time) return;
+                        const taskDateTime = new Date(task.date + 'T' + task.time);
+                        if (isNaN(taskDateTime.getTime())) return;
+                        if (taskDateTime > now && taskDateTime <= oneHourLater) {
+                            tasksToNotify.push({...task, folderName: folder.name});
+                        }
+                    });
+                });
+                return tasksToNotify;
+            }
+
             return {
-                getTodayTasks,
-                getOverdueTasks,
-                getTasksForSmartFolder,
-                processRepeats,
-                searchTasks,
-                getCalendarData,
-                getTasksForDate,
-                getStats,
-                getUpcomingBirthdays,
-                getClientsSorted
+                getTodayTasks, getOverdueTasks, getTasksForSmartFolder, processRepeats,
+                searchTasks, getCalendarData, getTasksForDate, getStats, getUpcomingBirthdays,
+                getClientsSorted, getTasksForNotification
             };
         })();
 
-        // ========================================
-        // 5. UI-КОМПОНЕНТЫ (Renderers)
-        // ========================================
         const UI = (() => {
             function showToast(message) {
                 const toast = document.getElementById('toast');
@@ -1647,16 +1573,9 @@
                     center: document.getElementById('customQuoteCenter'),
                     right: document.getElementById('customQuoteRight')
                 };
-                const defaults = {
-                    left: '💬 Своя цитата слева',
-                    center: '💬 Своя цитата центр',
-                    right: '💬 Своя цитата справа'
-                };
-
+                const defaults = {left: '💬 Своя цитата слева', center: '💬 Своя цитата центр', right: '💬 Своя цитата справа'};
                 Object.entries(elements).forEach(([side, el]) => {
-                    if (el) {
-                        el.textContent = quotes[side] || defaults[side];
-                    }
+                    if (el) el.textContent = quotes[side] || defaults[side];
                 });
             }
 
@@ -1669,35 +1588,48 @@
                     return;
                 }
 
+                const viewMode = State.getFolderViewMode();
                 let html = '';
+                
+                // Переключатель вида
+                html += `
+                    <div class="view-toggle">
+                        <button class="view-toggle-btn ${viewMode === 'list' ? 'active' : ''}" data-view="list">📋 Список</button>
+                        <button class="view-toggle-btn ${viewMode === 'grid' ? 'active' : ''}" data-view="grid">🔲 Сетка</button>
+                    </div>`;
 
-                // Умная папка "Сегодня"
                 const todayTasks = Services.getTodayTasks();
                 html += buildSmartFolderHTML(SMART_FOLDERS.TODAY, '📅', 'Сегодня', todayTasks.length);
 
-                // Умная папка "Просроченные"
                 const overdueTasks = Services.getOverdueTasks();
                 if (overdueTasks.length > 0) {
-                    html += buildSmartFolderHTML(
-                        SMART_FOLDERS.OVERDUE, '⚠️', 'Просроченные', overdueTasks.length, 'var(--overdue)'
-                    );
+                    html += buildSmartFolderHTML(SMART_FOLDERS.OVERDUE, '⚠️', 'Просроченные', overdueTasks.length, 'var(--overdue)');
                 }
 
-                // Корзина
                 const trash = State.getFolders().find(f => f.id === SMART_FOLDERS.TRASH);
                 if (trash && trash.tasks.length > 0) {
                     html += buildSmartFolderHTML(SMART_FOLDERS.TRASH, '🗑️', 'Корзина', trash.tasks.length);
                 }
 
-                // Обычные папки
                 const folders = State.getFolders().filter(f => f.id !== SMART_FOLDERS.TRASH);
-                if (!folders.length) {
+                if (!folders.length && !todayTasks.length) {
                     html += '<p style="text-align:center;padding:20px;opacity:0.6;">📂 Нет папок. Создайте первую!</p>';
-                } else {
+                } else if (folders.length) {
+                    html += `<div class="${viewMode === 'grid' ? 'folder-grid' : ''}">`;
                     html += folders.map(buildFolderCardHTML).join('');
+                    html += '</div>';
                 }
 
                 container.innerHTML = html;
+                
+                // Обработчики переключения вида
+                container.querySelectorAll('.view-toggle-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        State.setFolderViewMode(this.dataset.view);
+                        State.save();
+                        UI.renderFolderList();
+                    });
+                });
             }
             
             function buildSmartFolderHTML(id, icon, name, taskCount, colorClass) {
@@ -1745,7 +1677,17 @@
                     container.innerHTML = '<p style="text-align:center;padding:20px;opacity:0.6;">🔍 Ничего не найдено</p>';
                     return;
                 }
-                container.innerHTML = tasks.map(task => buildTaskHTML(task, task.folderId, true)).join('');
+                container.innerHTML = '<div style="margin-bottom:10px;"><button class="btn-sm" id="btnClearSearch">← Назад к папкам</button></div>' + 
+                    tasks.map(task => buildTaskHTML(task, task.folderId, true)).join('');
+                
+                const clearBtn = document.getElementById('btnClearSearch');
+                if (clearBtn) {
+                    clearBtn.addEventListener('click', () => {
+                        document.getElementById('searchInput').value = '';
+                        document.getElementById('searchStats').style.display = 'none';
+                        UI.renderFolderList();
+                    });
+                }
             }
 
             function renderTasks() {
@@ -1783,7 +1725,7 @@
                     : Services.getTasksForSmartFolder(folderId);
                 const taskList = document.getElementById('taskList');
                 if (!taskList) return;
-    
+
                 if (!tasks.length) {
                     taskList.innerHTML = '<div class="no-tasks">🎉 Задач нет!</div>';
                 } else {
@@ -1828,7 +1770,6 @@
                     ? tasks.filter(t => !t.completed)
                     : tasks.filter(t => t.completed);
 
-                // Сортировка: приоритет, затем дата
                 filtered.sort((a, b) => {
                     const priorityDiff = (b.priority || 0) - (a.priority || 0);
                     if (priorityDiff !== 0) return priorityDiff;
@@ -1881,7 +1822,6 @@
                 html += buildSubtasksHTML(task);
                 html += `</div>`;
 
-                // Звездочки приоритета
                 for (let i = 1; i <= MAX_PRIORITY; i++) {
                     html += `
                         <button class="star-btn ${task.priority >= i ? 'active' : ''}" 
@@ -1899,30 +1839,18 @@
 
             function buildSubtasksHTML(task) {
                 if (!Array.isArray(task.subtasks) || !task.subtasks.length) return '';
-                
                 let html = '<ul class="subtask-list">';
                 task.subtasks.forEach(subtask => {
                     if (!subtask) return;
                     html += `
                         <li class="subtask-item ${subtask.completed ? 'completed' : ''}">
-                            <div class="subtask-checkbox" 
-                                 data-action="${ACTIONS.TOGGLE_SUBTASK}" 
-                                 data-task-id="${task.id}" 
-                                 data-subtask-id="${subtask.id}">
+                            <div class="subtask-checkbox" data-action="${ACTIONS.TOGGLE_SUBTASK}" data-task-id="${task.id}" data-subtask-id="${subtask.id}">
                                 ${subtask.completed ? '✓' : ''}
                             </div>
                             <span class="subtask-text">${Utils.escapeHtml(subtask.text)}</span>
                             <div class="subtask-actions">
-                                <button class="btn-xs" 
-                                        data-action="${ACTIONS.EDIT_SUBTASK}" 
-                                        data-task-id="${task.id}" 
-                                        data-subtask-id="${subtask.id}" 
-                                        title="Редактировать">✏️</button>
-                                <button class="btn-xs" 
-                                        data-action="${ACTIONS.DELETE_SUBTASK}" 
-                                        data-task-id="${task.id}" 
-                                        data-subtask-id="${subtask.id}" 
-                                        title="Удалить">✕</button>
+                                <button class="btn-xs" data-action="${ACTIONS.EDIT_SUBTASK}" data-task-id="${task.id}" data-subtask-id="${subtask.id}" title="Редактировать">✏️</button>
+                                <button class="btn-xs" data-action="${ACTIONS.DELETE_SUBTASK}" data-task-id="${task.id}" data-subtask-id="${subtask.id}" title="Удалить">✕</button>
                             </div>
                         </li>`;
                 });
@@ -1932,18 +1860,11 @@
 
             function buildTaskBadgesHTML(task) {
                 let html = '';
-                
                 if (task.repeat) {
-                    const repeatText = task.repeat === 'custom' 
-                        ? `${task.repeatDays || '?'}д` 
-                        : (REPEAT_ABBREVIATIONS[task.repeat] || task.repeat);
+                    const repeatText = task.repeat === 'custom' ? `${task.repeatDays || '?'}д` : (REPEAT_ABBREVIATIONS[task.repeat] || task.repeat);
                     html += `<span class="repeat-badge">🔁 ${repeatText}</span>`;
                 }
-                
-                if (task.time) {
-                    html += `<span>🕐 ${task.time}</span>`;
-                }
-                
+                if (task.time) html += `<span>🕐 ${task.time}</span>`;
                 if (task.date) {
                     let dateToCheck = task.date;
                     if (task.type === TASK_TYPES.BIRTHDAY) {
@@ -1951,13 +1872,9 @@
                         if (nextBd) dateToCheck = Utils.formatDateISO(nextBd);
                     }
                     const daysInfo = Utils.getDaysText(dateToCheck);
-                    if (daysInfo) {
-                        html += `<span class="days-badge ${daysInfo.className}">${daysInfo.text}</span>`;
-                    } else {
-                        html += `<span>📅 ${Utils.formatDate(task.date)}</span>`;
-                    }
+                    if (daysInfo) html += `<span class="days-badge ${daysInfo.className}">${daysInfo.text}</span>`;
+                    else html += `<span>📅 ${Utils.formatDate(task.date)}</span>`;
                 }
-                
                 return html;
             }
 
@@ -1971,56 +1888,34 @@
             function renderNotes() {
                 const container = document.getElementById('notesList');
                 if (!container) return;
-
                 const notes = State.getNotes();
                 if (!notes.length) {
                     container.innerHTML = '<p style="text-align:center;padding:20px;opacity:0.6;">💡 Нет заметок</p>';
                     return;
                 }
-
-                container.innerHTML = notes
-                    .filter(note => note)
-                    .map(note => `
-                        <div class="note-card" style="position:relative;">
-                            <div style="display:flex;justify-content:flex-end;margin-bottom:8px;">
-                                <button class="btn-sm btn-danger" 
-                                        data-action="${ACTIONS.DELETE_NOTE}" 
-                                        data-note-id="${note.id}" 
-                                        style="font-size:11px;padding:4px 10px;">✕ Удалить</button>
-                            </div>
-                            <textarea class="note-textarea" data-note-id="${note.id}">${Utils.escapeHtml(note.text || '')}</textarea>
-                        </div>`)
-                    .join('');
+                container.innerHTML = notes.filter(note => note).map(note => `
+                    <div class="note-card" style="position:relative;">
+                        <div style="display:flex;justify-content:flex-end;margin-bottom:8px;">
+                            <button class="btn-sm btn-danger" data-action="${ACTIONS.DELETE_NOTE}" data-note-id="${note.id}" style="font-size:11px;padding:4px 10px;">✕ Удалить</button>
+                        </div>
+                        <textarea class="note-textarea" data-note-id="${note.id}">${Utils.escapeHtml(note.text || '')}</textarea>
+                    </div>`).join('');
             }
 
             function renderCalendar(year, month, selectedDate) {
                 const titleEl = document.getElementById('calendarTitle');
-                if (titleEl) {
-                    titleEl.textContent = new Date(year, month)
-                        .toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' });
-                }
-
+                if (titleEl) titleEl.textContent = new Date(year, month).toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' });
                 const grid = document.getElementById('calendarGrid');
                 if (!grid) return;
-
                 const { startOffset, days } = Services.getCalendarData(year, month);
-                
                 grid.innerHTML = '';
-                
-                // Дни недели
                 ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'].forEach(day => {
                     const div = document.createElement('div');
                     div.style.cssText = 'font-size:10px;font-weight:700;';
                     div.textContent = day;
                     grid.appendChild(div);
                 });
-
-                // Пустые ячейки
-                for (let i = 0; i < startOffset; i++) {
-                    grid.appendChild(document.createElement('div'));
-                }
-
-                // Дни месяца
+                for (let i = 0; i < startOffset; i++) grid.appendChild(document.createElement('div'));
                 days.forEach(({ day, dateStr, isToday, hasTasks }) => {
                     const dayDiv = document.createElement('div');
                     dayDiv.className = 'calendar-day';
@@ -2032,52 +1927,32 @@
                     dayDiv.dataset.date = dateStr;
                     grid.appendChild(dayDiv);
                 });
-
                 renderCalendarTasks(selectedDate);
             }
 
             function renderCalendarTasks(selectedDate) {
                 const container = document.getElementById('calendarTasks');
                 if (!container) return;
-                
-                if (!selectedDate) {
-                    container.innerHTML = '';
-                    return;
-                }
-
+                if (!selectedDate) { container.innerHTML = ''; return; }
                 const tasks = Services.getTasksForDate(selectedDate);
-                
                 if (!tasks.length) {
                     container.innerHTML = '<p style="color:var(--text-secondary);text-align:center;padding:10px;">Нет задач и событий 🎉</p>';
                     return;
                 }
-
                 container.innerHTML = `
                     <strong>📅 ${Utils.formatDate(selectedDate)}</strong><br>
                     ${tasks.map(task => {
-                        if (task.type === TASK_TYPES.BIRTHDAY) {
-                            return `<div class="task-item">🎂 ${Utils.escapeHtml(task.text)}</div>`;
-                        }
-                        return `<div class="task-item">
-                            <span>${task.icon || '📌'}</span>
-                            <span>${Utils.escapeHtml(task.text)}</span>
-                            <span style="font-size:10px;color:var(--text-secondary);">${Utils.escapeHtml(task.folder)}</span>
-                        </div>`;
+                        if (task.type === TASK_TYPES.BIRTHDAY) return `<div class="task-item">🎂 ${Utils.escapeHtml(task.text)}</div>`;
+                        return `<div class="task-item"><span>${task.icon || '📌'}</span> <span>${Utils.escapeHtml(task.text)}</span> <span style="font-size:10px;color:var(--text-secondary);">${Utils.escapeHtml(task.folder)}</span></div>`;
                     }).join('')}`;
             }
 
             function renderAI() {
                 const container = document.getElementById('aiContent');
                 if (!container) return;
-
                 const upcoming = Services.getUpcomingBirthdays();
-                
                 if (upcoming.length) {
-                    container.innerHTML = `
-                        <strong>🎂 Ближайшие ДР:</strong><br>
-                        ${upcoming.map(client => 
-                            `• ${Utils.escapeHtml(client.name)} — через ${client.daysUntil} дн.`
-                        ).join('<br>')}`;
+                    container.innerHTML = `<strong>🎂 Ближайшие ДР:</strong><br>${upcoming.map(c => `• ${Utils.escapeHtml(c.name)} — через ${c.daysUntil} дн.`).join('<br>')}`;
                 } else {
                     container.innerHTML = '<p>🎉 Всё под контролем!</p>';
                 }
@@ -2086,7 +1961,6 @@
             function renderClients() {
                 const container = document.getElementById('clientList');
                 if (!container) return;
-
                 const clients = State.getClients();
                 if (!clients.length) {
                     container.innerHTML = '<p style="text-align:center;padding:16px;opacity:0.6;">👥 Нет клиентов</p>';
@@ -2094,28 +1968,17 @@
                     if (statsEl) statsEl.textContent = '';
                     return;
                 }
-
                 const sortedClients = Services.getClientsSorted();
-                
                 container.innerHTML = sortedClients.map(client => {
                     const dateStr = `${client.birthday.getDate()} ${client.birthday.toLocaleDateString('ru-RU', { month: 'long' })} ${client.birthday.getFullYear()}`;
                     let status;
-                    if (client.daysUntil === 0) {
-                        status = '🎂 Сегодня!';
-                    } else if (client.daysUntil === 1) {
-                        status = '🎂 Завтра!';
-                    } else {
-                        status = `📅 ${dateStr} (через ${client.daysUntil} дн.)`;
-                    }
-
+                    if (client.daysUntil === 0) status = '🎂 Сегодня!';
+                    else if (client.daysUntil === 1) status = '🎂 Завтра!';
+                    else status = `📅 ${dateStr} (через ${client.daysUntil} дн.)`;
                     return `
                         <div class="client-card">
                             <div style="display:flex;justify-content:space-between;gap:6px;flex-wrap:wrap;">
-                                <span>
-                                    <strong>${Utils.escapeHtml(client.name)}</strong> — 
-                                    ${Utils.formatDate(client.date)} 
-                                    (${client.age} ${Utils.getAgeWord(client.age)})
-                                </span>
+                                <span><strong>${Utils.escapeHtml(client.name)}</strong> — ${Utils.formatDate(client.date)} (${client.age} ${Utils.getAgeWord(client.age)})</span>
                                 <div>
                                     <button class="btn-sm btn-add" data-action="${ACTIONS.EDIT_CLIENT}" data-client-id="${client.id}">✏️</button>
                                     <button class="btn-sm btn-email" data-action="${ACTIONS.EMAIL_CLIENT}" data-client-id="${client.id}">📧</button>
@@ -2127,26 +1990,17 @@
                         </div>`;
                 }).join('');
 
-                // Статистика
                 const now = new Date();
                 const birthdaysThisMonth = clients.filter(client => {
-                    try {
-                        const bd = Utils.getNextBirthday(client.date);
-                        return bd && bd.getMonth() === now.getMonth();
-                    } catch (e) {
-                        return false;
-                    }
+                    try { const bd = Utils.getNextBirthday(client.date); return bd && bd.getMonth() === now.getMonth(); }
+                    catch (e) { return false; }
                 }).length;
-                
                 const statsEl = document.getElementById('clientStats');
-                if (statsEl) {
-                    statsEl.textContent = `В этом месяце: ${birthdaysThisMonth} дн. рожд. · Всего: ${clients.length}`;
-                }
+                if (statsEl) statsEl.textContent = `В этом месяце: ${birthdaysThisMonth} дн. рожд. · Всего: ${clients.length}`;
             }
 
             function renderStats() {
                 const stats = Services.getStats();
-                
                 const elements = {
                     total: document.getElementById('statTotal'),
                     completed: document.getElementById('statCompleted'),
@@ -2154,21 +2008,14 @@
                     progressFill: document.getElementById('progressFill'),
                     details: document.getElementById('statsDetails')
                 };
-
                 if (elements.total) elements.total.textContent = stats.total;
                 if (elements.completed) elements.completed.textContent = stats.completed;
                 if (elements.percent) elements.percent.textContent = `${stats.percent}%`;
                 if (elements.progressFill) elements.progressFill.style.width = `${stats.percent}%`;
-                
                 if (elements.details && stats.folderStats.length) {
-                    elements.details.innerHTML = `
-                        <strong>По папкам:</strong><br>
-                        ${stats.folderStats.map(fs => 
-                            `${fs.icon} ${Utils.escapeHtml(fs.name)}: ${fs.completed}/${fs.total} выполнено`
-                        ).join('<br>')}`;
+                    elements.details.innerHTML = `<strong>По папкам:</strong><br>${stats.folderStats.map(fs => `${fs.icon} ${Utils.escapeHtml(fs.name)}: ${fs.completed}/${fs.total} выполнено`).join('<br>')}`;
                 }
-
-                State.save(); // updateDocumentTitle вызывается внутри
+                State.save();
             }
 
             function renderAll(calendarState = null) {
@@ -2178,64 +2025,35 @@
                 renderNotes();
                 renderAI();
                 renderClients();
-                
-                if (calendarState) {
-                    renderCalendar(calendarState.year, calendarState.month, calendarState.selectedDate);
-                }
-                
-                if (document.getElementById('section-stats').classList.contains('active')) {
-                    renderStats();
-                }
+                if (calendarState) renderCalendar(calendarState.year, calendarState.month, calendarState.selectedDate);
+                if (document.getElementById('section-stats').classList.contains('active')) renderStats();
             }
 
-            return {
-                showToast,
-                updateQuote,
-                renderCustomQuotes,
-                renderFolderList,
-                renderTasks,
-                renderNotes,
-                renderCalendar,
-                renderAI,
-                renderClients,
-                renderStats,
-                renderAll
-            };
+            return { showToast, updateQuote, renderCustomQuotes, renderFolderList, renderTasks, renderNotes, renderCalendar, renderAI, renderClients, renderStats, renderAll };
         })();
 
-        // ========================================
-        // 6. ОБРАБОТЧИКИ ДЕЙСТВИЙ (Action Handlers)
-        // ========================================
         const Actions = (() => {
             function openFolder(folderId) {
                 State.setCurrentFolderId(folderId);
                 State.setCurrentTaskFilter(FILTERS.ACTIVE);
-                
                 const searchContainer = document.getElementById('searchContainer');
                 if (searchContainer) searchContainer.style.display = 'none';
-                
                 State.save();
                 UI.renderAll();
             }
 
             function toggleTask(taskId) {
                 const currentFolderId = State.getCurrentFolderId();
-            
                 if (Utils.isSmartFolder(currentFolderId)) {
                     const result = Utils.findTaskById(taskId);
                     if (!result) {
                         const client = State.getClients().find(c => `bd_${c.id}` === taskId);
-                        if (client) {
-                            UI.showToast('🎂 Это день рождения!');
-                            return;
-                        }
+                        if (client) { UI.showToast('🎂 Это день рождения!'); return; }
                         return;
                     }
-            
                     const { task } = result;
                     task.completed = !task.completed;
                     const wasCompleted = task.completed;
-            
                     Services.processRepeats();
                     State.save();
                     UI.renderAll();
@@ -2244,7 +2062,6 @@
                 } else {
                     const result = Utils.findTaskById(taskId);
                     if (!result) return;
-            
                     result.task.completed = !result.task.completed;
                     const wasCompleted = result.task.completed;
                     Services.processRepeats();
@@ -2257,120 +2074,63 @@
 
             function addTask() {
                 const currentFolderId = State.getCurrentFolderId();
-                if (Utils.isSmartFolder(currentFolderId)) {
-                    UI.showToast('❌ В этой папке нельзя создавать задачи. Откройте обычную папку.');
-                    return;
-                }
-
+                if (Utils.isSmartFolder(currentFolderId)) { UI.showToast('❌ В этой папке нельзя создавать задачи.'); return; }
                 const taskInput = document.getElementById('taskInput');
                 const taskDate = document.getElementById('taskDate');
                 const taskTime = document.getElementById('taskTime');
                 const taskRepeat = document.getElementById('taskRepeat');
                 const taskRepeatDays = document.getElementById('taskRepeatDays');
-                
-                if (!taskInput || !taskDate || !taskTime || !taskRepeat) {
-                    UI.showToast('❌ Ошибка интерфейса');
-                    return;
-                }
-
+                if (!taskInput || !taskDate || !taskTime || !taskRepeat) { UI.showToast('❌ Ошибка интерфейса'); return; }
                 const text = taskInput.value.trim();
-                if (!text) {
-                    UI.showToast('❌ Введите текст задачи');
-                    return;
-                }
-
+                if (!text) { UI.showToast('❌ Введите текст задачи'); return; }
                 const folder = State.getFolderById(currentFolderId);
-                if (!folder) {
-                    UI.showToast('❌ Папка не найдена');
-                    return;
-                }
-
+                if (!folder) { UI.showToast('❌ Папка не найдена'); return; }
                 const repeat = taskRepeat.value;
                 const repeatDays = repeat === 'custom' ? parseInt(taskRepeatDays.value) || 1 : 0;
-
                 folder.tasks.push({
-                    id: Utils.generateId(),
-                    text,
-                    date: taskDate.value,
-                    time: taskTime.value,
-                    completed: false,
-                    subtasks: [],
-                    repeat: repeat || undefined,
-                    repeatDays: repeatDays || undefined,
-                    priority: 0
+                    id: Utils.generateId(), text, date: taskDate.value, time: taskTime.value,
+                    completed: false, subtasks: [], repeat: repeat || undefined, repeatDays: repeatDays || undefined, priority: 0
                 });
-
-                // Очистка формы
                 taskInput.value = '';
                 taskRepeat.value = '';
                 taskRepeatDays.style.display = 'none';
-                
                 State.setCurrentTaskFilter(FILTERS.ACTIVE);
                 State.save();
                 UI.renderAll();
                 UI.showToast('✅ Задача добавлена!');
             }
 
-            function editTask(taskId) {
-                if (Utils.isSmartFolder(State.getCurrentFolderId())) {
-                    UI.showToast('❌ В этой папке нельзя редактировать задачи.');
-                    return;
-                }
-
+            function editTask(taskId) { /* ... без изменений ... */
+                if (Utils.isSmartFolder(State.getCurrentFolderId())) { UI.showToast('❌ Нельзя редактировать'); return; }
                 const result = Utils.findTaskById(taskId);
-                if (!result) {
-                    UI.showToast('❌ Задача не найдена');
-                    return;
-                }
-
+                if (!result) { UI.showToast('❌ Не найдена'); return; }
                 const { task } = result;
-                
                 const newText = prompt('Текст задачи:', task.text);
                 if (newText === null) return;
-                
                 const newDate = prompt('Дата (ГГГГ-ММ-ДД):', task.date || '');
                 if (newDate === null) return;
-                
                 const newTime = prompt('Время (ЧЧ:ММ):', task.time || '');
                 if (newTime === null) return;
-
-                // Период повторения
-                const options = Object.entries(REPEAT_LABELS)
-                    .map(([v, l], i) => `${i + 1}. ${l}`)
-                    .join('\n');
+                const options = Object.entries(REPEAT_LABELS).map(([v, l], i) => `${i + 1}. ${l}`).join('\n');
                 const currentLabel = REPEAT_LABELS[task.repeat] || 'Без повтора';
-                const choice = prompt(`Период повторения:\n${options}\n\nТекущий: ${currentLabel}\nВведите номер:`, '');
-                
+                const choice = prompt(`Период:\n${options}\n\nТекущий: ${currentLabel}\nВведите номер:`, '');
                 if (choice === null) return;
-                
-                let newRepeat = '';
-                let newRepeatDays = 0;
+                let newRepeat = '', newRepeatDays = 0;
                 const keys = Object.keys(REPEAT_LABELS);
                 const choiceNum = parseInt(choice);
-                
                 if (!isNaN(choiceNum) && choiceNum >= 1 && choiceNum <= keys.length) {
                     newRepeat = keys[choiceNum - 1];
                     if (newRepeat === 'custom') {
                         const daysStr = prompt('Дней:', task.repeatDays || '7');
                         if (daysStr === null) return;
                         const days = parseInt(daysStr);
-                        if (isNaN(days) || days < 1) {
-                            UI.showToast('❌ Некорректно');
-                            return;
-                        }
+                        if (isNaN(days) || days < 1) { UI.showToast('❌ Некорректно'); return; }
                         newRepeatDays = days;
                     }
                 }
-
-                task.text = newText.trim();
-                task.date = newDate.trim();
-                task.time = newTime.trim();
-                task.repeat = newRepeat || undefined;
-                task.repeatDays = newRepeatDays || undefined;
-
-                State.save();
-                UI.renderAll();
-                UI.showToast('✅ Задача обновлена!');
+                task.text = newText.trim(); task.date = newDate.trim(); task.time = newTime.trim();
+                task.repeat = newRepeat || undefined; task.repeatDays = newRepeatDays || undefined;
+                State.save(); UI.renderAll(); UI.showToast('✅ Обновлена!');
             }
 
             function deleteTask(taskId) {
@@ -2386,482 +2146,285 @@
                 UI.showToast('🗑️ В корзине');
             }
 
+            // Остальные функции Actions без изменений
             function setPriority(taskId, priority) {
                 const result = Utils.findTaskById(taskId);
                 if (!result) return;
-                
                 const { task } = result;
                 task.priority = task.priority === priority ? priority - 1 : priority;
-                
-                State.save();
-                UI.renderTasks();
+                State.save(); UI.renderTasks();
             }
-
             function addSubtask(taskId) {
                 const result = Utils.findTaskById(taskId);
-                if (!result) {
-                    UI.showToast('❌ Задача не найдена');
-                    return;
-                }
-
+                if (!result) { UI.showToast('❌ Не найдена'); return; }
                 const { task } = result;
                 if (!Array.isArray(task.subtasks)) task.subtasks = [];
-                
                 const subtaskText = prompt('Текст подзадачи:');
                 if (!subtaskText || !subtaskText.trim()) return;
-                
-                task.subtasks.push({
-                    id: Utils.generateId(),
-                    text: subtaskText.trim(),
-                    completed: false
-                });
-                
-                State.save();
-                UI.renderAll();
-                UI.showToast('📋 Подзадача добавлена!');
+                task.subtasks.push({id: Utils.generateId(), text: subtaskText.trim(), completed: false});
+                State.save(); UI.renderAll(); UI.showToast('📋 Добавлена!');
             }
-
             function toggleSubtask(taskId, subtaskId) {
                 const result = Utils.findTaskById(taskId);
                 if (!result) return;
-
                 const { task } = result;
                 const subtask = task.subtasks?.find(s => s && s.id === subtaskId);
                 if (!subtask) return;
-
                 subtask.completed = !subtask.completed;
-                State.save();
-                UI.renderAll();
+                State.save(); UI.renderAll();
             }
-
             function editSubtask(taskId, subtaskId) {
                 const result = Utils.findTaskById(taskId);
                 if (!result) return;
-
                 const { task } = result;
                 const subtask = task.subtasks?.find(s => s && s.id === subtaskId);
                 if (!subtask) return;
-
                 const newText = prompt('Текст подзадачи:', subtask.text);
                 if (newText === null || !newText.trim()) return;
-
                 subtask.text = newText.trim();
-                State.save();
-                UI.renderAll();
-                UI.showToast('✏️ Подзадача обновлена!');
+                State.save(); UI.renderAll(); UI.showToast('✏️ Обновлена!');
             }
-
             function deleteSubtask(taskId, subtaskId) {
                 if (!confirm('Удалить подзадачу?')) return;
-
                 const result = Utils.findTaskById(taskId);
                 if (!result) return;
-
                 const { task } = result;
                 task.subtasks = task.subtasks.filter(s => s && s.id !== subtaskId);
-                
-                State.save();
-                UI.renderAll();
-                UI.showToast('🗑️ Подзадача удалена');
+                State.save(); UI.renderAll(); UI.showToast('🗑️ Удалена');
             }
-
             function addFolder() {
                 const name = prompt('Название папки:');
                 if (!name || !name.trim()) return;
-                
                 const icon = prompt('Иконка (по умолчанию 📁):', DEFAULT_FOLDER_ICON);
-                
-                State.addFolder({
-                    id: Utils.generateId(),
-                    name: name.trim(),
-                    icon: icon || DEFAULT_FOLDER_ICON,
-                    tasks: []
-                });
-                
-                State.save();
-                UI.renderAll();
-                UI.showToast('📁 Папка создана!');
+                State.addFolder({id: Utils.generateId(), name: name.trim(), icon: icon || DEFAULT_FOLDER_ICON, tasks: []});
+                State.save(); UI.renderAll(); UI.showToast('📁 Создана!');
             }
-
             function editFolder() {
                 const currentFolderId = State.getCurrentFolderId();
-                if (Utils.isSmartFolder(currentFolderId)) {
-                    UI.showToast('❌ Эту папку нельзя редактировать.');
-                    return;
-                }
-
+                if (Utils.isSmartFolder(currentFolderId)) { UI.showToast('❌ Нельзя'); return; }
                 const folder = State.getFolderById(currentFolderId);
                 if (!folder) return;
-
                 const newName = prompt('Название папки:', folder.name);
                 if (!newName || !newName.trim()) return;
-
                 folder.name = newName.trim();
-                State.save();
-                UI.renderAll();
-                UI.showToast('✅ Папка обновлена!');
+                State.save(); UI.renderAll(); UI.showToast('✅ Обновлена!');
             }
-
             function changeFolderIcon(folderId) {
-                if (Utils.isSmartFolder(folderId)) {
-                    UI.showToast('❌ Иконку этой папки нельзя изменить.');
-                    return;
-                }
-
+                if (Utils.isSmartFolder(folderId)) { UI.showToast('❌ Нельзя'); return; }
                 const folder = State.getFolderById(folderId);
                 if (!folder) return;
-
-                const newIcon = prompt(
-                    `Выберите иконку:\n${FOLDER_ICONS.join(' ')}`,
-                    folder.icon || DEFAULT_FOLDER_ICON
-                );
-                
+                const newIcon = prompt(`Выберите иконку:\n${FOLDER_ICONS.join(' ')}`, folder.icon || DEFAULT_FOLDER_ICON);
                 if (!newIcon || !newIcon.trim()) return;
-
                 folder.icon = newIcon.trim();
-                State.save();
-                UI.renderAll();
-                UI.showToast('✅ Иконка обновлена!');
+                State.save(); UI.renderAll(); UI.showToast('✅ Обновлена!');
             }
-
-            function setTaskFilter(filter) {
-                State.setCurrentTaskFilter(filter);
-                State.save();
-                UI.renderTasks();
-            }
-
+            function setTaskFilter(filter) { State.setCurrentTaskFilter(filter); State.save(); UI.renderTasks(); }
             function addClient() {
                 const nameInput = document.getElementById('clientName');
                 const phoneInput = document.getElementById('clientPhone');
                 const dateInput = document.getElementById('clientDate');
-                
-                if (!nameInput || !phoneInput || !dateInput) {
-                    UI.showToast('❌ Ошибка');
-                    return;
-                }
-
+                if (!nameInput || !phoneInput || !dateInput) { UI.showToast('❌ Ошибка'); return; }
                 const name = nameInput.value.trim();
                 const phone = phoneInput.value.trim();
                 const date = dateInput.value;
-
-                if (!name || !date) {
-                    UI.showToast('❌ Введите имя и дату');
-                    return;
-                }
-
-                State.addClient({
-                    id: Utils.generateId(),
-                    name,
-                    phone,
-                    date
-                });
-
-                nameInput.value = '';
-                phoneInput.value = '';
-                dateInput.value = '';
-
-                State.save();
-                UI.renderAll();
-                UI.showToast('👤 Клиент добавлен!');
+                if (!name || !date) { UI.showToast('❌ Введите имя и дату'); return; }
+                State.addClient({id: Utils.generateId(), name, phone, date});
+                nameInput.value = ''; phoneInput.value = ''; dateInput.value = '';
+                State.save(); UI.renderAll(); UI.showToast('👤 Добавлен!');
             }
-
             function editClient(clientId) {
                 const client = State.getClientById(clientId);
                 if (!client) return;
-
                 const name = prompt('ФИО:', client.name);
                 if (!name || !name.trim()) return;
-                
                 const phone = prompt('Телефон:', client.phone || '');
                 if (phone === null) return;
-                
                 const date = prompt('Дата:', client.date);
                 if (!date) return;
-
-                client.name = name.trim();
-                client.phone = phone.trim();
-                client.date = date;
-
-                State.save();
-                UI.renderClients();
-                UI.showToast('✅ Обновлено!');
+                client.name = name.trim(); client.phone = phone.trim(); client.date = date;
+                State.save(); UI.renderClients(); UI.showToast('✅ Обновлено!');
             }
-
             function deleteClient(clientId) {
                 if (!confirm('Удалить?')) return;
                 State.removeClient(clientId);
-                State.save();
-                UI.renderClients();
-                UI.showToast('🗑️ Удален');
+                State.save(); UI.renderClients(); UI.showToast('🗑️ Удален');
             }
-
             function emailClient(clientId) {
                 const client = State.getClientById(clientId);
                 if (!client) return;
-
                 try {
                     const birthday = Utils.getNextBirthday(client.date);
                     if (!birthday) throw new Error('Дата');
-                    
                     const age = Utils.getAge(client.date, birthday);
                     const subject = encodeURIComponent(`ДР: ${client.name}`);
-                    const body = encodeURIComponent(
-                        `Клиент: ${client.name}\n` +
-                        `Дата рождения: ${Utils.formatDate(client.date)}\n` +
-                        `ДР: ${birthday.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}\n` +
-                        `Возраст: ${age} ${Utils.getAgeWord(age)}\n` +
-                        `Телефон: ${client.phone || '—'}`
-                    );
-                    
+                    const body = encodeURIComponent(`Клиент: ${client.name}\nДата рождения: ${Utils.formatDate(client.date)}\nДР: ${birthday.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}\nВозраст: ${age} ${Utils.getAgeWord(age)}\nТелефон: ${client.phone || '—'}`);
                     window.open(`mailto:fry1997@mail.ru?subject=${subject}&body=${body}`);
-                } catch (e) {
-                    UI.showToast('❌ Ошибка');
-                }
+                } catch (e) { UI.showToast('❌ Ошибка'); }
             }
-
             function addNote() {
                 const noteText = document.getElementById('noteText');
                 if (!noteText) return;
-
-                State.addNote({
-                    id: Utils.generateId(),
-                    text: noteText.value.trim(),
-                    updatedAt: Date.now()
-                });
-
+                State.addNote({id: Utils.generateId(), text: noteText.value.trim(), updatedAt: Date.now()});
                 noteText.value = '';
-                State.save();
-                UI.renderAll();
-                UI.showToast('💡 Добавлена!');
+                State.save(); UI.renderAll(); UI.showToast('💡 Добавлена!');
             }
-
             function deleteNote(noteId) {
                 if (!confirm('Удалить заметку?')) return;
                 State.removeNote(noteId);
-                State.save();
-                UI.renderNotes();
-                UI.showToast('🗑️ Заметка удалена');
+                State.save(); UI.renderNotes(); UI.showToast('🗑️ Удалена');
             }
-
             function deleteFolder(folderId) {
-                if (!confirm('Удалить папку и все задачи в ней?')) return;
+                if (!confirm('Удалить папку и все задачи?')) return;
                 State.removeFolder(folderId);
                 if (State.getCurrentFolderId() === folderId) State.setCurrentFolderId(null);
-                State.save();
-                UI.renderAll();
-                UI.showToast('🗑️ Папка удалена');
+                State.save(); UI.renderAll(); UI.showToast('🗑️ Папка удалена');
             }
-
             function editCustomQuote(side) {
                 if (!['left', 'center', 'right'].includes(side)) return;
-                
                 const current = State.getCustomQuotes()[side] || '';
                 const text = prompt('Введите цитату:', current);
                 if (text === null) return;
-
                 State.setCustomQuote(side, text.trim());
-                State.save();
-                UI.renderCustomQuotes();
+                State.save(); UI.renderCustomQuotes();
             }
-
             function toggleSearch() {
                 const searchContainer = document.getElementById('searchContainer');
                 const searchInput = document.getElementById('searchInput');
                 if (!searchContainer || !searchInput) return;
-
                 if (searchContainer.style.display === 'block') {
                     searchContainer.style.display = 'none';
                     searchInput.value = '';
-                    
-                    const searchStats = document.getElementById('searchStats');
-                    if (searchStats) searchStats.style.display = 'none';
-                    
-                    const taskContainer = document.getElementById('taskContainer');
-                    if (taskContainer) taskContainer.style.display = 'none';
-                    
+                    document.getElementById('searchStats').style.display = 'none';
+                    document.getElementById('taskContainer').style.display = 'none';
                     UI.renderFolderList();
                 } else {
                     searchContainer.style.display = 'block';
                     searchInput.value = '';
                     searchInput.focus();
-                    
-                    const taskContainer = document.getElementById('taskContainer');
-                    if (taskContainer) taskContainer.style.display = 'none';
-                    
+                    document.getElementById('taskContainer').style.display = 'none';
                     updateSearchResults();
                 }
             }
-
             function updateSearchResults() {
                 const searchInput = document.getElementById('searchInput');
                 const searchStats = document.getElementById('searchStats');
                 if (!searchInput) return;
-
                 const query = searchInput.value.toLowerCase().trim();
-                
                 if (!query) {
                     if (searchStats) searchStats.style.display = 'none';
                     UI.renderFolderList();
                     return;
                 }
-
                 const results = Services.searchTasks(query);
-                
                 if (searchStats) {
                     searchStats.style.display = 'block';
                     searchStats.textContent = `Найдено: ${results.length} задач`;
                 }
-
                 UI.renderFolderList(results);
             }
-
             function goBackToFolders() {
                 State.setCurrentFolderId(null);
-                
-                const searchContainer = document.getElementById('searchContainer');
-                if (searchContainer) searchContainer.style.display = 'none';
-                
-                State.save();
-                UI.renderAll();
+                document.getElementById('searchContainer').style.display = 'none';
+                State.save(); UI.renderAll();
             }
-
             function exportData() {
                 try {
-                    const json = JSON.stringify({
-                        folders: State.getFolders(),
-                        notes: State.getNotes(),
-                        clients: State.getClients(),
-                        customQuotes: State.getCustomQuotes()
-                    }, null, 2);
-                    
+                    const json = JSON.stringify({folders: State.getFolders(), notes: State.getNotes(), clients: State.getClients(), customQuotes: State.getCustomQuotes()}, null, 2);
                     const blob = new Blob([json], { type: 'application/json' });
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
                     a.download = `my_plans_backup_${new Date().toISOString().slice(0, 10)}.json`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
+                    document.body.appendChild(a); a.click(); document.body.removeChild(a);
                     URL.revokeObjectURL(url);
-                    
                     UI.showToast('📤 Экспортировано!');
-                } catch (e) {
-                    UI.showToast('❌ Ошибка экспорта');
-                }
+                } catch (e) { UI.showToast('❌ Ошибка экспорта'); }
             }
-
             function importData() {
                 const input = document.createElement('input');
-                input.type = 'file';
-                input.accept = '.json,.txt,application/json';
-                input.style.display = 'none';
-                
+                input.type = 'file'; input.accept = '.json,.txt,application/json'; input.style.display = 'none';
                 document.body.appendChild(input);
-                
                 input.addEventListener('change', function(e) {
                     const file = e.target.files[0];
-                    if (!file) {
-                        document.body.removeChild(input);
-                        return;
-                    }
-                    
+                    if (!file) { document.body.removeChild(input); return; }
                     const reader = new FileReader();
                     reader.onload = function(ev) {
                         try {
                             const imported = JSON.parse(ev.target.result);
-                            if (!imported || typeof imported !== 'object' || !Array.isArray(imported.folders)) {
-                                throw new Error('Формат');
-                            }
-                            
-                            // Сохраняем бекап
-                            const backup = JSON.stringify({
-                                folders: State.getFolders(),
-                                notes: State.getNotes(),
-                                clients: State.getClients(),
-                                customQuotes: State.getCustomQuotes()
-                            });
-                            
+                            if (!imported || typeof imported !== 'object' || !Array.isArray(imported.folders)) throw new Error('Формат');
+                            const backup = JSON.stringify({folders: State.getFolders(), notes: State.getNotes(), clients: State.getClients(), customQuotes: State.getCustomQuotes()});
                             try {
-                                // Загружаем новые данные
                                 localStorage.setItem(STORAGE_KEY, JSON.stringify(imported));
-                                State.load();
-                                Services.processRepeats();
-                                UI.renderAll();
+                                State.load(); Services.processRepeats(); UI.renderAll();
                                 UI.showToast('📥 Импортировано!');
                             } catch (inner) {
-                                // Восстанавливаем из бекапа
                                 localStorage.setItem(STORAGE_KEY, backup);
-                                State.load();
-                                throw inner;
+                                State.load(); throw inner;
                             }
-                        } catch (err) {
-                            UI.showToast(`❌ Ошибка: ${err.message}`);
-                        }
+                        } catch (err) { UI.showToast(`❌ Ошибка: ${err.message}`); }
                         document.body.removeChild(input);
                     };
-                    
-                    reader.onerror = () => {
-                        UI.showToast('❌ Не удалось прочитать');
-                        document.body.removeChild(input);
-                    };
-                    
+                    reader.onerror = () => { UI.showToast('❌ Не удалось прочитать'); document.body.removeChild(input); };
                     reader.readAsText(file);
                 });
-                
                 input.click();
             }
-
             function syncData() {
-                if (confirm('Синхронизировать? ОК — сохранить данные в файл. Отмена — загрузить из файла.')) {
-                    exportData();
-                    UI.showToast('☁️ Файл синхронизации сохранён!');
-                } else {
-                    document.getElementById('btnImport')?.click();
-                }
+                if (confirm('Синхронизировать? ОК — сохранить, Отмена — загрузить.')) {
+                    exportData(); UI.showToast('☁️ Сохранён!');
+                } else { document.getElementById('btnImport')?.click(); }
             }
-
             function toggleTheme() {
                 document.body.classList.toggle('dark');
                 const theme = document.body.classList.contains('dark') ? 'dark' : 'light';
                 localStorage.setItem('theme', theme);
             }
 
+            // Уведомления
+            function requestNotification() {
+                if (!('Notification' in window)) {
+                    UI.showToast('❌ Уведомления не поддерживаются');
+                    return;
+                }
+                if (Notification.permission === 'granted') {
+                    checkAndNotify();
+                } else if (Notification.permission !== 'denied') {
+                    Notification.requestPermission().then(permission => {
+                        if (permission === 'granted') checkAndNotify();
+                        else UI.showToast('❌ Разрешите уведомления в настройках');
+                    });
+                }
+            }
+
+            function checkAndNotify() {
+                const tasks = Services.getTasksForNotification();
+                if (!tasks.length) {
+                    UI.showToast('🔔 Нет задач в ближайший час');
+                    return;
+                }
+                tasks.forEach(task => {
+                    const timeToDeadline = Math.ceil((new Date(task.date + 'T' + task.time) - new Date()) / 60000);
+                    new Notification('⏰ Напоминание', {
+                        body: `«${task.text}» через ${timeToDeadline} мин.`,
+                        icon: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Ctext y=".9em" font-size="90"%3E🔔%3C/text%3E%3C/svg%3E',
+                        tag: task.id
+                    });
+                });
+                UI.showToast(`🔔 Найдено задач: ${tasks.length}`);
+            }
+
             return {
-                openFolder,
-                toggleTask,
-                addTask,
-                editTask,
-                deleteTask,
-                setPriority,
-                addSubtask,
-                toggleSubtask,
-                editSubtask,
-                deleteSubtask,
-                addFolder,
-                editFolder,
-                changeFolderIcon,
-                setTaskFilter,
-                addClient,
-                editClient,
-                deleteClient,
-                emailClient,
-                addNote,
-                deleteNote,
-                deleteFolder,
-                editCustomQuote,
-                toggleSearch,
-                updateSearchResults,
-                goBackToFolders,
-                exportData,
-                importData,
-                syncData,
-                toggleTheme
+                openFolder, toggleTask, addTask, editTask, deleteTask, setPriority,
+                addSubtask, toggleSubtask, editSubtask, deleteSubtask,
+                addFolder, editFolder, changeFolderIcon, setTaskFilter,
+                addClient, editClient, deleteClient, emailClient,
+                addNote, deleteNote, deleteFolder, editCustomQuote,
+                toggleSearch, updateSearchResults, goBackToFolders,
+                exportData, importData, syncData, toggleTheme,
+                requestNotification
             };
         })();
 
-        // ========================================
-        // 7. DRAG & DROP
-        // ========================================
         const DragDrop = (() => {
             function handleDragStart(event) {
                 event.target.classList.add('dragging');
@@ -2871,63 +2434,39 @@
                 }));
                 event.dataTransfer.effectAllowed = 'move';
             }
-
             function handleDragEnd(event) {
                 event.target.classList.remove('dragging');
                 document.querySelectorAll('.folder-card').forEach(card => card.classList.remove('drag-over'));
             }
-
             function handleDragOver(event) {
                 event.preventDefault();
                 event.dataTransfer.dropEffect = 'move';
                 event.currentTarget.classList.add('drag-over');
             }
-
-            function handleDragLeave(event) {
-                event.currentTarget.classList.remove('drag-over');
-            }
-
+            function handleDragLeave(event) { event.currentTarget.classList.remove('drag-over'); }
             function handleDrop(event, toFolderId) {
                 event.preventDefault();
                 event.currentTarget.classList.remove('drag-over');
-                
                 try {
                     const dragData = JSON.parse(event.dataTransfer.getData('text/plain'));
                     const { taskId, fromFolderId } = dragData;
-                    
                     if (fromFolderId === toFolderId || Utils.isSmartFolder(toFolderId)) return;
-                    
                     const fromFolder = State.getFolderById(fromFolderId);
                     const toFolder = State.getFolderById(toFolderId);
-                    
                     if (!fromFolder || !toFolder) return;
-                    
                     const taskIndex = fromFolder.tasks.findIndex(t => t && t.id === taskId);
                     if (taskIndex === -1) return;
-                    
                     const task = fromFolder.tasks.splice(taskIndex, 1)[0];
                     toFolder.tasks.push(task);
-                    
-                    // Обновляем текущую папку если нужно
-                    if (State.getCurrentFolderId() === fromFolderId && !fromFolder.tasks.length) {
-                        State.setCurrentFolderId(toFolderId);
-                    } else if (State.getCurrentFolderId() !== toFolderId) {
-                        State.setCurrentFolderId(toFolderId);
-                    }
-                    
-                    State.save();
-                    UI.renderAll();
+                    if (State.getCurrentFolderId() === fromFolderId && !fromFolder.tasks.length) State.setCurrentFolderId(toFolderId);
+                    else if (State.getCurrentFolderId() !== toFolderId) State.setCurrentFolderId(toFolderId);
+                    State.save(); UI.renderAll();
                     UI.showToast('📦 Задача перемещена!');
-                } catch (e) {
-                    console.error('Drop error:', e);
-                    UI.showToast('❌ Ошибка перемещения');
-                }
+                } catch (e) { UI.showToast('❌ Ошибка перемещения'); }
             }
-
             return { handleDragStart, handleDragEnd, handleDragOver, handleDragLeave, handleDrop };
         })();
 
-        // Экспорт для глобального доступа
         window.App = {
             handleDragStart: DragDrop.handleDragStart,
             handleDragEnd: DragDrop.handleDragEnd,
@@ -2936,38 +2475,37 @@
             handleDrop: DragDrop.handleDrop
         };
 
-        // ========================================
-        // 8. НАСТРОЙКА ОБРАБОТЧИКОВ СОБЫТИЙ
-        // ========================================
         function setupEventListeners() {
-            // Делегирование кликов
             document.addEventListener('click', function(event) {
                 const target = event.target.closest('[data-action]');
                 if (!target) return;
-                
                 const action = target.dataset.action;
                 event.preventDefault();
-                
-                try {
-                    handleAction(action, target.dataset);
-                } catch (e) {
-                    console.error('Action error:', action, e);
-                    UI.showToast('❌ Ошибка');
-                }
+                try { handleAction(action, target.dataset); }
+                catch (e) { console.error('Action error:', action, e); UI.showToast('❌ Ошибка'); }
             });
 
-            // Кнопки с прямыми ID
             setupButtonHandlers();
-            
-            // Табы
             setupTabHandlers();
-            
-            // Обработчики ввода
             setupInputHandlers();
             
-            // Тема
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme === 'dark') document.body.classList.add('dark');
+            
+            // Автопроверка уведомлений каждые 5 минут
+            if ('Notification' in window && Notification.permission === 'granted') {
+                setInterval(() => {
+                    const tasks = Services.getTasksForNotification();
+                    tasks.forEach(task => {
+                        const timeToDeadline = Math.ceil((new Date(task.date + 'T' + task.time) - new Date()) / 60000);
+                        new Notification('⏰ Напоминание', {
+                            body: `«${task.text}» через ${timeToDeadline} мин.`,
+                            icon: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Ctext y=".9em" font-size="90"%3E🔔%3C/text%3E%3C/svg%3E',
+                            tag: task.id
+                        });
+                    });
+                }, 300000);
+            }
         }
 
         function handleAction(action, dataset) {
@@ -3006,22 +2544,17 @@
                 btnNewFolder: Actions.addFolder,
                 btnNewNote: Actions.addNote,
                 btnSearch: Actions.toggleSearch,
+                btnNotify: Actions.requestNotification,
                 btnBackToFolders: Actions.goBackToFolders,
                 btnPrevMonth: () => {
                     AppState.calendarMonth--;
-                    if (AppState.calendarMonth < 0) {
-                        AppState.calendarMonth = 11;
-                        AppState.calendarYear--;
-                    }
+                    if (AppState.calendarMonth < 0) { AppState.calendarMonth = 11; AppState.calendarYear--; }
                     AppState.selectedDate = null;
                     UI.renderCalendar(AppState.calendarYear, AppState.calendarMonth, null);
                 },
                 btnNextMonth: () => {
                     AppState.calendarMonth++;
-                    if (AppState.calendarMonth > 11) {
-                        AppState.calendarMonth = 0;
-                        AppState.calendarYear++;
-                    }
+                    if (AppState.calendarMonth > 11) { AppState.calendarMonth = 0; AppState.calendarYear++; }
                     AppState.selectedDate = null;
                     UI.renderCalendar(AppState.calendarYear, AppState.calendarMonth, null);
                 },
@@ -3030,7 +2563,6 @@
                 btnImport: Actions.importData,
                 btnSync: Actions.syncData
             };
-
             Object.entries(handlers).forEach(([id, fn]) => {
                 const el = document.getElementById(id);
                 if (el) el.addEventListener('click', fn);
@@ -3041,38 +2573,25 @@
             document.querySelectorAll('#mainTabs .tab').forEach(tab => {
                 tab.addEventListener('click', function() {
                     const tabName = this.dataset.tab;
-                    
-                    // Обновляем активный таб
                     document.querySelectorAll('#mainTabs .tab').forEach(t => t.classList.remove('active'));
                     this.classList.add('active');
-                    
-                    // Показываем нужную секцию
                     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
                     const section = document.getElementById(`section-${tabName}`);
                     if (!section) return;
-                    
                     section.classList.add('active');
-                    
-                    // Рендерим содержимое
                     switch (tabName) {
                         case 'tasks': 
-                            const searchContainer = document.getElementById('searchContainer');
-                            if (searchContainer) searchContainer.style.display = 'none';
+                            document.getElementById('searchContainer').style.display = 'none';
                             UI.renderAll();
                             break;
-                        case 'calendar': 
-                            UI.renderCalendar(AppState.calendarYear, AppState.calendarMonth, AppState.selectedDate);
-                            break;
-                        case 'stats': 
-                            UI.renderStats();
-                            break;
+                        case 'calendar': UI.renderCalendar(AppState.calendarYear, AppState.calendarMonth, AppState.selectedDate); break;
+                        case 'stats': UI.renderStats(); break;
                     }
                 });
             });
         }
 
         function setupInputHandlers() {
-            // Фильтр задач
             const taskFilter = document.getElementById('taskFilter');
             if (taskFilter) {
                 taskFilter.addEventListener('click', function(e) {
@@ -3080,20 +2599,14 @@
                     if (btn) Actions.setTaskFilter(btn.dataset.filter);
                 });
             }
-
-            // Повтор задач
             const taskRepeat = document.getElementById('taskRepeat');
             const taskRepeatDays = document.getElementById('taskRepeatDays');
             if (taskRepeat && taskRepeatDays) {
                 taskRepeat.addEventListener('change', function() {
                     taskRepeatDays.style.display = this.value === 'custom' ? 'inline' : 'none';
-                    if (this.value === 'custom' && !taskRepeatDays.value) {
-                        taskRepeatDays.value = '1';
-                    }
+                    if (this.value === 'custom' && !taskRepeatDays.value) taskRepeatDays.value = '1';
                 });
             }
-
-            // Поиск
             const searchInput = document.getElementById('searchInput');
             if (searchInput) {
                 searchInput.addEventListener('input', Actions.updateSearchResults);
@@ -3101,81 +2614,48 @@
                     if (e.key === 'Escape') Actions.toggleSearch();
                 });
             }
-
-            // Заметки (автосохранение)
             let noteTimeout;
             document.addEventListener('input', function(e) {
                 if (!e.target.classList.contains('note-textarea')) return;
                 clearTimeout(noteTimeout);
                 noteTimeout = setTimeout(() => {
                     const note = State.getNoteById(e.target.dataset.noteId);
-                    if (note) {
-                        note.text = e.target.value;
-                        note.updatedAt = Date.now();
-                        State.save();
-                    }
+                    if (note) { note.text = e.target.value; note.updatedAt = Date.now(); State.save(); }
                 }, 600);
             });
         }
 
-        // ========================================
-        // 9. СОСТОЯНИЕ КАЛЕНДАРЯ
-        // ========================================
         const AppState = {
             calendarYear: new Date().getFullYear(),
             calendarMonth: new Date().getMonth(),
             selectedDate: null
         };
 
-        // ========================================
-        // 10. ИНИЦИАЛИЗАЦИЯ
-        // ========================================
         function initialize() {
             try {
                 State.load();
                 Services.processRepeats();
                 setupEventListeners();
-                
-                const calendarState = {
-                    year: AppState.calendarYear,
-                    month: AppState.calendarMonth,
-                    selectedDate: AppState.selectedDate
-                };
-                
+                const calendarState = {year: AppState.calendarYear, month: AppState.calendarMonth, selectedDate: AppState.selectedDate};
                 UI.renderAll(calendarState);
-                State.save(); // Для обновления заголовка
-                
+                State.save();
                 UI.updateQuote();
                 setInterval(UI.updateQuote, 30000);
-                
                 console.log('✅ Приложение готово');
-            } catch (e) {
-                console.error('Init error:', e);
-            }
+            } catch (e) { console.error('Init error:', e); }
         }
 
-        // Отладка
         window.debugApp = {
             getState: () => ({
-                folders: State.getFolders(),
-                notes: State.getNotes(),
-                clients: State.getClients(),
-                customQuotes: State.getCustomQuotes(),
-                currentFolderId: State.getCurrentFolderId(),
+                folders: State.getFolders(), notes: State.getNotes(), clients: State.getClients(),
+                customQuotes: State.getCustomQuotes(), currentFolderId: State.getCurrentFolderId(),
                 currentTaskFilter: State.getCurrentTaskFilter()
             }),
-            resetData: () => {
-                localStorage.removeItem(STORAGE_KEY);
-                location.reload();
-            }
+            resetData: () => { localStorage.removeItem(STORAGE_KEY); location.reload(); }
         };
 
-        // Запуск
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initialize);
-        } else {
-            initialize();
-        }
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initialize);
+        else initialize();
     })();
     </script>
     <button onclick="window.scrollTo({top:0,behavior:'smooth'})" style="position:fixed;bottom:20px;right:20px;z-index:999;width:44px;height:44px;border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:20px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.2);">⬆</button>
