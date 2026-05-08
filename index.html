@@ -1186,7 +1186,7 @@
             },
 
             isSmartFolder(folderId) {
-                return folderId === SMART_FOLDERS.TODAY || folderId === SMART_FOLDERS.OVERDUE;
+                return folderId === SMART_FOLDERS.TODAY || folderId === SMART_FOLDERS.OVERDUE || folderId === SMART_FOLDERS.TRASH;
             },
 
             getValidTasksArray(tasks) {
@@ -1686,8 +1686,14 @@
                     );
                 }
 
+                // Корзина
+                const trash = State.getFolders().find(f => f.id === SMART_FOLDERS.TRASH);
+                if (trash && trash.tasks.length > 0) {
+                    html += buildSmartFolderHTML(SMART_FOLDERS.TRASH, '🗑️', 'Корзина', trash.tasks.length);
+                }
+
                 // Обычные папки
-                const folders = State.getFolders();
+                const folders = State.getFolders().filter(f => f.id !== SMART_FOLDERS.TRASH);
                 if (!folders.length) {
                     html += '<p style="text-align:center;padding:20px;opacity:0.6;">📂 Нет папок. Создайте первую!</p>';
                 } else {
@@ -1695,7 +1701,6 @@
                 }
 
                 container.innerHTML = html;
-            }
 
             function buildSmartFolderHTML(id, icon, name, taskCount, colorClass) {
                 const colorStyle = colorClass ? `style="color:${colorClass};"` : '';
@@ -1766,7 +1771,9 @@
 
                 const folderNameEl = document.getElementById('currentFolderName');
                 if (folderNameEl) {
-                    folderNameEl.textContent = folderId === SMART_FOLDERS.TODAY ? '📅 Сегодня' : '⚠️ Просроченные';
+                if (folderId === SMART_FOLDERS.TODAY) folderNameEl.textContent = '📅 Сегодня';
+                else if (folderId === SMART_FOLDERS.OVERDUE) folderNameEl.textContent = '⚠️ Просроченные';
+                else folderNameEl.textContent = '🗑️ Корзина';
                 }
 
                 document.getElementById('taskFilter').style.display = 'none';
@@ -1776,6 +1783,7 @@
                 const tasks = Services.getTasksForSmartFolder(folderId);
                 const taskList = document.getElementById('taskList');
                 if (!taskList) return;
+    
 
                 if (!tasks.length) {
                     taskList.innerHTML = '<div class="no-tasks">🎉 Задач нет!</div>';
