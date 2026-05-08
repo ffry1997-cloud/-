@@ -1778,7 +1778,9 @@
                 document.getElementById('btnEditFolder').style.display = 'none';
                 document.querySelector('.input-row').style.display = 'none';
 
-                const tasks = Services.getTasksForSmartFolder(folderId);
+                const tasks = folderId === SMART_FOLDERS.TRASH 
+                    ? (State.getFolderById(folderId)?.tasks || [])
+                    : Services.getTasksForSmartFolder(folderId);
                 const taskList = document.getElementById('taskList');
                 if (!taskList) return;
     
