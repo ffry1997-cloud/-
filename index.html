@@ -1052,16 +1052,15 @@
                 return 'id_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 6);
             },
 
-            // Стало
-escapeHtml(str) {
-    if (!str) return '';
-    return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-},
+            escapeHtml(str) {
+                if (!str) return '';
+                return String(str)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+            },
 
             formatDate(dateStr) {
                 if (!dateStr) return '';
@@ -2223,15 +2222,15 @@ escapeHtml(str) {
             }
 
             // НАЙДИТЕ ПРОБЛЕМНЫЙ МЕТОД toggleTask В ОБЪЕКТЕ Actions И ЗАМЕНИТЕ ЕГО НА ЭТОТ
-function toggleTask(taskId) {
-    const currentFolderId = State.getCurrentFolderId();
+            function toggleTask(taskId) {
+                const currentFolderId = State.getCurrentFolderId();
 
-    if (Utils.isSmartFolder(currentFolderId)) {
-        const result = Utils.findTaskById(taskId);
-        if (!result) {
+                if (Utils.isSmartFolder(currentFolderId)) {
+                    const result = Utils.findTaskById(taskId);
+                if (!result) {
             // Проверяем, не день ли рождения
-            const client = State.getClients().find(c => `bd_${c.id}` === taskId);
-            if (client) {
+                const client = State.getClients().find(c => `bd_${c.id}` === taskId);
+                if (client) {
                 UI.showToast('🎂 Это день рождения!');
                 return;
             }
