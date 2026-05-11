@@ -1482,11 +1482,23 @@
                 setupEventListeners();
                 UI.renderAll({year:AppState.calendarYear,month:AppState.calendarMonth,selectedDate:AppState.selectedDate});
                 State.save();
-                UI.updateQuote();
-                setTimeout(function(){ UI.updateQuote(); }, 100);
-                setTimeout(function(){ UI.updateQuote(); }, 500);
-                setInterval(UI.updateQuote, 30000);
             }catch(e){console.error('Init error:',e);}
+            setTimeout(function(){
+                var e=document.getElementById('bgQuote');
+                if(e){
+                    e.textContent='«'+QUOTES[Math.floor(Math.random()*QUOTES.length)]+'»';
+                    e.style.opacity='1';
+                    e.style.color='#2d2a26';
+                    e.style.display='block';
+                }
+                setInterval(function(){
+                    var el=document.getElementById('bgQuote');
+                    if(el){
+                        el.textContent='«'+QUOTES[Math.floor(Math.random()*QUOTES.length)]+'»';
+                        el.style.opacity='1';
+                    }
+                },30000);
+            },1000);
         }
 
         if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initialize);
