@@ -1479,7 +1479,9 @@
                 UI.renderAll({year:AppState.calendarYear,month:AppState.calendarMonth,selectedDate:AppState.selectedDate});
                 State.save();
                 UI.updateQuote();
-                setInterval(UI.updateQuote,30000);
+                setTimeout(function(){ UI.updateQuote(); }, 100);
+                setTimeout(function(){ UI.updateQuote(); }, 500);
+                setInterval(UI.updateQuote, 30000);
             }catch(e){console.error('Init error:',e);}
         }
 
