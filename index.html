@@ -1001,7 +1001,7 @@
             escapeHtml(str){if(!str)return'';return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');},
             formatDate(d){if(!d)return'';const p=d.split('-');return p.length===3?`${p[2]}.${p[1]}.${p[0]}`:d;},
             formatDateISO(d){if(!(d instanceof Date)||isNaN(d.getTime()))return'';return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;},
-            parseDate(d){if(!d)return null;const dt=new Date(d+'T00:00:00');return isNaN(dt.getTime())?null:dt;},
+            parseDate(d){if(!d)return null;const parts=d.split('-');if(parts.length!==3)return null;const dt=new Date(+parts[0],+parts[1]-1,+parts[2]);dt.setHours(0,0,0,0);return isNaN(dt.getTime())?null:dt;},
             getTodayISO(){return this.formatDateISO(new Date());},
             getDaysUntil(d){const t=new Date();t.setHours(0,0,0,0);const td=this.parseDate(d);return td?Math.ceil((td-t)/86400000):null;},
             getDaysText(d){const df=this.getDaysUntil(d);if(df===null)return null;if(df<0)return{text:`⏳ ${Math.abs(df)} дн назад`,className:'overdue'};if(df===0)return{text:'⏳ Сегодня',className:'today'};if(df===1)return{text:'⏳ Завтра',className:'upcoming'};return{text:`⏳ через ${df} дн`,className:'upcoming'};},
