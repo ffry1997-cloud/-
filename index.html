@@ -15,7 +15,7 @@
             --bg: #f5f3f0;
             --card: #ffffff;
             --text: #1a1a1a;
-            --text-secondary: #888888;
+            --text-secondary: #666666;
             --accent: #4a90d9;
             --accent-light: #eef4fb;
             --danger: #d96969;
@@ -169,6 +169,11 @@
 
         .icon-btn:active {
             transform: scale(0.94);
+        }
+
+        .icon-btn:focus-visible {
+            outline: 3px solid var(--accent);
+            outline-offset: 2px;
         }
 
         .tabs {
@@ -835,6 +840,13 @@
         .week-day-date { font-size: 20px; font-weight: 700; margin: 4px 0; }
         .week-day-count { font-size: 10px; color: var(--accent); font-weight: 600; }
         
+        .menu-wrapper { position: relative; }
+        .menu-dropdown { position: absolute; top: 50px; right: 0; background: var(--card); border-radius: 14px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); z-index: 100; min-width: 180px; padding: 6px; display: none; border: 1px solid var(--border); }
+        .menu-dropdown.show { display: block; }
+        .menu-item { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--text); background: none; border: none; width: 100%; text-align: left; font-family: var(--font); }
+        .menu-item:hover { background: var(--bg); }
+        .menu-item .menu-icon { font-size: 18px; width: 24px; text-align: center; }
+        
         @supports (-webkit-touch-callout: none) {
             .app-container {
                 -webkit-overflow-scrolling: touch;
@@ -869,15 +881,19 @@
             <div class="custom-quote-box" id="customQuoteRight" data-action="edit-custom-quote" data-side="right">💬 Своя цитата справа</div>
         </div>
         <div class="header-actions">
-            <button class="icon-btn" id="btnNewFolder" title="Новая папка">📁</button>
-            <button class="icon-btn" id="btnNewNote" title="Новая заметка">💡</button>
-            <button class="icon-btn" id="btnSearch" title="Поиск">🔍</button>
-            <button class="icon-btn" id="btnNotify" title="Уведомления">🔔</button>
-            <button class="icon-btn" id="btnWeekView" title="Неделя">📆</button>
-            <button class="icon-btn" id="btnSync" title="Синхронизировать">🔄</button>
-            <button class="icon-btn" id="btnTheme" title="Сменить тему">🌓</button>
-            <button class="icon-btn" id="btnExport" title="Экспорт">📤</button>
-            <button class="icon-btn" id="btnImport" title="Импорт">📥</button>
+            <button class="icon-btn" id="btnSearch" aria-label="Поиск">🔍</button>
+            <button class="icon-btn" id="btnWeekView" aria-label="Обзор недели">🗓️</button>
+            <div class="menu-wrapper">
+                <button class="icon-btn" id="btnMenu" aria-label="Меню">⚙️</button>
+                <div class="menu-dropdown" id="menuDropdown">
+                    <button class="menu-item" id="btnNewFolderMenu"><span class="menu-icon">📁</span> Новая папка</button>
+                    <button class="menu-item" id="btnNewNoteMenu"><span class="menu-icon">💡</span> Новая заметка</button>
+                    <button class="menu-item" id="btnThemeMenu"><span class="menu-icon">🌓</span> Тема</button>
+                    <button class="menu-item" id="btnExportMenu"><span class="menu-icon">📤</span> Экспорт</button>
+                    <button class="menu-item" id="btnImportMenu"><span class="menu-icon">📥</span> Импорт</button>
+                </div>
+            </div>
+            <button class="icon-btn" id="btnNotify" aria-label="Уведомления">🔔</button>
         </div>
         <div class="tabs" id="mainTabs">
             <div class="tab active" data-tab="tasks">📂 Папки</div>
@@ -1244,7 +1260,7 @@
             function showToast(msg){const t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.classList.add('show');clearTimeout(t._timeout);t._timeout=setTimeout(()=>t.classList.remove('show'),TOAST_DURATION);}
             function updateQuote(){const e=document.getElementById('bgQuote');if(!e)return;e.style.opacity='0';setTimeout(()=>{e.textContent=`«${QUOTES[Math.floor(Math.random()*QUOTES.length)]}»`;e.style.opacity='0.7';},1000);}
             function renderCustomQuotes(){const q=State.getCustomQuotes();['left','center','right'].forEach(s=>{const e=document.getElementById('customQuote'+s.charAt(0).toUpperCase()+s.slice(1));if(e)e.textContent=q[s]||'💬 Своя цитата '+(s==='left'?'слева':s==='center'?'центр':'справа');});}
-            function renderWeekOverview(){const c=document.getElementById('weekOverview');if(!c||c.style.display==='none')return;const ds=Services.getWeekData();c.innerHTML=ds.map(d=>`<div class="week-day ${d.isToday?'today':''}" onclick="App.openDateView('${d.dateStr}')"><div class="week-day-name">${d.dayName}</div><div class="week-day-date">${d.dayOfMonth}</div><div class="week-day-count">${d.count?'📋 '+d.count:'—'}</div></div>`).join('');}
+            function renderWeekOverview(){var c=document.getElementById('weekOverview');if(!c||c.style.display==='none')return;var ds=Services.getWeekData();var h='';for(var i=0;i<ds.length;i++){var d=ds[i];h+='<div class="week-day'+(d.isToday?' today':'')+'" data-date="'+d.dateStr+'" onclick="App.openDateView(\''+d.dateStr+'\')"><div class="week-day-name">'+d.dayName+'</div><div class="week-day-date">'+d.dayOfMonth+'</div><div class="week-day-count">'+(d.count?'📋 '+d.count:'—')+'</div></div>';}c.innerHTML=h;}
             function renderFolderList(sr=null){const c=document.getElementById('folderList');if(!c)return;if(sr!==null){renderSearchResults(c,sr);return;}const vm=State.getFolderViewMode();let h=`<div class="view-toggle"><button class="view-toggle-btn ${vm==='list'?'active':''}" data-view="list">📋 Список</button><button class="view-toggle-btn ${vm==='grid'?'active':''}" data-view="grid">🔲 Сетка</button></div>`;const tt=Services.getTodayTasks();h+=buildSmartFolderHTML(SMART_FOLDERS.TODAY,'📅','Сегодня',tt.length);const ot=Services.getOverdueTasks();if(ot.length>0)h+=buildSmartFolderHTML(SMART_FOLDERS.OVERDUE,'⚠️','Просроченные',ot.length,'var(--overdue)');const tr=State.getFolders().find(f=>f.id===SMART_FOLDERS.TRASH);if(tr&&tr.tasks.length>0)h+=buildSmartFolderHTML(SMART_FOLDERS.TRASH,'🗑️','Корзина',tr.tasks.length);const fs=State.getFolders().filter(f=>f.id!==SMART_FOLDERS.TRASH);if(!fs.length&&!tt.length)h+='<p style="text-align:center;padding:20px;opacity:0.6;">📂 Нет папок. Создайте первую!</p>';else if(fs.length)h+=`<div class="${vm==='grid'?'folder-grid':''}">${fs.map(buildFolderCardHTML).join('')}</div>`;c.innerHTML=h;c.querySelectorAll('.view-toggle-btn').forEach(b=>b.addEventListener('click',function(){State.setFolderViewMode(this.dataset.view);State.save();UI.renderFolderList();}));}
             function buildSmartFolderHTML(id,icon,name,cnt,cc){const cs=cc?`style="color:${cc};"`:'';return`<div class="folder-card ${id===SMART_FOLDERS.TODAY?'smart-today':'smart-overdue'}" data-action="${A.OPEN_FOLDER}" data-folder-id="${id}"><span class="folder-icon">${icon}</span><div class="folder-info"><div class="folder-name">${name}</div><div class="folder-stats"><span class="stat-active" ${cs}>📋 ${cnt} задач</span></div></div></div>`;}
             function buildFolderCardHTML(f){const s=Utils.getFolderStats(f);const sh=s.total>0?`<span class="stat-active">📋 ${s.active} активных</span> <span class="stat-completed">✅ ${s.completed} заверш.</span>`:'<span>📭 Нет задач</span>';return`<div class="folder-card" data-action="${A.OPEN_FOLDER}" data-folder-id="${f.id}" ondragover="App.handleDragOver(event)" ondragleave="App.handleDragLeave(event)" ondrop="App.handleDrop(event, '${f.id}')"><span class="folder-icon" data-action="${A.CHANGE_ICON}" data-folder-id="${f.id}">${f.icon||DEFAULT_FOLDER_ICON}</span><div class="folder-info"><div class="folder-name">${Utils.escapeHtml(f.name)}</div><div class="folder-stats">${sh}</div></div><button class="btn-sm btn-danger" data-action="${A.DELETE_FOLDER}" data-folder-id="${f.id}" style="font-size:11px;padding:4px 8px;">🗑️</button></div>`;}
@@ -1257,8 +1273,8 @@
             function buildSubtasksHTML(task){if(!Array.isArray(task.subtasks)||!task.subtasks.length)return'';let h='<ul class="subtask-list">';task.subtasks.forEach(st=>{if(!st)return;h+=`<li class="subtask-item ${st.completed?'completed':''}"><div class="subtask-checkbox" data-action="${A.TOGGLE_SUBTASK}" data-task-id="${task.id}" data-subtask-id="${st.id}">${st.completed?'✓':''}</div><span class="subtask-text">${Utils.escapeHtml(st.text)}</span><div class="subtask-actions"><button class="btn-xs" data-action="${A.EDIT_SUBTASK}" data-task-id="${task.id}" data-subtask-id="${st.id}">✏️</button><button class="btn-xs" data-action="${A.DELETE_SUBTASK}" data-task-id="${task.id}" data-subtask-id="${st.id}">✕</button></div></li>`;});return h+'</ul>';}
             function buildTaskBadgesHTML(task){let h='';if(task.repeat){const t=task.repeat==='custom'?`${task.repeatDays||'?'}д`:(REPEAT_ABBREVIATIONS[task.repeat]||task.repeat);h+=`<span class="repeat-badge">🔁 ${t}</span>`;}if(task.time)h+=`<span>🕐 ${task.time}</span>`;if(task.date){let dtc=task.date;if(task.type===TASK_TYPES.BIRTHDAY){const nb=Utils.getNextBirthday(task.date);if(nb)dtc=Utils.formatDateISO(nb);}const di=Utils.getDaysText(dtc);h+=di?`<span class="days-badge ${di.className}">${di.text}</span>`:`<span>📅 ${Utils.formatDate(task.date)}</span>`;}return h;}
             function renderNotes(){const c=document.getElementById('notesList');if(!c)return;const ns=State.getNotes();c.innerHTML=ns.length?ns.filter(n=>n).map(n=>`<div class="note-card"><div style="display:flex;justify-content:flex-end;margin-bottom:8px;"><button class="btn-sm btn-danger" data-action="${A.DELETE_NOTE}" data-note-id="${n.id}">✕</button></div><textarea class="note-textarea" data-note-id="${n.id}">${Utils.escapeHtml(n.text||'')}</textarea></div>`).join(''):'<p style="text-align:center;padding:20px;">💡 Нет заметок</p>';}
-            function renderCalendar(y,m,sd){document.getElementById('calendarTitle').textContent=new Date(y,m).toLocaleDateString('ru-RU',{month:'long',year:'numeric'});const g=document.getElementById('calendarGrid');if(!g)return;const{startOffset,days}=Services.getCalendarData(y,m);g.innerHTML='';['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].forEach(d=>{const div=document.createElement('div');div.style.cssText='font-size:10px;font-weight:700;';div.textContent=d;g.appendChild(div);});for(let i=0;i<startOffset;i++)g.appendChild(document.createElement('div'));days.forEach(({day,dateStr,isToday,hasTasks})=>{const div=document.createElement('div');div.className='calendar-day';if(isToday)div.classList.add('today');if(hasTasks)div.classList.add('has-tasks');if(dateStr===sd)div.classList.add('selected');div.textContent=day;div.dataset.action=A.SELECT_DATE;div.dataset.date=dateStr;div.addEventListener('click',function(){AppState.selectedDate=this.dataset.date;UI.renderCalendar(AppState.calendarYear,AppState.calendarMonth,AppState.selectedDate);});g.appendChild(div);});renderCalendarTasks(sd);}
-            function renderCalendarTasks(sd){const c=document.getElementById('calendarTasks');if(!c)return;if(!sd){c.innerHTML='';return;}const tasks=Services.getTasksForDate(sd);c.innerHTML=tasks.length?`<strong>📅 ${Utils.formatDate(sd)}</strong><br>`+tasks.map(t=>t.type===TASK_TYPES.BIRTHDAY?`<div class="task-item">🎂 ${Utils.escapeHtml(t.text)}</div>`:`<div class="task-item"><span>${t.icon||'📌'}</span> <span>${Utils.escapeHtml(t.text)}</span></div>`).join(''):'<p style="text-align:center;padding:10px;">Нет задач 🎉</p>';}
+            function renderCalendar(y,m,sd){document.getElementById('calendarTitle').textContent=new Date(y,m).toLocaleDateString('ru-RU',{month:'long',year:'numeric'});var g=document.getElementById('calendarGrid');if(!g)return;var data=Services.getCalendarData(y,m);var startOffset=data.startOffset,days=data.days;g.innerHTML='';var weekDays=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];for(var w=0;w<7;w++){var wd=document.createElement('div');wd.style.cssText='font-size:10px;font-weight:700;';wd.textContent=weekDays[w];g.appendChild(wd);}for(var i=0;i<startOffset;i++){g.appendChild(document.createElement('div'));}for(var j=0;j<days.length;j++){var dayData=days[j];var div=document.createElement('div');div.className='calendar-day';if(dayData.isToday)div.classList.add('today');if(dayData.hasTasks)div.classList.add('has-tasks');if(dayData.dateStr===sd)div.classList.add('selected');div.textContent=dayData.day;div.style.cursor='pointer';(function(dateStr){div.onclick=function(){document.querySelectorAll('.calendar-day').forEach(function(el){el.classList.remove('selected');});this.classList.add('selected');AppState.selectedDate=dateStr;UI.renderCalendarTasks(dateStr);};})(dayData.dateStr);g.appendChild(div);}UI.renderCalendarTasks(sd);}
+            function renderCalendarTasks(sd){var c=document.getElementById('calendarTasks');if(!c)return;if(!sd){c.innerHTML='';return;}var tasks=Services.getTasksForDate(sd);if(!tasks||!tasks.length){c.innerHTML='<p style="text-align:center;padding:10px;">Нет задач на эту дату</p>';return;}var html='<strong>📅 '+Utils.formatDate(sd)+'</strong><br>';for(var i=0;i<tasks.length;i++){var t=tasks[i];if(t.type===TASK_TYPES.BIRTHDAY){html+='<div class="task-item">🎂 '+Utils.escapeHtml(t.text)+'</div>';}else{html+='<div class="task-item"><span>'+(t.icon||'📌')+'</span> <span>'+Utils.escapeHtml(t.text)+'</span></div>';}}c.innerHTML=html;}
             function renderAI(){const c=document.getElementById('aiContent');if(!c)return;const up=Services.getUpcomingBirthdays();c.innerHTML=up.length?`<strong>🎂 Ближайшие ДР:</strong><br>${up.map(x=>`• ${Utils.escapeHtml(x.name)} — через ${x.daysUntil} дн.`).join('<br>')}`:'<p>🎉 Всё под контролем!</p>';}
             function renderClients(){const c=document.getElementById('clientList');if(!c)return;const cs=State.getClients();if(!cs.length){c.innerHTML='<p>👥 Нет клиентов</p>';return;}const sc=Services.getClientsSorted();c.innerHTML=sc.map(x=>{const ds=`${x.birthday.getDate()} ${x.birthday.toLocaleDateString('ru-RU',{month:'long'})} ${x.birthday.getFullYear()}`;const st=x.daysUntil===0?'🎂 Сегодня!':x.daysUntil===1?'🎂 Завтра!':`📅 ${ds} (через ${x.daysUntil} дн.)`;return`<div class="client-card"><div style="display:flex;justify-content:space-between;gap:6px;flex-wrap:wrap;"><span><strong>${Utils.escapeHtml(x.name)}</strong> — ${Utils.formatDate(x.date)} (${x.age} ${Utils.getAgeWord(x.age)})</span><div><button class="btn-sm btn-add" data-action="${A.EDIT_CLIENT}" data-client-id="${x.id}">✏️</button><button class="btn-sm btn-email" data-action="${A.EMAIL_CLIENT}" data-client-id="${x.id}">📧</button><button class="btn-sm btn-danger" data-action="${A.DELETE_CLIENT}" data-client-id="${x.id}">✕</button></div></div>${x.phone?`<span>📱 ${Utils.escapeHtml(x.phone)}</span>`:''}<span style="font-size:12px;color:var(--accent);">${st}</span></div>`;}).join('');}
             function renderStats(){const s=Services.getStats();document.getElementById('statTotal').textContent=s.total;document.getElementById('statCompleted').textContent=s.completed;document.getElementById('statPercent').textContent=s.percent+'%';document.getElementById('progressFill').style.width=s.percent+'%';if(s.folderStats.length)document.getElementById('statsDetails').innerHTML='<strong>По папкам:</strong><br>'+s.folderStats.map(fs=>`${fs.icon} ${Utils.escapeHtml(fs.name)}: ${fs.completed}/${fs.total}`).join('<br>');State.save();}
@@ -1298,7 +1314,7 @@
             goBackToFolders(){State.setCurrentFolderId(null);document.getElementById('searchContainer').style.display='none';State.save();UI.renderAll();},
             exportData(){try{const json=JSON.stringify({folders:State.getFolders(),notes:State.getNotes(),clients:State.getClients(),customQuotes:State.getCustomQuotes()},null,2);const blob=new Blob([json],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`my_plans_backup_${new Date().toISOString().slice(0,10)}.json`;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);UI.showToast('📤 Экспортировано');}catch(e){UI.showToast('❌ Ошибка');}},
             importData(){const inp=document.createElement('input');inp.type='file';inp.accept='.json,.txt,application/json';inp.style.display='none';document.body.appendChild(inp);inp.addEventListener('change',function(e){const f=e.target.files[0];if(!f){document.body.removeChild(inp);return;}const r=new FileReader();r.onload=function(ev){try{const imp=JSON.parse(ev.target.result);if(!imp||typeof imp!=='object'||!Array.isArray(imp.folders))throw new Error('Формат');const backup=JSON.stringify({folders:State.getFolders(),notes:State.getNotes(),clients:State.getClients(),customQuotes:State.getCustomQuotes()});try{localStorage.setItem(STORAGE_KEY,JSON.stringify(imp));State.load();Services.processRepeats();UI.renderAll();UI.showToast('📥 Импортировано');}catch(inner){localStorage.setItem(STORAGE_KEY,backup);State.load();throw inner;}}catch(err){UI.showToast(`❌ Ошибка: ${err.message}`);}document.body.removeChild(inp);};r.onerror=()=>{UI.showToast('❌ Не удалось прочитать');document.body.removeChild(inp);};r.readAsText(f);});inp.click();},
-            syncData(){if(confirm('Синхронизировать? ОК — сохранить, Отмена — загрузить.')){Actions.exportData();}else{document.getElementById('btnImport')?.click();}},
+            syncData(){Actions.exportData();},
             toggleTheme(){document.body.classList.toggle('dark');localStorage.setItem('theme',document.body.classList.contains('dark')?'dark':'light');},
             requestNotification(){if(!('Notification' in window)){UI.showToast('❌ Не поддерживаются');return;}if(Notification.permission==='granted'){Actions.checkAndNotify();}else if(Notification.permission!=='denied'){Notification.requestPermission().then(p=>{if(p==='granted')Actions.checkAndNotify();else UI.showToast('❌ Разрешите в настройках');});}},
             checkAndNotify(){const tasks=Services.getTasksForNotification();if(!tasks.length){UI.showToast('🔔 Нет задач в ближайший час');return;}tasks.forEach(t=>{const min=Math.ceil((new Date(t.date+'T'+t.time)-new Date())/60000);new Notification('⏰ Напоминание',{body:`«${t.text}» через ${min} мин.`,tag:t.id});});UI.showToast(`🔔 Найдено: ${tasks.length} задач`);},
@@ -1328,18 +1344,19 @@
             document.getElementById('btnEditFolder').addEventListener('click',Actions.editFolder);
             document.getElementById('btnAddClient').addEventListener('click',Actions.addClient);
             document.getElementById('btnAddNote').addEventListener('click',Actions.addNote);
-            document.getElementById('btnNewFolder').addEventListener('click',Actions.addFolder);
-            document.getElementById('btnNewNote').addEventListener('click',Actions.addNote);
             document.getElementById('btnSearch').addEventListener('click',Actions.toggleSearch);
             document.getElementById('btnNotify').addEventListener('click',Actions.requestNotification);
             document.getElementById('btnWeekView').addEventListener('click',Actions.toggleWeekView);
             document.getElementById('btnBackToFolders').addEventListener('click',Actions.goBackToFolders);
+            document.getElementById('btnNewFolderMenu').addEventListener('click',Actions.addFolder);
+            document.getElementById('btnNewNoteMenu').addEventListener('click',Actions.addNote);
+            document.getElementById('btnThemeMenu').addEventListener('click',Actions.toggleTheme);
+            document.getElementById('btnExportMenu').addEventListener('click',Actions.exportData);
+            document.getElementById('btnImportMenu').addEventListener('click',Actions.importData);
+            document.getElementById('btnMenu').addEventListener('click',function(e){e.stopPropagation();document.getElementById('menuDropdown').classList.toggle('show');});
+            document.addEventListener('click',function(e){if(!e.target.closest('.menu-wrapper')){document.getElementById('menuDropdown').classList.remove('show');}});
             document.getElementById('btnPrevMonth').addEventListener('click',function(){AppState.calendarMonth--;if(AppState.calendarMonth<0){AppState.calendarMonth=11;AppState.calendarYear--;}AppState.selectedDate=null;UI.renderCalendar(AppState.calendarYear,AppState.calendarMonth,null);});
             document.getElementById('btnNextMonth').addEventListener('click',function(){AppState.calendarMonth++;if(AppState.calendarMonth>11){AppState.calendarMonth=0;AppState.calendarYear++;}AppState.selectedDate=null;UI.renderCalendar(AppState.calendarYear,AppState.calendarMonth,null);});
-            document.getElementById('btnTheme').addEventListener('click',Actions.toggleTheme);
-            document.getElementById('btnExport').addEventListener('click',Actions.exportData);
-            document.getElementById('btnImport').addEventListener('click',Actions.importData);
-            document.getElementById('btnSync').addEventListener('click',Actions.syncData);
             
             document.querySelectorAll('#mainTabs .tab').forEach(function(tab){
                 tab.addEventListener('click',function(){
