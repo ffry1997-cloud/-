@@ -100,11 +100,10 @@
         .bg-quote {
             text-align: center;
             font-style: italic;
-            color: var(--accent);
+            color: var(--text);
             padding: 8px 0;
             font-size: 14px;
-            opacity: 0.85;
-            transition: opacity 0.5s;
+            opacity: 1;
             display: block !important;
             min-height: 24px;
             font-weight: 500;
@@ -1314,7 +1313,7 @@
 
         const UI = (()=>{
             function showToast(msg){const t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.classList.add('show');clearTimeout(t._timeout);t._timeout=setTimeout(()=>t.classList.remove('show'),TOAST_DURATION);}
-            function updateQuote(){var e=document.getElementById('bgQuote');if(!e)return;e.textContent='«'+QUOTES[Math.floor(Math.random()*QUOTES.length)]+'»';e.style.opacity='0.85';}
+            function updateQuote(){var e=document.getElementById('bgQuote');if(!e)return;e.textContent='«'+QUOTES[Math.floor(Math.random()*QUOTES.length)]+'»';e.style.opacity='1';}
             function renderCustomQuotes(){const q=State.getCustomQuotes();['left','center','right'].forEach(s=>{const e=document.getElementById('customQuote'+s.charAt(0).toUpperCase()+s.slice(1));if(e)e.textContent=q[s]||'💬 Своя цитата '+(s==='left'?'слева':s==='center'?'центр':'справа');});}
             function renderWeekOverview(){var c=document.getElementById('weekOverview');if(!c||c.style.display==='none')return;var ds=Services.getWeekData();var h='';for(var i=0;i<ds.length;i++){var d=ds[i];h+='<div class="week-day'+(d.isToday?' today':'')+'" data-date="'+d.dateStr+'" onclick="App.openDateView(\''+d.dateStr+'\')"><div class="week-day-name">'+d.dayName+'</div><div class="week-day-date">'+d.dayOfMonth+'</div><div class="week-day-count">'+(d.count?'📋 '+d.count:'—')+'</div></div>';}c.innerHTML=h;}
             function renderFolderList(sr=null){const c=document.getElementById('folderList');if(!c)return;if(sr!==null){renderSearchResults(c,sr);return;}const vm=State.getFolderViewMode();let h=`<div class="view-toggle"><button class="view-toggle-btn ${vm==='list'?'active':''}" data-view="list">📋 Список</button><button class="view-toggle-btn ${vm==='grid'?'active':''}" data-view="grid">🔲 Сетка</button></div>`;const tt=Services.getTodayTasks();h+=buildSmartFolderHTML(SMART_FOLDERS.TODAY,'📅','Сегодня',tt.length);const ot=Services.getOverdueTasks();if(ot.length>0)h+=buildSmartFolderHTML(SMART_FOLDERS.OVERDUE,'⚠️','Просроченные',ot.length,'var(--overdue)');const tr=State.getFolders().find(f=>f.id===SMART_FOLDERS.TRASH);if(tr&&tr.tasks.length>0)h+=buildSmartFolderHTML(SMART_FOLDERS.TRASH,'🗑️','Корзина',tr.tasks.length);const fs=State.getFolders().filter(f=>f.id!==SMART_FOLDERS.TRASH);if(!fs.length&&!tt.length)h+='<p style="text-align:center;padding:20px;opacity:0.6;">📂 Нет папок. Создайте первую!</p>';else if(fs.length)h+=`<div class="${vm==='grid'?'folder-grid':''}">${fs.map(buildFolderCardHTML).join('')}</div>`;c.innerHTML=h;c.querySelectorAll('.view-toggle-btn').forEach(b=>b.addEventListener('click',function(){State.setFolderViewMode(this.dataset.view);State.save();UI.renderFolderList();}));}
