@@ -884,7 +884,7 @@
             <div class="tab" data-tab="calendar">📅 Календарь</div>
             <div class="tab" data-tab="stats">📊 Статистика</div>
             <div class="tab" data-tab="ai">🧠 ИИ</div>
-            <div class="tab" data-tab="clients">👥 Клиенты</div>
+            <div class="tab" data-tab="clients">👥 Дни рождения</div>
             <div class="tab" data-tab="ideas">💡 Идеи</div>
         </div>
         <div class="section active" id="section-tasks">
@@ -949,7 +949,7 @@
         <div class="section" id="section-ai"><div class="card"><h3>🧠 Рекомендации</h3><div id="aiContent"></div></div></div>
         <div class="section" id="section-clients">
             <div class="card">
-                <h3>👥 Клиенты</h3>
+                <h3>👥 Дни рождения</h3>
                 <div style="display:flex;gap:6px;flex-wrap:wrap;">
                     <input type="text" class="input" id="clientName" placeholder="ФИО" style="flex:2;">
                     <input type="tel" class="input" id="clientPhone" placeholder="Телефон" style="flex:1;">
@@ -1001,7 +1001,7 @@
             escapeHtml(str){if(!str)return'';return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');},
             formatDate(d){if(!d)return'';const p=d.split('-');return p.length===3?`${p[2]}.${p[1]}.${p[0]}`:d;},
             formatDateISO(d){if(!(d instanceof Date)||isNaN(d.getTime()))return'';return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;},
-            parseDate(d){if(!d)return null;const dt=new Date(d);dt.setHours(0,0,0,0);return isNaN(dt.getTime())?null:dt;},
+            parseDate(d){if(!d)return null;const dt=new Date(d+'T00:00:00');return isNaN(dt.getTime())?null:dt;},
             getTodayISO(){return this.formatDateISO(new Date());},
             getDaysUntil(d){const t=new Date();t.setHours(0,0,0,0);const td=this.parseDate(d);return td?Math.ceil((td-t)/86400000):null;},
             getDaysText(d){const df=this.getDaysUntil(d);if(df===null)return null;if(df<0)return{text:`⏳ ${Math.abs(df)} дн назад`,className:'overdue'};if(df===0)return{text:'⏳ Сегодня',className:'today'};if(df===1)return{text:'⏳ Завтра',className:'upcoming'};return{text:`⏳ через ${df} дн`,className:'upcoming'};},
@@ -1024,19 +1024,219 @@
         })();
 
         const Services = (()=>{
-            function getTodayTasks(){const ts=Utils.getTodayISO(),r=[];State.getFolders().forEach(f=>{if(f.id===SMART_FOLDERS.TRASH)return;Utils.getValidTasksArray(f.tasks).forEach(t=>{if(!t.completed&&t.date===ts)r.push({...t,folderId:f.id,folderName:f.name,folderIcon:f.icon,type:TASK_TYPES.TASK});});});r.sort((a,b)=>(b.priority||0)-(a.priority||0)||(a.time&&b.time?a.time.localeCompare(b.time):a.time?-1:1));return r;}
-            function getOverdueTasks(){const ts=Utils.getTodayISO(),r=[];State.getFolders().forEach(f=>{if(f.id===SMART_FOLDERS.TRASH)return;Utils.getValidTasksArray(f.tasks).forEach(t=>{if(!t.completed&&t.date&&t.date<ts)r.push({...t,folderId:f.id,folderName:f.name,folderIcon:f.icon,type:TASK_TYPES.TASK});});});r.sort((a,b)=>a.date.localeCompare(b.date));return r;}
-            function getTasksForSmartFolder(id){if(id===SMART_FOLDERS.TODAY)return getTodayTasks();if(id===SMART_FOLDERS.OVERDUE)return getOverdueTasks();return[];}
-            function processRepeats(){const t=new Date();t.setHours(0,0,0,0);let h=false;State.getFolders().forEach(f=>{if(f.id===SMART_FOLDERS.TRASH)return;const sn=[...f.tasks];sn.forEach(task=>{if(!task||!task.completed||!task.repeat||!task.date)return;try{const d=Utils.parseDate(task.date);if(!d)return;const n=new Date(d);switch(task.repeat){case'daily':n.setDate(n.getDate()+1);break;case'weekly':n.setDate(n.getDate()+7);break;case'monthly':n.setMonth(n.getMonth()+1);break;case'yearly':n.setFullYear(n.getFullYear()+1);break;case'custom':if(task.repeatDays>0)n.setDate(n.getDate()+task.repeatDays);else return;default:return;}if(n<=d)return;const ns=Utils.formatDateISO(n);if(f.tasks.some(x=>x&&x.text===task.text&&x.date===ns&&!x.completed))return;f.tasks.push({id:Utils.generateId(),text:task.text,date:ns,time:task.time,completed:false,subtasks:Utils.getValidTasksArray(task.subtasks).map(st=>({id:Utils.generateId(),text:st.text,completed:false})),repeat:task.repeat,repeatDays:task.repeatDays,priority:task.priority||0});const o=f.tasks.find(x=>x.id===task.id);if(o){o.repeat='';o.repeatDays=0;}h=true;}catch(e){}});});if(h)State.save();}
-            function searchTasks(q){if(!q)return[];const lq=q.toLowerCase().trim();return Utils.getAllTasksWithFolders().filter(t=>t.text.toLowerCase().includes(lq)||(t.folderName&&t.folderName.toLowerCase().includes(lq)));}
-            function getCalendarData(y,m){const fd=new Date(y,m,1);let so=fd.getDay()||7;so-=1;const dim=new Date(y,m+1,0).getDate(),ts=Utils.getTodayISO(),ds=[];for(let d=1;d<=dim;d++){const ds2=Utils.formatDateISO(new Date(y,m,d));ds.push({day:d,dateStr:ds2,isToday:ds2===ts,hasTasks:checkDateHasTasks(ds2)});}return{startOffset:so,days:ds,daysInMonth:dim};}
-            function checkDateHasTasks(ds){const hf=State.getFolders().some(f=>f.id!==SMART_FOLDERS.TRASH&&Utils.getValidTasksArray(f.tasks).some(t=>t&&t.date===ds&&!t.completed));const hb=State.getClients().some(c=>c&&c.date&&c.date.slice(5)===ds.slice(5));return hf||hb;}
-            function getTasksForDate(ds){const r=[];const s=new Set();State.getFolders().forEach(f=>{if(f.id===SMART_FOLDERS.TRASH)return;Utils.getValidTasksArray(f.tasks).forEach(t=>{if(!t||t.date!==ds||t.completed)return;const k=`task_${t.id}`;if(!s.has(k)){s.add(k);r.push({text:t.text,type:TASK_TYPES.TASK,folder:f.name,icon:f.icon});}});});State.getClients().forEach(c=>{if(!c||!c.date||c.date.slice(5)!==ds.slice(5))return;const k=`bd_${c.name.toLowerCase()}_${c.date}`;if(!s.has(k)){s.add(k);r.push({text:c.name,type:TASK_TYPES.BIRTHDAY});}});return r;}
-            function getStats(){const at=Utils.getAllTasksWithFolders().filter(t=>t.folderId!==SMART_FOLDERS.TRASH);const total=at.length,completed=at.filter(t=>t.completed).length,pct=total>0?Math.round((completed/total)*100):0;const fs=State.getFolders().filter(f=>f.id!==SMART_FOLDERS.TRASH).map(f=>{const s=Utils.getFolderStats(f);return{icon:f.icon||DEFAULT_FOLDER_ICON,name:f.name,completed:s.completed,total:s.total};});return{total,completed,percent:pct,folderStats:fs};}
-            function getUpcomingBirthdays(days=7){const t=new Date();t.setHours(0,0,0,0);return State.getClients().filter(c=>{if(!c||!c.date)return false;const b=Utils.getNextBirthday(c.date);if(!b)return false;const df=Math.ceil((b-t)/86400000);return df>=0&&df<=days;}).map(c=>{const b=Utils.getNextBirthday(c.date);return{name:c.name,daysUntil:Math.ceil((b-t)/86400000)};});}
-            function getClientsSorted(){const t=new Date();t.setHours(0,0,0,0);return[...State.getClients()].sort((a,b)=>{const ba=Utils.getNextBirthday(a.date),bb=Utils.getNextBirthday(b.date);if(!ba||!bb)return 0;return ba-bb;}).map(c=>{const b=Utils.getNextBirthday(c.date);if(!b)return null;return{...c,birthday:b,age:Utils.getAge(c.date,b),daysUntil:Math.ceil((b-t)/86400000)};}).filter(c=>c!==null);}
-            function getTasksForNotification(){const n=new Date(),ohl=new Date(n.getTime()+3600000),r=[];State.getFolders().forEach(f=>{if(f.id===SMART_FOLDERS.TRASH)return;Utils.getValidTasksArray(f.tasks).forEach(t=>{if(!t||t.completed||!t.date||!t.time)return;const dt=new Date(t.date+'T'+t.time);if(isNaN(dt.getTime()))return;if(dt>n&&dt<=ohl)r.push({...t,folderName:f.name});});});return r;}
-            function getWeekData(){const t=new Date(),dow=t.getDay(),mon=new Date(t);mon.setDate(t.getDate()-(dow===0?6:dow-1));const ds=[];for(let i=0;i<7;i++){const d=new Date(mon);d.setDate(mon.getDate()+i);const ds2=Utils.formatDateISO(d);const cnt=State.getFolders().filter(f=>f.id!==SMART_FOLDERS.TRASH).reduce((s,f)=>s+Utils.getValidTasksArray(f.tasks).filter(t=>t&&!t.completed&&t.date===ds2).length,0);ds.push({date:d,dateStr:ds2,dayName:DAYS_OF_WEEK[d.getDay()],dayOfMonth:d.getDate(),count:cnt,isToday:ds2===Utils.getTodayISO()});}return ds;}
+            function getTodayTasks(){
+                const ts=Utils.getTodayISO(),r=[];
+                State.getFolders().forEach(f=>{
+                    if(f.id===SMART_FOLDERS.TRASH)return;
+                    Utils.getValidTasksArray(f.tasks).forEach(t=>{
+                        if(!t.completed&&t.date===ts)
+                            r.push({...t,folderId:f.id,folderName:f.name,folderIcon:f.icon,type:TASK_TYPES.TASK});
+                    });
+                });
+                State.getClients().forEach(c=>{
+                    if(!c||!c.date)return;
+                    const bd=Utils.getNextBirthday(c.date);
+                    if(!bd)return;
+                    const bdStr=Utils.formatDateISO(bd);
+                    if(bdStr===ts){
+                        const age=Utils.getAge(c.date,bd);
+                        r.push({
+                            id:'bd_'+c.id,
+                            text:`${c.name} — ${age} ${Utils.getAgeWord(age)}`,
+                            date:bdStr,
+                            time:'',
+                            completed:false,
+                            subtasks:[],
+                            repeat:'yearly',
+                            repeatDays:0,
+                            priority:3,
+                            folderId:SMART_FOLDERS.TODAY,
+                            folderName:'Дни рождения',
+                            folderIcon:'🎂',
+                            type:TASK_TYPES.BIRTHDAY
+                        });
+                    }
+                });
+                r.sort((a,b)=>(b.priority||0)-(a.priority||0)||(a.time&&b.time?a.time.localeCompare(b.time):a.time?-1:1));
+                return r;
+            }
+            function getOverdueTasks(){
+                const ts=Utils.getTodayISO(),r=[];
+                State.getFolders().forEach(f=>{
+                    if(f.id===SMART_FOLDERS.TRASH)return;
+                    Utils.getValidTasksArray(f.tasks).forEach(t=>{
+                        if(!t.completed&&t.date&&t.date<ts)
+                            r.push({...t,folderId:f.id,folderName:f.name,folderIcon:f.icon,type:TASK_TYPES.TASK});
+                    });
+                });
+                r.sort((a,b)=>a.date.localeCompare(b.date));
+                return r;
+            }
+            function getTasksForSmartFolder(id){
+                if(id===SMART_FOLDERS.TODAY)return getTodayTasks();
+                if(id===SMART_FOLDERS.OVERDUE)return getOverdueTasks();
+                return[];
+            }
+            function processRepeats(){
+                const t=new Date();t.setHours(0,0,0,0);let h=false;
+                State.getFolders().forEach(f=>{
+                    if(f.id===SMART_FOLDERS.TRASH)return;
+                    const sn=[...f.tasks];
+                    sn.forEach(task=>{
+                        if(!task||!task.completed||!task.repeat||!task.date)return;
+                        if(task.type===TASK_TYPES.BIRTHDAY)return;
+                        try{
+                            const d=Utils.parseDate(task.date);if(!d)return;
+                            const n=new Date(d);
+                            switch(task.repeat){
+                                case'daily':n.setDate(n.getDate()+1);break;
+                                case'weekly':n.setDate(n.getDate()+7);break;
+                                case'monthly':n.setMonth(n.getMonth()+1);break;
+                                case'yearly':n.setFullYear(n.getFullYear()+1);break;
+                                case'custom':if(task.repeatDays>0)n.setDate(n.getDate()+task.repeatDays);else return;
+                                default:return;
+                            }
+                            if(n<=d)return;
+                            const ns=Utils.formatDateISO(n);
+                            if(f.tasks.some(x=>x&&x.text===task.text&&x.date===ns&&!x.completed))return;
+                            f.tasks.push({
+                                id:Utils.generateId(),text:task.text,date:ns,time:task.time,completed:false,
+                                subtasks:Utils.getValidTasksArray(task.subtasks).map(st=>({id:Utils.generateId(),text:st.text,completed:false})),
+                                repeat:task.repeat,repeatDays:task.repeatDays,priority:task.priority||0
+                            });
+                            const o=f.tasks.find(x=>x.id===task.id);
+                            if(o){o.repeat='';o.repeatDays=0;}
+                            h=true;
+                        }catch(e){}
+                    });
+                });
+                if(h)State.save();
+            }
+            function searchTasks(q){
+                if(!q)return[];
+                const lq=q.toLowerCase().trim();
+                return Utils.getAllTasksWithFolders().filter(t=>
+                    t.text.toLowerCase().includes(lq)||
+                    (t.folderName&&t.folderName.toLowerCase().includes(lq))
+                );
+            }
+            function getCalendarData(y,m){
+                const fd=new Date(y,m,1);let so=fd.getDay()||7;so-=1;
+                const dim=new Date(y,m+1,0).getDate(),ts=Utils.getTodayISO(),ds=[];
+                for(let d=1;d<=dim;d++){
+                    const ds2=Utils.formatDateISO(new Date(y,m,d));
+                    ds.push({day:d,dateStr:ds2,isToday:ds2===ts,hasTasks:checkDateHasTasks(ds2)});
+                }
+                return{startOffset:so,days:ds,daysInMonth:dim};
+            }
+            function checkDateHasTasks(ds){
+                const hf=State.getFolders().some(f=>
+                    f.id!==SMART_FOLDERS.TRASH&&
+                    Utils.getValidTasksArray(f.tasks).some(t=>t&&t.date===ds&&!t.completed)
+                );
+                const today=new Date();today.setHours(0,0,0,0);
+                const hb=State.getClients().some(c=>{
+                    if(!c||!c.date)return false;
+                    const bd=Utils.getNextBirthday(c.date);
+                    if(!bd)return false;
+                    return Utils.formatDateISO(bd)===ds;
+                });
+                return hf||hb;
+            }
+            function getTasksForDate(ds){
+                const r=[],s=new Set();
+                State.getFolders().forEach(f=>{
+                    if(f.id===SMART_FOLDERS.TRASH)return;
+                    Utils.getValidTasksArray(f.tasks).forEach(t=>{
+                        if(!t||t.date!==ds||t.completed)return;
+                        const k=`task_${t.id}`;
+                        if(!s.has(k)){s.add(k);r.push({text:t.text,type:TASK_TYPES.TASK,folder:f.name,icon:f.icon});}
+                    });
+                });
+                State.getClients().forEach(c=>{
+                    if(!c||!c.date)return;
+                    const bd=Utils.getNextBirthday(c.date);
+                    if(!bd)return;
+                    const bdStr=Utils.formatDateISO(bd);
+                    if(bdStr!==ds)return;
+                    const k=`bd_${c.name.toLowerCase()}_${c.date}`;
+                    if(!s.has(k)){
+                        s.add(k);
+                        const age=Utils.getAge(c.date,bd);
+                        r.push({text:`${c.name} — ${age} ${Utils.getAgeWord(age)}`,type:TASK_TYPES.BIRTHDAY});
+                    }
+                });
+                return r;
+            }
+            function getStats(){
+                const at=Utils.getAllTasksWithFolders().filter(t=>t.folderId!==SMART_FOLDERS.TRASH);
+                const total=at.length,completed=at.filter(t=>t.completed).length;
+                const pct=total>0?Math.round((completed/total)*100):0;
+                const fs=State.getFolders().filter(f=>f.id!==SMART_FOLDERS.TRASH).map(f=>{
+                    const s=Utils.getFolderStats(f);
+                    return{icon:f.icon||DEFAULT_FOLDER_ICON,name:f.name,completed:s.completed,total:s.total};
+                });
+                return{total,completed,percent:pct,folderStats:fs};
+            }
+            function getUpcomingBirthdays(days=7){
+                const t=new Date();t.setHours(0,0,0,0);
+                return State.getClients().filter(c=>{
+                    if(!c||!c.date)return false;
+                    const b=Utils.getNextBirthday(c.date);
+                    if(!b)return false;
+                    const df=Math.ceil((b-t)/86400000);
+                    return df>=0&&df<=days;
+                }).map(c=>{
+                    const b=Utils.getNextBirthday(c.date);
+                    const age=Utils.getAge(c.date,b);
+                    return{name:c.name,daysUntil:Math.ceil((b-t)/86400000),age};
+                });
+            }
+            function getClientsSorted(){
+                const t=new Date();t.setHours(0,0,0,0);
+                return[...State.getClients()].sort((a,b)=>{
+                    const ba=Utils.getNextBirthday(a.date),bb=Utils.getNextBirthday(b.date);
+                    if(!ba||!bb)return 0;
+                    return ba-bb;
+                }).map(c=>{
+                    const b=Utils.getNextBirthday(c.date);
+                    if(!b)return null;
+                    return{...c,birthday:b,age:Utils.getAge(c.date,b),daysUntil:Math.ceil((b-t)/86400000)};
+                }).filter(c=>c!==null);
+            }
+            function getTasksForNotification(){
+                const n=new Date(),ohl=new Date(n.getTime()+3600000),r=[];
+                State.getFolders().forEach(f=>{
+                    if(f.id===SMART_FOLDERS.TRASH)return;
+                    Utils.getValidTasksArray(f.tasks).forEach(t=>{
+                        if(!t||t.completed||!t.date||!t.time)return;
+                        const dt=new Date(t.date+'T'+t.time);
+                        if(isNaN(dt.getTime()))return;
+                        if(dt>n&&dt<=ohl)r.push({...t,folderName:f.name});
+                    });
+                });
+                return r;
+            }
+            function getWeekData(){
+                const t=new Date(),dow=t.getDay(),mon=new Date(t);
+                mon.setDate(t.getDate()-(dow===0?6:dow-1));
+                const ds=[];
+                for(let i=0;i<7;i++){
+                    const d=new Date(mon);d.setDate(mon.getDate()+i);
+                    const ds2=Utils.formatDateISO(d);
+                    const cnt=State.getFolders()
+                        .filter(f=>f.id!==SMART_FOLDERS.TRASH)
+                        .reduce((s,f)=>s+Utils.getValidTasksArray(f.tasks).filter(t=>t&&!t.completed&&t.date===ds2).length,0)
+                        +
+                        State.getClients().filter(c=>{
+                            if(!c||!c.date)return false;
+                            const bd=Utils.getNextBirthday(c.date);
+                            return bd&&Utils.formatDateISO(bd)===ds2;
+                        }).length;
+                    ds.push({date:d,dateStr:ds2,dayName:DAYS_OF_WEEK[d.getDay()],dayOfMonth:d.getDate(),count:cnt,isToday:ds2===Utils.getTodayISO()});
+                }
+                return ds;
+            }
             return{getTodayTasks,getOverdueTasks,getTasksForSmartFolder,processRepeats,searchTasks,getCalendarData,getTasksForDate,getStats,getUpcomingBirthdays,getClientsSorted,getTasksForNotification,getWeekData};
         })();
 
@@ -1049,7 +1249,7 @@
             function buildSmartFolderHTML(id,icon,name,cnt,cc){const cs=cc?`style="color:${cc};"`:'';return`<div class="folder-card ${id===SMART_FOLDERS.TODAY?'smart-today':'smart-overdue'}" data-action="${A.OPEN_FOLDER}" data-folder-id="${id}"><span class="folder-icon">${icon}</span><div class="folder-info"><div class="folder-name">${name}</div><div class="folder-stats"><span class="stat-active" ${cs}>📋 ${cnt} задач</span></div></div></div>`;}
             function buildFolderCardHTML(f){const s=Utils.getFolderStats(f);const sh=s.total>0?`<span class="stat-active">📋 ${s.active} активных</span> <span class="stat-completed">✅ ${s.completed} заверш.</span>`:'<span>📭 Нет задач</span>';return`<div class="folder-card" data-action="${A.OPEN_FOLDER}" data-folder-id="${f.id}" ondragover="App.handleDragOver(event)" ondragleave="App.handleDragLeave(event)" ondrop="App.handleDrop(event, '${f.id}')"><span class="folder-icon" data-action="${A.CHANGE_ICON}" data-folder-id="${f.id}">${f.icon||DEFAULT_FOLDER_ICON}</span><div class="folder-info"><div class="folder-name">${Utils.escapeHtml(f.name)}</div><div class="folder-stats">${sh}</div></div><button class="btn-sm btn-danger" data-action="${A.DELETE_FOLDER}" data-folder-id="${f.id}" style="font-size:11px;padding:4px 8px;">🗑️</button></div>`;}
             function renderSearchResults(c,tasks){if(!tasks.length){c.innerHTML='<p style="text-align:center;padding:20px;opacity:0.6;">🔍 Ничего не найдено</p>';return;}c.innerHTML='<div style="margin-bottom:10px;"><button class="btn-sm" id="btnClearSearch">← Назад к папкам</button></div>'+tasks.map(t=>buildTaskHTML(t,t.folderId,true)).join('');document.getElementById('btnClearSearch')?.addEventListener('click',()=>{document.getElementById('searchInput').value='';document.getElementById('searchStats').style.display='none';UI.renderFolderList();});}
-            function renderTasks(){const tc=document.getElementById('taskContainer'),fl=document.getElementById('folderList');if(!tc||!fl)return;const cid=State.getCurrentFolderId();if(Utils.isSmartFolder(cid))renderSmartFolderTasks(tc,fl,cid);else renderRegularFolderTasks(tc,fl,cid);}
+            function renderTasks(){const tc=document.getElementById('taskContainer'),fl=document.getElementById('folderList');if(!tc||!fl)return;const cid=State.getCurrentFolderId();if(!cid){tc.style.display='none';fl.style.display='block';return;}if(Utils.isSmartFolder(cid))renderSmartFolderTasks(tc,fl,cid);else renderRegularFolderTasks(tc,fl,cid);}
             function renderSmartFolderTasks(tc,fl,fid){tc.style.display='flex';fl.style.display='none';const fe=document.getElementById('currentFolderName');if(fe){if(fid===SMART_FOLDERS.TODAY)fe.textContent='📅 Сегодня';else if(fid===SMART_FOLDERS.OVERDUE)fe.textContent='⚠️ Просроченные';else fe.textContent='🗑️ Корзина';}document.getElementById('taskFilter').style.display='none';document.getElementById('btnEditFolder').style.display='none';document.querySelector('.input-row').style.display='none';const tasks=fid===SMART_FOLDERS.TRASH?(State.getFolderById(fid)?.tasks||[]):Services.getTasksForSmartFolder(fid);const tl=document.getElementById('taskList');if(!tl)return;tl.innerHTML=tasks.length?tasks.map(t=>buildTaskHTML(t,t.folderId||fid,true)).join(''):'<div class="no-tasks">🎉 Задач нет!</div>';}
             function renderRegularFolderTasks(tc,fl,fid){document.getElementById('taskFilter').style.display='flex';document.getElementById('btnEditFolder').style.display='';document.querySelector('.input-row').style.display='flex';const f=State.getFolderById(fid);if(!f){tc.style.display='none';fl.style.display='block';return;}tc.style.display='flex';fl.style.display='none';document.getElementById('currentFolderName').textContent=`${f.icon||DEFAULT_FOLDER_ICON} ${f.name}`;updateTaskFilterUI(Utils.getFolderStats(f));const tl=document.getElementById('taskList');if(!tl)return;const tasks=Utils.getValidTasksArray(f.tasks);if(!tasks.length){tl.innerHTML='<div class="no-tasks">📭 Нет задач в этой папке</div>';return;}const filter=State.getCurrentTaskFilter();const fts=filter===FILTERS.ACTIVE?tasks.filter(t=>!t.completed):tasks.filter(t=>t.completed);fts.sort((a,b)=>(b.priority||0)-(a.priority||0)||(!a.date&&!b.date?0:!a.date?1:!b.date?-1:a.date.localeCompare(b.date)));tl.innerHTML=fts.length?fts.map(t=>buildTaskHTML(t,fid,false)).join(''):`<div class="no-tasks">${filter===FILTERS.ACTIVE?'🎉 Все задачи выполнены!':'📭 Нет завершенных задач'}</div>`;}
             function updateTaskFilterUI(s){document.getElementById('activeCount').textContent=s.active;document.getElementById('completedCount').textContent=s.completed;const f=State.getCurrentTaskFilter();document.querySelectorAll('.task-filter-btn').forEach(b=>b.classList.toggle('active',b.dataset.filter===f));}
@@ -1107,19 +1307,19 @@
         };
 
         window.App = {
-            handleDragStart(e){e.target.classList.add('dragging');e.dataTransfer.setData('text/plain',JSON.stringify({taskId:e.target.dataset.taskId,fromFolderId:e.target.dataset.folderId}));e.dataTransfer.effectAllowed='move';},
-            handleDragEnd(e){e.target.classList.remove('dragging');document.querySelectorAll('.folder-card').forEach(c=>c.classList.remove('drag-over'));},
-            handleDragOver(e){e.preventDefault();e.dataTransfer.dropEffect='move';e.currentTarget.classList.add('drag-over');},
-            handleDragLeave(e){e.currentTarget.classList.remove('drag-over');},
-            handleDrop(e,toFid){e.preventDefault();e.currentTarget.classList.remove('drag-over');try{const d=JSON.parse(e.dataTransfer.getData('text/plain'));const{tid,fid}=d;if(fid===toFid||Utils.isSmartFolder(toFid))return;const ff=State.getFolderById(fid),tf=State.getFolderById(toFid);if(!ff||!tf)return;const idx=ff.tasks.findIndex(t=>t&&t.id===tid);if(idx===-1)return;const task=ff.tasks.splice(idx,1)[0];tf.tasks.push(task);State.save();UI.renderAll();UI.showToast('📦 Перемещена');}catch(e){UI.showToast('❌ Ошибка');}},
-            openDateView(ds){Actions.openDateView(ds);}
+            handleDragStart: function(e){e.target.classList.add('dragging');e.dataTransfer.setData('text/plain',JSON.stringify({taskId:e.target.dataset.taskId,fromFolderId:e.target.dataset.folderId}));e.dataTransfer.effectAllowed='move';},
+            handleDragEnd: function(e){e.target.classList.remove('dragging');document.querySelectorAll('.folder-card').forEach(function(c){c.classList.remove('drag-over');});},
+            handleDragOver: function(e){e.preventDefault();e.dataTransfer.dropEffect='move';e.currentTarget.classList.add('drag-over');},
+            handleDragLeave: function(e){e.currentTarget.classList.remove('drag-over');},
+            handleDrop: function(e,toFid){e.preventDefault();e.currentTarget.classList.remove('drag-over');try{var d=JSON.parse(e.dataTransfer.getData('text/plain'));var tid=d.taskId,fid=d.fromFolderId;if(fid===toFid||Utils.isSmartFolder(toFid))return;var ff=State.getFolderById(fid),tf=State.getFolderById(toFid);if(!ff||!tf)return;var idx=ff.tasks.findIndex(function(t){return t&&t.id===tid;});if(idx===-1)return;var task=ff.tasks.splice(idx,1)[0];tf.tasks.push(task);State.save();UI.renderAll();UI.showToast('📦 Перемещена');}catch(err){UI.showToast('❌ Ошибка');}},
+            openDateView: function(ds){Actions.openDateView(ds);}
         };
 
         function setupEventListeners(){
             document.addEventListener('click',function(e){
-                const t=e.target.closest('[data-action]');
+                var t=e.target.closest('[data-action]');
                 if(!t)return;
-                const action=t.dataset.action;
+                var action=t.dataset.action;
                 e.preventDefault();
                 try{handleAction(action,t.dataset);}catch(err){console.error('Action error:',action,err);UI.showToast('❌ Ошибка');}
             });
@@ -1134,72 +1334,70 @@
             document.getElementById('btnNotify').addEventListener('click',Actions.requestNotification);
             document.getElementById('btnWeekView').addEventListener('click',Actions.toggleWeekView);
             document.getElementById('btnBackToFolders').addEventListener('click',Actions.goBackToFolders);
-            document.getElementById('btnPrevMonth').addEventListener('click',()=>{AppState.calendarMonth--;if(AppState.calendarMonth<0){AppState.calendarMonth=11;AppState.calendarYear--;}AppState.selectedDate=null;UI.renderCalendar(AppState.calendarYear,AppState.calendarMonth,null);});
-            document.getElementById('btnNextMonth').addEventListener('click',()=>{AppState.calendarMonth++;if(AppState.calendarMonth>11){AppState.calendarMonth=0;AppState.calendarYear++;}AppState.selectedDate=null;UI.renderCalendar(AppState.calendarYear,AppState.calendarMonth,null);});
+            document.getElementById('btnPrevMonth').addEventListener('click',function(){AppState.calendarMonth--;if(AppState.calendarMonth<0){AppState.calendarMonth=11;AppState.calendarYear--;}AppState.selectedDate=null;UI.renderCalendar(AppState.calendarYear,AppState.calendarMonth,null);});
+            document.getElementById('btnNextMonth').addEventListener('click',function(){AppState.calendarMonth++;if(AppState.calendarMonth>11){AppState.calendarMonth=0;AppState.calendarYear++;}AppState.selectedDate=null;UI.renderCalendar(AppState.calendarYear,AppState.calendarMonth,null);});
             document.getElementById('btnTheme').addEventListener('click',Actions.toggleTheme);
             document.getElementById('btnExport').addEventListener('click',Actions.exportData);
             document.getElementById('btnImport').addEventListener('click',Actions.importData);
             document.getElementById('btnSync').addEventListener('click',Actions.syncData);
             
-            document.querySelectorAll('#mainTabs .tab').forEach(tab=>{
+            document.querySelectorAll('#mainTabs .tab').forEach(function(tab){
                 tab.addEventListener('click',function(){
-                    const tn=this.dataset.tab;
-                    document.querySelectorAll('#mainTabs .tab').forEach(t=>t.classList.remove('active'));
+                    var tn=this.dataset.tab;
+                    document.querySelectorAll('#mainTabs .tab').forEach(function(t){t.classList.remove('active');});
                     this.classList.add('active');
-                    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-                    document.getElementById(`section-${tn}`).classList.add('active');
-                    switch(tn){
-                        case'tasks':document.getElementById('searchContainer').style.display='none';UI.renderAll();break;
-                        case'calendar':UI.renderCalendar(AppState.calendarYear,AppState.calendarMonth,AppState.selectedDate);break;
-                        case'stats':UI.renderStats();break;
-                    }
+                    document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active');});
+                    document.getElementById('section-'+tn).classList.add('active');
+                    if(tn==='tasks'){document.getElementById('searchContainer').style.display='none';UI.renderAll();}
+                    else if(tn==='calendar'){UI.renderCalendar(AppState.calendarYear,AppState.calendarMonth,AppState.selectedDate);}
+                    else if(tn==='stats'){UI.renderStats();}
                 });
             });
             
-            document.getElementById('taskFilter')?.addEventListener('click',function(e){const b=e.target.closest('.task-filter-btn');if(b)Actions.setTaskFilter(b.dataset.filter);});
-            const tr=document.getElementById('taskRepeat'),trd=document.getElementById('taskRepeatDays');
+            (document.getElementById('taskFilter')||{}).addEventListener?.('click',function(e){var b=e.target.closest('.task-filter-btn');if(b)Actions.setTaskFilter(b.dataset.filter);});
+            var tr=document.getElementById('taskRepeat'),trd=document.getElementById('taskRepeatDays');
             if(tr&&trd)tr.addEventListener('change',function(){trd.style.display=this.value==='custom'?'inline':'none';});
-            const si=document.getElementById('searchInput');
+            var si=document.getElementById('searchInput');
             if(si){si.addEventListener('input',Actions.updateSearchResults);si.addEventListener('keydown',function(e){if(e.key==='Escape')Actions.toggleSearch();});}
             
-            let nt;document.addEventListener('input',function(e){if(!e.target.classList.contains('note-textarea'))return;clearTimeout(nt);nt=setTimeout(()=>{const n=State.getNoteById(e.target.dataset.noteId);if(n){n.text=e.target.value;n.updatedAt=Date.now();State.save();}},600);});
+            var nt;document.addEventListener('input',function(e){if(!e.target.classList.contains('note-textarea'))return;clearTimeout(nt);nt=setTimeout(function(){var n=State.getNoteById(e.target.dataset.noteId);if(n){n.text=e.target.value;n.updatedAt=Date.now();State.save();}},600);});
             
-            const savedTheme=localStorage.getItem('theme');if(savedTheme==='dark')document.body.classList.add('dark');
+            var savedTheme=localStorage.getItem('theme');if(savedTheme==='dark')document.body.classList.add('dark');
             
-            const stb=document.getElementById('scrollTopBtn');
-            window.addEventListener('scroll',()=>{stb.classList.toggle('visible',window.scrollY>300);});
-            stb.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+            var stb=document.getElementById('scrollTopBtn');
+            window.addEventListener('scroll',function(){stb.classList.toggle('visible',window.scrollY>300);});
+            stb.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
             
-            if('Notification' in window&&Notification.permission==='granted'){setInterval(()=>{Services.getTasksForNotification().forEach(t=>{const min=Math.ceil((new Date(t.date+'T'+t.time)-new Date())/60000);new Notification('⏰ Напоминание',{body:`«${t.text}» через ${min} мин.`,tag:t.id});});},300000);}
+            if('Notification' in window&&Notification.permission==='granted'){setInterval(function(){Services.getTasksForNotification().forEach(function(t){var min=Math.ceil((new Date(t.date+'T'+t.time)-new Date())/60000);new Notification('⏰ Напоминание',{body:'«'+t.text+'» через '+min+' мин.',tag:t.id});});},300000);}
         }
 
         function handleAction(action,ds){
             switch(action){
-                case A.OPEN_FOLDER:Actions.openFolder(ds.folderId);break;
-                case A.CHANGE_ICON:Actions.changeFolderIcon(ds.folderId);break;
-                case A.TOGGLE_TASK:Actions.toggleTask(ds.taskId);break;
-                case A.EDIT_TASK:Actions.editTask(ds.taskId);break;
-                case A.DELETE_TASK:Actions.deleteTask(ds.taskId);break;
-                case A.DELETE_FOREVER:Actions.deleteForever(ds.taskId);break;
-                case A.RESTORE_TASK:Actions.restoreTask(ds.taskId);break;
-                case A.DUPLICATE_TASK:Actions.duplicateTask(ds.taskId);break;
-                case A.MOVE_TO_TOMORROW:Actions.moveToTomorrow(ds.taskId);break;
-                case A.ADD_SUBTASK:Actions.addSubtask(ds.taskId);break;
-                case A.EDIT_SUBTASK:Actions.editSubtask(ds.taskId,ds.subtaskId);break;
-                case A.DELETE_SUBTASK:Actions.deleteSubtask(ds.taskId,ds.subtaskId);break;
-                case A.TOGGLE_SUBTASK:Actions.toggleSubtask(ds.taskId,ds.subtaskId);break;
-                case A.SET_PRIORITY:Actions.setPriority(ds.taskId,parseInt(ds.priority));break;
-                case A.EDIT_CLIENT:Actions.editClient(ds.clientId);break;
-                case A.EMAIL_CLIENT:Actions.emailClient(ds.clientId);break;
-                case A.DELETE_CLIENT:Actions.deleteClient(ds.clientId);break;
-                case A.SELECT_DATE:AppState.selectedDate=ds.date;UI.renderCalendar(AppState.calendarYear,AppState.calendarMonth,AppState.selectedDate);break;
-                case A.EDIT_CUSTOM_QUOTE:Actions.editCustomQuote(ds.side);break;
-                case A.DELETE_NOTE:Actions.deleteNote(ds.noteId);break;
-                case A.DELETE_FOLDER:Actions.deleteFolder(ds.folderId);break;
+                case A.OPEN_FOLDER: Actions.openFolder(ds.folderId); break;
+                case A.CHANGE_ICON: Actions.changeFolderIcon(ds.folderId); break;
+                case A.TOGGLE_TASK: Actions.toggleTask(ds.taskId); break;
+                case A.EDIT_TASK: Actions.editTask(ds.taskId); break;
+                case A.DELETE_TASK: Actions.deleteTask(ds.taskId); break;
+                case A.DELETE_FOREVER: Actions.deleteForever(ds.taskId); break;
+                case A.RESTORE_TASK: Actions.restoreTask(ds.taskId); break;
+                case A.DUPLICATE_TASK: Actions.duplicateTask(ds.taskId); break;
+                case A.MOVE_TO_TOMORROW: Actions.moveToTomorrow(ds.taskId); break;
+                case A.ADD_SUBTASK: Actions.addSubtask(ds.taskId); break;
+                case A.EDIT_SUBTASK: Actions.editSubtask(ds.taskId,ds.subtaskId); break;
+                case A.DELETE_SUBTASK: Actions.deleteSubtask(ds.taskId,ds.subtaskId); break;
+                case A.TOGGLE_SUBTASK: Actions.toggleSubtask(ds.taskId,ds.subtaskId); break;
+                case A.SET_PRIORITY: Actions.setPriority(ds.taskId,parseInt(ds.priority)); break;
+                case A.EDIT_CLIENT: Actions.editClient(ds.clientId); break;
+                case A.EMAIL_CLIENT: Actions.emailClient(ds.clientId); break;
+                case A.DELETE_CLIENT: Actions.deleteClient(ds.clientId); break;
+                case A.SELECT_DATE: AppState.selectedDate=ds.date; UI.renderCalendar(AppState.calendarYear,AppState.calendarMonth,AppState.selectedDate); break;
+                case A.EDIT_CUSTOM_QUOTE: Actions.editCustomQuote(ds.side); break;
+                case A.DELETE_NOTE: Actions.deleteNote(ds.noteId); break;
+                case A.DELETE_FOLDER: Actions.deleteFolder(ds.folderId); break;
             }
         }
 
-        const AppState={calendarYear:new Date().getFullYear(),calendarMonth:new Date().getMonth(),selectedDate:null};
+        var AppState={calendarYear:new Date().getFullYear(),calendarMonth:new Date().getMonth(),selectedDate:null};
 
         function initialize(){
             try{
