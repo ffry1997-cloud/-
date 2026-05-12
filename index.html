@@ -1250,9 +1250,9 @@
                     Utils.getValidTasksArray(f.tasks).forEach(t=>{
                         if(!t||t.date!==ds||t.completed)return;
                         const k=`task_${t.id}`;
-                        if(!s.has(k)){s.add(k);r.push({text:t.text,type:TASK_TYPES.TASK,folder:f.name,icon:f.icon,time:t.time||''});
-                               
+                        if(!s.has(k)){s.add(k);r.push({text:t.text,type:TASK_TYPES.TASK,folder:f.name,icon:f.icon,time:t.time||''});}
                     });
+                        
                 });
                 State.getClients().forEach(c=>{
                     if(!c||!c.date)return;
