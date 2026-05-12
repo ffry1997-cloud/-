@@ -1416,23 +1416,25 @@
             handleDrop: function(e,toFid){e.preventDefault();e.currentTarget.classList.remove('drag-over');try{var d=JSON.parse(e.dataTransfer.getData('text/plain'));var tid=d.taskId,fid=d.fromFolderId;if(fid===toFid||Utils.isSmartFolder(toFid))return;var ff=State.getFolderById(fid),tf=State.getFolderById(toFid);if(!ff||!tf)return;var idx=ff.tasks.findIndex(function(t){return t&&t.id===tid;});if(idx===-1)return;var task=ff.tasks.splice(idx,1)[0];tf.tasks.push(task);State.save();UI.renderAll();UI.showToast('📦 Перемещена');}catch(err){UI.showToast('❌ Ошибка');}},
             openDateView: function(ds){Actions.openDateView(ds);},
             goToFolder: function(folderName){
-                // Перебираем папки
                 var allFolders = State.getFolders();
                 for(var i = 0; i < allFolders.length; i++){
                     if(allFolders[i].name === folderName){
-                        // Открываем папку — напрямую через UI и State
                         State.setCurrentFolderId(allFolders[i].id);
                         State.setCurrentTaskFilter('active');
                         var sc = document.getElementById('searchContainer');
                         if(sc) sc.style.display = 'none';
                         State.save();
+                        document.querySelectorAll('#mainTabs .tab').forEach(function(t){t.classList.remove('active');});
+                        document.querySelector('#mainTabs .tab[data-tab="tasks"]').classList.add('active');
+                        document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active');});
+                        document.getElementById('section-tasks').classList.add('active');
                         UI.renderAll();
-                        UI.showToast('📁 ' + folderName);
                         return;
                     }
                 }
                 UI.showToast('📁 Папка не найдена: ' + folderName);
             },
+            
             
         };
 
