@@ -1415,6 +1415,7 @@
             handleDragLeave: function(e){e.currentTarget.classList.remove('drag-over');},
             handleDrop: function(e,toFid){e.preventDefault();e.currentTarget.classList.remove('drag-over');try{var d=JSON.parse(e.dataTransfer.getData('text/plain'));var tid=d.taskId,fid=d.fromFolderId;if(fid===toFid||Utils.isSmartFolder(toFid))return;var ff=State.getFolderById(fid),tf=State.getFolderById(toFid);if(!ff||!tf)return;var idx=ff.tasks.findIndex(function(t){return t&&t.id===tid;});if(idx===-1)return;var task=ff.tasks.splice(idx,1)[0];tf.tasks.push(task);State.save();UI.renderAll();UI.showToast('📦 Перемещена');}catch(err){UI.showToast('❌ Ошибка');}},
             openDateView: function(ds){Actions.openDateView(ds);}
+            goToFolder: function(folderName){var f=State.getFolders().find(function(x){return x.name===folderName;});if(f){Actions.openFolder(f.id);}else{UI.showToast('📁 Папка не найдена');}},
         };
 
         function setupEventListeners(){
