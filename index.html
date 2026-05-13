@@ -707,7 +707,7 @@
 
         .task-item {
             display: flex;
-            align-items: center;
+            align-items: flex-start !important;
             gap: 10px;
             padding: 12px 14px;
             background: var(--card);
@@ -717,6 +717,11 @@
             border: 1px solid var(--border);
             flex-wrap: wrap;
             transition: opacity 0.2s, transform 0.2s;
+        }
+
+        .task-item > div:nth-child(2) {
+            flex: 1 1 calc(100% - 60px);
+            min-width: 120px;
         }
 
         .task-checkbox {
@@ -1042,8 +1047,9 @@
         .task-item {
             align-items: flex-start !important;
         }
-        .task-item > div:first-of-type {
-            min-width: 0;
+        .task-item > div:nth-child(2) {
+            flex: 1 1 auto;
+            min-width: 120px;
         }
         body.bg-image {
             background-size: cover;
@@ -1075,6 +1081,7 @@
             margin-top: 6px;
             list-style: none;
             flex-basis: 100%;
+            order: 1;
         }
 
         .subtask-item {
