@@ -1474,6 +1474,8 @@
                     bgStyle='background-image:url('+f.customImage+');background-size:cover;background-position:center;';
                 }else if(f.color){
                     bgStyle='background:'+f.color+';';
+                }else if(f.opacity){
+                    bgStyle='background:rgba(255,255,255,'+f.opacity+');';
                 }
                 var iconHTML='<span style="font-size:24px">'+(f.icon||'📁')+'</span>';
                 return'<div class="folder-card" style="'+bgStyle+'" data-action="'+A.OPEN_FOLDER+'" data-folder-id="'+f.id+'" ondragover="App.handleDragOver(event)" ondragleave="App.handleDragLeave(event)" ondrop="App.handleDrop(event, \''+f.id+'\')"><div class="folder-icon-circle" data-action="'+A.CHANGE_ICON+'" data-folder-id="'+f.id+'">'+iconHTML+'</div><div class="folder-info"><div class="folder-name">'+Utils.escapeHtml(f.name)+'</div><div class="folder-stats"><span>📋 '+s.active+' / ✅ '+s.completed+'</span></div></div><button class="btn-sm btn-danger delete-folder-btn" data-action="'+A.DELETE_FOLDER+'" data-folder-id="'+f.id+'" style="font-size:11px;padding:4px 8px;">🗑️</button></div>';
@@ -1537,6 +1539,13 @@
                         reader.readAsDataURL(file);
                     };
                     inp.click();
+                }else if(!isNaN(parseFloat(choice))&&parseFloat(choice)>=0&&parseFloat(choice)<=1){
+                    f.opacity=choice;
+                    f.color='';
+                    f.customImage='';
+                    State.save();
+                    UI.renderAll();
+                    UI.showToast('🔍 Прозрачность: '+choice);
                 }else if(choice.startsWith('#')){
                     f.color=choice;
                     f.customImage='';
