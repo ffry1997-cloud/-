@@ -1574,8 +1574,14 @@
                                 var brightness=0;
                                 for(var j=0;j<data.length;j+=4){brightness+=(data[j]+data[j+1]+data[j+2])/3;}
                                 brightness=brightness/(data.length/4);
-                                if(brightness<128){document.body.classList.add('dark');localStorage.setItem('theme','dark');}
-                                else{document.body.classList.remove('dark');localStorage.setItem('theme','light');}
+                                if(brightness<128){
+                                    document.body.classList.add('dark');
+                                    localStorage.setItem('theme','dark');
+                                }else{
+                                    document.body.classList.remove('dark');
+                                    localStorage.setItem('theme','light');
+                                }
+                                UI.renderAll();
                             };
                             localStorage.setItem('bg_image',ev.target.result);
                             UI.showToast('🖼️ Фон обновлён');
@@ -1767,7 +1773,11 @@
                 var savedColor=localStorage.getItem('custom_theme');
                 if(savedColor){['--bg','--card','--text','--text-secondary','--accent','--accent-light','--danger','--danger-light','--success','--success-light','--warning','--warning-light','--border'].forEach(function(v){document.documentElement.style.setProperty(v,savedColor);});}
                 var savedBg=localStorage.getItem('bg_image');
-                if(savedBg){document.body.style.backgroundImage='url('+savedBg+')';document.body.classList.add('bg-image');}
+                if(savedBg){
+                    document.body.style.backgroundImage='url('+savedBg+')';
+                    document.body.classList.add('bg-image');
+                    if(localStorage.getItem('theme')==='dark'){document.body.classList.add('dark');}
+                }
                 State.load();
                 Services.processRepeats();
                 setupEventListeners();
