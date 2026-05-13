@@ -1028,6 +1028,30 @@
         .task-item > div:first-of-type {
             min-width: 0;
         }
+        body.bg-image {
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            position: relative;
+        }
+        body.bg-image::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(255,255,255,0.7);
+            z-index: 0;
+        }
+        body.bg-image .app-container {
+            position: relative;
+            z-index: 1;
+        }
+        body.dark.bg-image::before {
+            background: rgba(0,0,0,0.6);
+        }
+        body.no-transition * {
+            transition: none !important;
+        }
 
     </style>
     <link rel="manifest" href="data:application/json;charset=utf-8,%7B%22name%22%3A%22%D0%9C%D0%BE%D0%B8%20%D0%BF%D0%BB%D0%B0%D0%BD%D1%8B%22%2C%22short_name%22%3A%22%D0%9F%D0%BB%D0%B0%D0%BD%D1%8B%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20100%20100'%3E%3Ctext%20y%3D'.9em'%20font-size%3D'90'%3E%F0%9F%93%85%3C%2Ftext%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22any%22%5D%7D%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f5f3f0%22%2C%22theme_color%22%3A%22%234a90d9%22%7D">
@@ -1055,6 +1079,7 @@
                 <div class="menu-dropdown" id="menuDropdown">
                     <button class="menu-item" id="btnNewFolderMenu"><span class="menu-icon">📁</span> Новая папка</button>
                     <button class="menu-item" id="btnNewNoteMenu"><span class="menu-icon">💡</span> Новая заметка</button>
+                    <button class="menu-item" id="btnThemeCustom"><span class="menu-icon">🎨</span> Оформление</button>
                     <button class="menu-item" id="btnThemeMenu"><span class="menu-icon">🌓</span> Тема</button>
                     <button class="menu-item" id="btnExportMenu"><span class="menu-icon">📤</span> Экспорт</button>
                     <button class="menu-item" id="btnImportMenu"><span class="menu-icon">📥</span> Импорт</button>
@@ -1156,6 +1181,12 @@
     (function() {
         'use strict';
 
+        const THEME_PRESETS = {
+            pastel:{'--bg':'#f8f6f2','--card':'#ffffff','--text':'#2d2a26','--text-secondary':'#7a756e','--accent':'#7eb8c9','--accent-light':'#eaf4f7','--danger':'#d4949a','--danger-light':'#faf0f1','--success':'#9cbfa7','--success-light':'#eef5f0','--warning':'#e8d5a3','--warning-light':'#fdf9f0','--border':'#e8e4dd'},
+            forest:{'--bg':'#f2f5f0','--card':'#ffffff','--text':'#2a2d2a','--text-secondary':'#6b7a6b','--accent':'#6b9e7a','--accent-light':'#e8f0e9','--danger':'#c97d7d','--danger-light':'#faf0f0','--success':'#7aaa7a','--success-light':'#e8f0e8','--warning':'#c9b87a','--warning-light':'#faf8e8','--border':'#dde4db'},
+            sunset:{'--bg':'#faf4f2','--card':'#ffffff','--text':'#2d2624','--text-secondary':'#8a7a70','--accent':'#d4948a','--accent-light':'#faf0ed','--danger':'#c97d8b','--danger-light':'#faf0f2','--success':'#9bba8a','--success-light':'#f0f5eb','--warning':'#d4b88a','--warning-light':'#faf6ed','--border':'#e8ded9'},
+            ocean:{'--bg':'#f2f5f8','--card':'#ffffff','--text':'#242a2d','--text-secondary':'#6b7a85','--accent':'#5b8fa8','--accent-light':'#e8f0f5','--danger':'#c97d7d','--danger-light':'#faf0f0','--success':'#7aaa9a','--success-light':'#e8f5f0','--warning':'#c9b87a','--warning-light':'#faf8e8','--border':'#d9e1e6'}
+        };
         const STORAGE_KEY = 'my_plans_v18';
         const TOAST_DURATION = 2500;
         const FILTERS = Object.freeze({ ACTIVE: 'active', COMPLETED: 'completed' });
@@ -1514,6 +1545,50 @@
                     UI.showToast('✅ Иконка обновлена');
                 }
             },
+            changeTheme(){
+                var presets=Object.keys(THEME_PRESETS);
+                var msg='Выберите тему:\n';
+                for(var i=0;i<presets.length;i++){msg+=(i+1)+'. '+presets[i]+'\n';}
+                msg+='\nИли:\n- Введите hex (#7eb8c9) для цвета\n- Напишите "фото" для фона\n- Напишите "сброс" для стандартной';
+                var choice=prompt(msg);
+                if(!choice)return;
+                var root=document.documentElement;
+                if(choice==='фото'||choice==='foto'){
+                    var inp=document.createElement('input');
+                    inp.type='file';inp.accept='image/*';
+                    inp.onchange=function(e){
+                        var file=e.target.files[0];if(!file)return;
+                        var reader=new FileReader();
+                        reader.onload=function(ev){
+                            document.body.style.backgroundImage='url('+ev.target.result+')';
+                            document.body.classList.add('bg-image');
+                            localStorage.setItem('bg_image',ev.target.result);
+                            UI.showToast('🖼️ Фон обновлён');
+                        };
+                        reader.readAsDataURL(file);
+                    };
+                    inp.click();
+                }else if(choice==='сброс'){
+                    document.body.style.backgroundImage='';
+                    document.body.classList.remove('bg-image');
+                    localStorage.removeItem('bg_image');
+                    localStorage.removeItem('custom_theme');
+                    localStorage.removeItem('theme_preset');
+                    location.reload();
+                }else if(choice.startsWith('#')){
+                    ['--bg','--card','--text','--text-secondary','--accent','--accent-light','--danger','--danger-light','--success','--success-light','--warning','--warning-light','--border'].forEach(function(v){root.style.setProperty(v,choice);});
+                    localStorage.setItem('custom_theme',choice);
+                    UI.showToast('🎨 Цвет: '+choice);
+                }else{
+                    var idx=parseInt(choice)-1;
+                    if(idx>=0&&idx<presets.length){
+                        var preset=THEME_PRESETS[presets[idx]];
+                        Object.keys(preset).forEach(function(key){root.style.setProperty(key,preset[key]);});
+                        localStorage.setItem('theme_preset',presets[idx]);
+                        UI.showToast('🎨 Тема: '+presets[idx]);
+                    }
+                }
+            },
             setTaskFilter(filter){State.setCurrentTaskFilter(filter);State.save();UI.renderTasks();},
             addClient(){const ni=document.getElementById('clientName'),pi=document.getElementById('clientPhone'),di=document.getElementById('clientDate');if(!ni||!pi||!di)return;const name=ni.value.trim(),phone=pi.value.trim(),date=di.value;if(!name||!date){UI.showToast('❌ Введите имя и дату');return;}State.addClient({id:Utils.generateId(),name,phone,date});ni.value='';pi.value='';di.value='';State.save();UI.renderAll();UI.showToast('👤 Добавлен');},
             editClient(cid){const c=State.getClientById(cid);if(!c)return;const name=prompt('ФИО:',c.name);if(!name)return;var currentPhone=c.phone||'';var phone=prompt('Телефон:',currentPhone);if(phone===null)return;phone=phone.trim();if(phone){var digits=phone.replace(/\D/g,'');if(digits.length===11&&digits.startsWith('8')){digits='7'+digits.slice(1);}if(digits.length>=1){phone='+7';if(digits.length>1)phone+=' ('+digits.slice(1,4);if(digits.length>=4)phone+=') '+digits.slice(4,7);if(digits.length>=7)phone+='-'+digits.slice(7,9);if(digits.length>=9)phone+='-'+digits.slice(9,11);}}const date=prompt('Дата:',c.date);if(!date)return;c.name=name.trim();c.phone=phone;c.date=date;State.save();UI.renderClients();UI.showToast('✅ Обновлено');},
@@ -1587,6 +1662,7 @@
             document.getElementById('btnNewFolderMenu').addEventListener('click',Actions.addFolder);
             document.getElementById('btnNewNoteMenu').addEventListener('click',Actions.addNote);
             document.getElementById('btnThemeMenu').addEventListener('click',Actions.toggleTheme);
+            document.getElementById('btnThemeCustom').addEventListener('click',Actions.changeTheme);
             document.getElementById('btnExportMenu').addEventListener('click',Actions.exportData);
             document.getElementById('btnImportMenu').addEventListener('click',Actions.importData);
             document.getElementById('btnMenu').addEventListener('click',function(e){e.stopPropagation();document.getElementById('menuDropdown').classList.toggle('show');});
@@ -1671,6 +1747,12 @@
 
         function initialize(){
             try{
+                var savedPreset=localStorage.getItem('theme_preset');
+                if(savedPreset&&THEME_PRESETS[savedPreset]){var preset=THEME_PRESETS[savedPreset];Object.keys(preset).forEach(function(key){document.documentElement.style.setProperty(key,preset[key]);});}
+                var savedColor=localStorage.getItem('custom_theme');
+                if(savedColor){['--bg','--card','--text','--text-secondary','--accent','--accent-light','--danger','--danger-light','--success','--success-light','--warning','--warning-light','--border'].forEach(function(v){document.documentElement.style.setProperty(v,savedColor);});}
+                var savedBg=localStorage.getItem('bg_image');
+                if(savedBg){document.body.style.backgroundImage='url('+savedBg+')';document.body.classList.add('bg-image');}
                 State.load();
                 Services.processRepeats();
                 setupEventListeners();
