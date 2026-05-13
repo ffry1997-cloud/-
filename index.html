@@ -1562,6 +1562,21 @@
                         reader.onload=function(ev){
                             document.body.style.backgroundImage='url('+ev.target.result+')';
                             document.body.classList.add('bg-image');
+                            // Определяем яркость фото
+                            var img=new Image();
+                            img.src=ev.target.result;
+                            img.onload=function(){
+                                var canvas=document.createElement('canvas');
+                                canvas.width=img.width;canvas.height=img.height;
+                                var ctx=canvas.getContext('2d');
+                                ctx.drawImage(img,0,0);
+                                var data=ctx.getImageData(0,0,canvas.width,canvas.height).data;
+                                var brightness=0;
+                                for(var j=0;j<data.length;j+=4){brightness+=(data[j]+data[j+1]+data[j+2])/3;}
+                                brightness=brightness/(data.length/4);
+                                if(brightness<128){document.body.classList.add('dark');localStorage.setItem('theme','dark');}
+                                else{document.body.classList.remove('dark');localStorage.setItem('theme','light');}
+                            };
                             localStorage.setItem('bg_image',ev.target.result);
                             UI.showToast('🖼️ Фон обновлён');
                         };
