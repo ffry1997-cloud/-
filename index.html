@@ -419,23 +419,23 @@
         .folder-card {
             background: var(--accent-light);
             border-radius: 50%;
-            width: 160px;
-            height: 160px;
-            padding: 20px 14px;
+            width: 150px;
+            height: 150px;
+            padding: 16px 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 4px;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
             border: 2px solid var(--border);
-            margin-bottom: 8px;
             text-align: center;
             position: relative;
             overflow: hidden;
         }
+        
         .folder-card:hover {
             transform: scale(1.05);
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
@@ -772,7 +772,14 @@
         .folder-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 10px;
+            gap: 14px;
+            justify-items: center;
+        }
+        .folder-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            justify-content: center;
         }
         
         .folder-grid .folder-card {
