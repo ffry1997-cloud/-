@@ -996,6 +996,10 @@
         .menu-item .menu-icon { font-size: 18px; width: 24px; text-align: center; }
         
         @supports (-webkit-touch-callout: none) {
+            .folder-card, .task-item, .client-card, .note-card, .card, .stats-card, .icon-btn, .tabs, .custom-quote-box {
+                backdrop-filter: none;
+                -webkit-backdrop-filter: none;
+            }
             .app-container {
                 -webkit-overflow-scrolling: touch;
                 padding-bottom: env(safe-area-inset-bottom, 12px);
@@ -1595,6 +1599,7 @@
                     inp.type='file';inp.accept='image/*';
                     inp.onchange=function(e){
                         var file=e.target.files[0];if(!file)return;
+                        if(file.size>500000){UI.showToast('❌ Фото слишком большое (макс 500 КБ)');return;}
                         var reader=new FileReader();
                         reader.onload=function(ev){
                             document.body.style.backgroundImage='url('+ev.target.result+')';
@@ -1604,7 +1609,9 @@
                             img.src=ev.target.result;
                             img.onload=function(){
                                 var canvas=document.createElement('canvas');
-                                canvas.width=img.width;canvas.height=img.height;
+                                var maxSize=100;
+                                canvas.width=Math.min(img.width,maxSize);
+                                canvas.height=Math.min(img.height,maxSize);
                                 var ctx=canvas.getContext('2d');
                                 ctx.drawImage(img,0,0);
                                 var data=ctx.getImageData(0,0,canvas.width,canvas.height).data;
@@ -1815,9 +1822,13 @@
                 if(savedColor){['--bg','--card','--text','--text-secondary','--accent','--accent-light','--danger','--danger-light','--success','--success-light','--warning','--warning-light','--border'].forEach(function(v){document.documentElement.style.setProperty(v,savedColor);});}
                 var savedBg=localStorage.getItem('bg_image');
                 if(savedBg){
-                    document.body.style.backgroundImage='url('+savedBg+')';
-                    document.body.classList.add('bg-image');
-                    if(localStorage.getItem('theme')==='dark'){document.body.classList.add('dark');}
+                    if(savedBg.length>500000){
+                        localStorage.removeItem('bg_image');
+                    }else{
+                        document.body.style.backgroundImage='url('+savedBg+')';
+                        document.body.classList.add('bg-image');
+                        if(localStorage.getItem('theme')==='dark'){document.body.classList.add('dark');}
+                    }
                 }
                 State.load();
                 Services.processRepeats();
