@@ -1597,9 +1597,13 @@
                     localStorage.removeItem('theme_preset');
                     location.reload();
                 }else if(choice.startsWith('#')){
-                    ['--bg','--card','--text','--text-secondary','--accent','--accent-light','--danger','--danger-light','--success','--success-light','--warning','--warning-light','--border'].forEach(function(v){root.style.setProperty(v,choice);});
+                    ['--bg','--accent-light','--accent'].forEach(function(v){root.style.setProperty(v,choice);});
+                    root.style.setProperty('--card','#ffffff');
+                    root.style.setProperty('--text','#2d2a26');
+                    root.style.setProperty('--text-secondary','#7a756e');
                     localStorage.setItem('custom_theme',choice);
                     UI.showToast('🎨 Цвет: '+choice);
+
                 }else{
                     var idx=parseInt(choice)-1;
                     if(idx>=0&&idx<presets.length){
