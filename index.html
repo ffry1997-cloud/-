@@ -1412,9 +1412,14 @@
             function buildSmartFolderHTML(id,icon,name,cnt,cc){const cs=cc?`style="color:${cc};"`:'';return`<div class="folder-card ${id===SMART_FOLDERS.TODAY?'smart-today':'smart-overdue'}" data-action="${A.OPEN_FOLDER}" data-folder-id="${id}"><span class="folder-icon">${icon}</span><div class="folder-info"><div class="folder-name">${name}</div><div class="folder-stats"><span class="stat-active" ${cs}>📋 ${cnt} задач</span></div></div></div>`;}
             function buildFolderCardHTML(f){
                 var s=Utils.getFolderStats(f);
-                var bg=f.color||'var(--accent-light)';
-                var iconHTML=f.customImage?'<img src="'+f.customImage+'" style="width:44px;height:44px;border-radius:50%;object-fit:cover;">':'<span style="font-size:28px">'+(f.icon||'📁')+'</span>';
-                return'<div class="folder-card" style="background:'+bg+';border-color:'+bg+';" data-action="'+A.OPEN_FOLDER+'" data-folder-id="'+f.id+'" ondragover="App.handleDragOver(event)" ondragleave="App.handleDragLeave(event)" ondrop="App.handleDrop(event, \''+f.id+'\')"><button class="btn-sm btn-danger delete-folder-btn" data-action="'+A.DELETE_FOLDER+'" data-folder-id="'+f.id+'" style="position:absolute;top:6px;right:10px;opacity:0;font-size:11px;padding:3px 7px;">🗑️</button><div class="folder-icon-circle" data-action="'+A.CHANGE_ICON+'" data-folder-id="'+f.id+'">'+iconHTML+'</div><div class="folder-name">'+Utils.escapeHtml(f.name)+'</div><div class="folder-stats"><span>📋 '+s.active+' / ✅ '+s.completed+'</span></div></div>';
+                var bgStyle='background:var(--accent-light);';
+                if(f.customImage){
+                    bgStyle='background-image:url('+f.customImage+');background-size:cover;background-position:center;';
+                }else if(f.color){
+                    bgStyle='background:'+f.color+';';
+                }
+                var iconHTML='<span style="font-size:28px">'+(f.icon||'📁')+'</span>';
+                return'<div class="folder-card" style="'+bgStyle+';border-color:var(--border);" data-action="'+A.OPEN_FOLDER+'" data-folder-id="'+f.id+'" ondragover="App.handleDragOver(event)" ondragleave="App.handleDragLeave(event)" ondrop="App.handleDrop(event, \''+f.id+'\')"><button class="btn-sm btn-danger delete-folder-btn" data-action="'+A.DELETE_FOLDER+'" data-folder-id="'+f.id+'" style="position:absolute;top:6px;right:10px;opacity:0;font-size:11px;padding:3px 7px;">🗑️</button><div class="folder-icon-circle" data-action="'+A.CHANGE_ICON+'" data-folder-id="'+f.id+'">'+iconHTML+'</div><div class="folder-name">'+Utils.escapeHtml(f.name)+'</div><div class="folder-stats"><span>📋 '+s.active+' / ✅ '+s.completed+'</span></div></div>';
             }
             function renderSearchResults(c,tasks){if(!tasks.length){c.innerHTML='<p style="text-align:center;padding:20px;opacity:0.6;">🔍 Ничего не найдено</p>';return;}c.innerHTML='<div style="margin-bottom:10px;"><button class="btn-sm" id="btnClearSearch">← Назад к папкам</button></div>'+tasks.map(t=>buildTaskHTML(t,t.folderId,true)).join('');document.getElementById('btnClearSearch')?.addEventListener('click',()=>{document.getElementById('searchInput').value='';document.getElementById('searchStats').style.display='none';UI.renderFolderList();});}
             function renderTasks(){const tc=document.getElementById('taskContainer'),fl=document.getElementById('folderList');if(!tc||!fl)return;const cid=State.getCurrentFolderId();if(!cid){tc.style.display='none';fl.style.display='block';return;}if(Utils.isSmartFolder(cid))renderSmartFolderTasks(tc,fl,cid);else renderRegularFolderTasks(tc,fl,cid);}
@@ -1455,7 +1460,7 @@
                 if(Utils.isSmartFolder(fid)){UI.showToast('❌ Нельзя');return;}
                 var f=State.getFolderById(fid);
                 if(!f)return;
-                var choice=prompt('Выберите:\n1. Цвет (hex, например #7eb8c9)\n2. Иконка (эмодзи)\n3. Фото (напишите "фото")\n\nТекущий: '+(f.color||'нет')+', '+(f.icon||'📁'), '');
+                var choice=prompt('Выберите:\n1. Цвет фона (hex, например #7eb8c9)\n2. Иконка (эмодзи)\n3. Фото на фон (напишите "фото")\n\nТекущий цвет: '+(f.color||'нет')+'\nТекущая иконка: '+(f.icon||'📁'), '');
                 if(!choice)return;
                 if(choice==='фото'||choice==='foto'||choice==='photo'){
                     var inp=document.createElement('input');
@@ -1470,7 +1475,7 @@
                             f.color='';
                             State.save();
                             UI.renderAll();
-                            UI.showToast('🖼️ Фото загружено');
+                            UI.showToast('🖼️ Фото загружено на фон');
                         };
                         reader.readAsDataURL(file);
                     };
@@ -1480,10 +1485,9 @@
                     f.customImage='';
                     State.save();
                     UI.renderAll();
-                    UI.showToast('🎨 Цвет обновлён');
+                    UI.showToast('🎨 Цвет фона обновлён');
                 }else{
                     f.icon=choice;
-                    f.customImage='';
                     State.save();
                     UI.renderAll();
                     UI.showToast('✅ Иконка обновлена');
