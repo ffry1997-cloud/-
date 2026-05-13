@@ -417,26 +417,36 @@
         }
 
         .folder-card {
-            background: var(--card);
-            border-radius: var(--radius);
-            padding: 14px 16px;
+            background: var(--accent-light);
+            border-radius: 50%;
+            width: 160px;
+            height: 160px;
+            padding: 20px 14px;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 12px;
+            justify-content: center;
+            gap: 6px;
             cursor: pointer;
-            transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-            margin-bottom: 4px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            border: 2px solid var(--border);
+            margin-bottom: 8px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
         }
-
         .folder-card:hover {
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            transform: scale(1.05);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            border-color: var(--accent);
+        }
+        .folder-card:active {
+            transform: scale(1.02);
         }
 
-        .folder-card:active {
-            transform: scale(0.98);
-            background: var(--bg);
+        .folder-card:hover .delete-folder-btn {
+            opacity: 1 !important;
         }
 
         .folder-icon-circle {
@@ -766,10 +776,9 @@
         }
         
         .folder-grid .folder-card {
-            flex-direction: column;
-            text-align: center;
+            width: 140px;
+            height: 140px;
             padding: 16px 10px;
-            gap: 8px;
         }
         
         .folder-grid .folder-icon {
@@ -1396,15 +1405,9 @@
             function buildSmartFolderHTML(id,icon,name,cnt,cc){const cs=cc?`style="color:${cc};"`:'';return`<div class="folder-card ${id===SMART_FOLDERS.TODAY?'smart-today':'smart-overdue'}" data-action="${A.OPEN_FOLDER}" data-folder-id="${id}"><span class="folder-icon">${icon}</span><div class="folder-info"><div class="folder-name">${name}</div><div class="folder-stats"><span class="stat-active" ${cs}>📋 ${cnt} задач</span></div></div></div>`;}
             function buildFolderCardHTML(f){
                 var s=Utils.getFolderStats(f);
-                var sh=s.total>0?'<span class="stat-active">📋 '+s.active+' активных</span> <span class="stat-completed">✅ '+s.completed+' заверш.</span>':'<span>📭 Нет задач</span>';
-                var iconHTML='';
-                if(f.customImage){
-                    iconHTML='<img src="'+f.customImage+'" alt="">';
-                }else{
-                    var bgColor=f.color||'var(--accent-light)';
-                    iconHTML='<span class="emoji-icon" style="background:'+bgColor+';width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;">'+(f.icon||'📁')+'</span>';
-                }
-                return'<div class="folder-card" data-action="'+A.OPEN_FOLDER+'" data-folder-id="'+f.id+'" ondragover="App.handleDragOver(event)" ondragleave="App.handleDragLeave(event)" ondrop="App.handleDrop(event, \''+f.id+'\')"><div class="folder-icon-circle" data-action="'+A.CHANGE_ICON+'" data-folder-id="'+f.id+'">'+iconHTML+'</div><div class="folder-info"><div class="folder-name">'+Utils.escapeHtml(f.name)+'</div><div class="folder-stats">'+sh+'</div></div><button class="btn-sm btn-danger" data-action="'+A.DELETE_FOLDER+'" data-folder-id="'+f.id+'" style="font-size:11px;padding:4px 8px;">🗑️</button></div>';
+                var bg=f.color||'var(--accent-light)';
+                var iconHTML=f.customImage?'<img src="'+f.customImage+'" style="width:44px;height:44px;border-radius:50%;object-fit:cover;">':'<span style="font-size:28px">'+(f.icon||'📁')+'</span>';
+                return'<div class="folder-card" style="background:'+bg+';border-color:'+bg+';" data-action="'+A.OPEN_FOLDER+'" data-folder-id="'+f.id+'" ondragover="App.handleDragOver(event)" ondragleave="App.handleDragLeave(event)" ondrop="App.handleDrop(event, \''+f.id+'\')"><button class="btn-sm btn-danger delete-folder-btn" data-action="'+A.DELETE_FOLDER+'" data-folder-id="'+f.id+'" style="position:absolute;top:6px;right:10px;opacity:0;font-size:11px;padding:3px 7px;">🗑️</button><div class="folder-icon-circle" data-action="'+A.CHANGE_ICON+'" data-folder-id="'+f.id+'">'+iconHTML+'</div><div class="folder-name">'+Utils.escapeHtml(f.name)+'</div><div class="folder-stats"><span>📋 '+s.active+' / ✅ '+s.completed+'</span></div></div>';
             }
             function renderSearchResults(c,tasks){if(!tasks.length){c.innerHTML='<p style="text-align:center;padding:20px;opacity:0.6;">🔍 Ничего не найдено</p>';return;}c.innerHTML='<div style="margin-bottom:10px;"><button class="btn-sm" id="btnClearSearch">← Назад к папкам</button></div>'+tasks.map(t=>buildTaskHTML(t,t.folderId,true)).join('');document.getElementById('btnClearSearch')?.addEventListener('click',()=>{document.getElementById('searchInput').value='';document.getElementById('searchStats').style.display='none';UI.renderFolderList();});}
             function renderTasks(){const tc=document.getElementById('taskContainer'),fl=document.getElementById('folderList');if(!tc||!fl)return;const cid=State.getCurrentFolderId();if(!cid){tc.style.display='none';fl.style.display='block';return;}if(Utils.isSmartFolder(cid))renderSmartFolderTasks(tc,fl,cid);else renderRegularFolderTasks(tc,fl,cid);}
