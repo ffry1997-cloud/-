@@ -88,17 +88,13 @@
             text-align: center;
             font-size: 22px;
             font-weight: 500;
-            padding: 10px 24px;
+            padding: 0 0 14px;
             letter-spacing: 3px;
-            color: #ffffff;
-            background: rgba(126, 184, 201, 0.5);
-            border-radius: 30px;
+            color: var(--accent);
             display: inline-block;
             margin: 0 auto;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-bottom: 2px solid var(--accent-light);
+            text-transform: lowercase;
         }
 
         .bg-quote {
@@ -277,6 +273,9 @@
             flex-direction: column;
             gap: 10px;
             border: 1px solid var(--border);
+        }
+        .folder-card, .task-item, .client-card, .note-card, .card, .stats-card {
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
         }
 
         .search-container {
@@ -870,7 +869,12 @@
         .calendar-day.today { background: var(--accent); color: #fff; font-weight: 700; }
         .calendar-day.has-tasks::after { content: ''; width: 5px; height: 5px; background: var(--accent); border-radius: 50%; position: absolute; bottom: 3px; }
         .calendar-day.today.has-tasks::after { background: #fff; }
-        .calendar-day.selected { outline: 2px solid var(--accent); outline-offset: 3px; }
+        .calendar-day.selected {
+            background: var(--accent-light);
+            outline: none;
+            font-weight: 700;
+            color: var(--accent);
+        }
 
         .note-card {
             background: var(--card);
@@ -916,16 +920,16 @@
 
         .scroll-top-btn {
             position: fixed;
-            bottom: 80px;
-            right: 20px;
+            bottom: 70px;
+            right: 16px;
             z-index: 999;
-            width: 44px;
-            height: 44px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             background: var(--accent);
             color: #fff;
             border: none;
-            font-size: 20px;
+            font-size: 16px;
             cursor: pointer;
             box-shadow: 0 2px 8px rgba(0,0,0,0.2);
             opacity: 0;
@@ -964,7 +968,7 @@
         .menu-wrapper { position: relative; }
         .menu-dropdown { position: absolute; top: 50px; right: 0; background: var(--card); border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); z-index: 100; min-width: 180px; padding: 6px; display: none; border: 1px solid var(--border); }
         .menu-dropdown.show { display: block; }
-        .menu-item { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--text); background: none; border: none; width: 100%; text-align: left; font-family: var(--font); }
+        .menu-item { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 14px; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--text); background: none; border: none; width: 100%; text-align: left; font-family: var(--font); }
         .menu-item:hover { background: var(--bg); }
         .menu-item .menu-icon { font-size: 18px; width: 24px; text-align: center; }
         
