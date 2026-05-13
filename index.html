@@ -1729,7 +1729,14 @@
             document.getElementById('btnWeekView').addEventListener('click',Actions.toggleWeekView);
             document.getElementById('btnBackToFolders').addEventListener('click',Actions.goBackToFolders);
             document.getElementById('btnNewFolderMenu').addEventListener('click',Actions.addFolder);
-            document.getElementById('btnNewNoteMenu').addEventListener('click',Actions.addNote);
+            document.getElementById('btnNewNoteMenu').addEventListener('click',function(){
+                document.querySelectorAll('#mainTabs .tab').forEach(function(t){t.classList.remove('active');});
+                document.querySelector('#mainTabs .tab[data-tab="ideas"]').classList.add('active');
+                document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active');});
+                document.getElementById('section-ideas').classList.add('active');
+                UI.renderAll();
+                setTimeout(function(){document.getElementById('noteText').focus();},200);
+            });
             document.getElementById('btnThemeMenu').addEventListener('click',Actions.toggleTheme);
             document.getElementById('btnThemeCustom').addEventListener('click',Actions.changeTheme);
             document.getElementById('btnExportMenu').addEventListener('click',Actions.exportData);
