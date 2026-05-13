@@ -1441,7 +1441,44 @@
             deleteSubtask(tid,sid){if(!confirm('Удалить?'))return;const r=Utils.findTaskById(tid);if(!r)return;r.task.subtasks=r.task.subtasks.filter(s=>s.id!==sid);State.save();UI.renderAll();},
             addFolder(){const name=prompt('Название:');if(!name)return;State.addFolder({id:Utils.generateId(),name:name.trim(),icon:DEFAULT_FOLDER_ICON,tasks:[]});State.save();UI.renderAll();UI.showToast('📁 Создана');},
             editFolder(){const cid=State.getCurrentFolderId();if(Utils.isSmartFolder(cid)){UI.showToast('❌ Нельзя');return;}const f=State.getFolderById(cid);if(!f)return;const name=prompt('Название:',f.name);if(!name)return;f.name=name.trim();State.save();UI.renderAll();UI.showToast('✅ Обновлена');},
-            changeFolderIcon(fid){if(Utils.isSmartFolder(fid)){UI.showToast('❌ Нельзя');return;}const f=State.getFolderById(fid);if(!f)return;const icon=prompt(`Иконка:\n${FOLDER_ICONS.join(' ')}`,f.icon||DEFAULT_FOLDER_ICON);if(!icon)return;f.icon=icon.trim();State.save();UI.renderAll();UI.showToast('✅ Обновлена');},
+            changeFolderIcon(fid){
+                if(Utils.isSmartFolder(fid)){UI.showToast('❌ Нельзя');return;}
+                var f=State.getFolderById(fid);
+                if(!f)return;
+                var choice=prompt('Выберите:\n1. Цвет (hex, например #7eb8c9)\n2. Иконка (эмодзи)\n3. Фото (напишите "фото")\n\nТекущий: '+(f.color||'нет')+', '+(f.icon||'📁'), '');
+                if(!choice)return;
+                if(choice==='фото'||choice==='foto'||choice==='photo'){
+                    var inp=document.createElement('input');
+                    inp.type='file';
+                    inp.accept='image/*';
+                    inp.onchange=function(e){
+                        var file=e.target.files[0];
+                        if(!file)return;
+                        var reader=new FileReader();
+                        reader.onload=function(ev){
+                            f.customImage=ev.target.result;
+                            f.color='';
+                            State.save();
+                            UI.renderAll();
+                            UI.showToast('🖼️ Фото загружено');
+                        };
+                        reader.readAsDataURL(file);
+                    };
+                    inp.click();
+                }else if(choice.startsWith('#')){
+                    f.color=choice;
+                    f.customImage='';
+                    State.save();
+                    UI.renderAll();
+                    UI.showToast('🎨 Цвет обновлён');
+                }else{
+                    f.icon=choice;
+                    f.customImage='';
+                    State.save();
+                    UI.renderAll();
+                    UI.showToast('✅ Иконка обновлена');
+                }
+            },
             setTaskFilter(filter){State.setCurrentTaskFilter(filter);State.save();UI.renderTasks();},
             addClient(){const ni=document.getElementById('clientName'),pi=document.getElementById('clientPhone'),di=document.getElementById('clientDate');if(!ni||!pi||!di)return;const name=ni.value.trim(),phone=pi.value.trim(),date=di.value;if(!name||!date){UI.showToast('❌ Введите имя и дату');return;}State.addClient({id:Utils.generateId(),name,phone,date});ni.value='';pi.value='';di.value='';State.save();UI.renderAll();UI.showToast('👤 Добавлен');},
             editClient(cid){const c=State.getClientById(cid);if(!c)return;const name=prompt('ФИО:',c.name);if(!name)return;var currentPhone=c.phone||'';var phone=prompt('Телефон:',currentPhone);if(phone===null)return;phone=phone.trim();if(phone){var digits=phone.replace(/\D/g,'');if(digits.length===11&&digits.startsWith('8')){digits='7'+digits.slice(1);}if(digits.length>=1){phone='+7';if(digits.length>1)phone+=' ('+digits.slice(1,4);if(digits.length>=4)phone+=') '+digits.slice(4,7);if(digits.length>=7)phone+='-'+digits.slice(7,9);if(digits.length>=9)phone+='-'+digits.slice(9,11);}}const date=prompt('Дата:',c.date);if(!date)return;c.name=name.trim();c.phone=phone;c.date=date;State.save();UI.renderClients();UI.showToast('✅ Обновлено');},
