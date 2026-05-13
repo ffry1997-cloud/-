@@ -86,18 +86,27 @@
 
         .app-title {
             text-align: center;
-            font-size: 28px;
-            font-weight: 700;
-            padding: 16px 24px;
-            letter-spacing: 2px;
+            font-size: 26px;
+            font-weight: 300;
+            padding: 18px 28px;
+            letter-spacing: 4px;
             color: var(--accent);
-            text-shadow: 0 2px 4px rgba(126, 184, 201, 0.3);
             background: var(--card);
-            border-radius: 20px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+            border-radius: 50px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
             display: inline-block;
             margin: 0 auto;
-            
+            border: 1px solid var(--border);
+            position: relative;
+            text-transform: lowercase;
+        }
+        .app-title::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 54px;
+            border: 1px solid var(--accent-light);
+            pointer-events: none;
         }
 
         .bg-quote {
@@ -1064,7 +1073,7 @@
 </head>
 <body>
     <div class="app-container" id="appContainer">
-        <div class="app-title">Мои планы</div>
+        <div class="app-title">День за днём</div>
         <div class="bg-quote" id="bgQuote"></div>
         <div class="custom-quotes">
             <div class="custom-quote-box" id="customQuoteLeft" data-action="edit-custom-quote" data-side="left">💬 Своя цитата слева</div>
