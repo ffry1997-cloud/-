@@ -2191,9 +2191,17 @@
                 }
 
                 const rect = e.currentTarget.getBoundingClientRect();
+                let topPosition = rect.bottom + 4;
+                const leftPosition = Math.min(rect.left, window.innerWidth - 200);
+
+                // Если меню не помещается снизу — показываем над задачей
+                if (topPosition + 220 > window.innerHeight) {
+                    topPosition = rect.top - 220;
+                }
+
                 panel.style.position = 'fixed';
-                panel.style.top = (rect.bottom + 4) + 'px';
-                panel.style.left = Math.min(rect.left, window.innerWidth - 200) + 'px';
+                panel.style.top = topPosition + 'px';
+                panel.style.left = leftPosition + 'px';
 
                 overlay.style.display = 'block';
                 panel.style.display = 'block';
