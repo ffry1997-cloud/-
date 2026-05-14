@@ -160,11 +160,66 @@
         .star-btn { font-size: 18px; cursor: pointer; padding: 2px 4px; border: none; background: none; transition: transform 0.1s; color: #ddd; }
         .star-btn.active { color: var(--star-color); }
         .star-btn:hover { transform: scale(1.15); }
-        .days-badge { font-size: 11px; padding: 3px 10px; border-radius: 12px; white-space: nowrap; font-weight: 600; }
-        .days-badge.overdue { background: #fde8e8; color: var(--overdue); }
-        .days-badge.today { background: #fef3e2; color: var(--today-color); }
-        .days-badge.upcoming { background: #e8f8ef; color: var(--upcoming); }
-        .repeat-badge { font-size: 10px; padding: 3px 8px; border-radius: 10px; background: var(--accent-light); color: var(--accent); white-space: nowrap; font-weight: 500; }
+        /* === Бейджи (общие) === */
+        .days-badge, .repeat-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+            border: 1.5px solid var(--border);
+            background: rgba(255,255,255,var(--opacity-btn));
+            color: var(--text-secondary);
+        }
+        .days-badge.overdue {
+            background: rgba(212, 148, 154, 0.15);
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+        .days-badge.today {
+            background: rgba(200, 170, 110, 0.15);
+            border-color: var(--warning);
+            color: var(--today-color);
+        }
+        .days-badge.upcoming {
+            background: rgba(156, 191, 167, 0.15);
+            border-color: var(--success);
+            color: var(--upcoming);
+        }
+        .repeat-badge {
+            background: rgba(126, 184, 201, 0.15);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* === Тёмная тема (приглушённее, но контрастнее) === */
+        .dark .days-badge, .dark .repeat-badge {
+            background: rgba(255,255,255,0.08);
+            color: #ccc;
+            border-color: var(--border);
+        }
+        .dark .days-badge.overdue {
+            background: rgba(212, 148, 154, 0.2);
+            color: #e0a0a5;
+            border-color: var(--danger);
+        }
+        .dark .days-badge.today {
+            background: rgba(200, 170, 110, 0.2);
+            color: #d4b87a;
+            border-color: var(--warning);
+        }
+        .dark .days-badge.upcoming {
+            background: rgba(156, 191, 167, 0.2);
+            color: #a0c4a8;
+            border-color: var(--success);
+        }
+        .dark .repeat-badge {
+            background: rgba(126, 184, 201, 0.2);
+            color: #8cc4d4;
+            border-color: var(--accent);
+        }
+        
         .stat-badge { font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
         .stat-active { color: var(--accent) !important; background: var(--accent-light) !important; padding: 2px 8px; border-radius: 10px; }
         .stat-completed { color: var(--success) !important; background: var(--success-light) !important; padding: 2px 8px; border-radius: 10px; }
