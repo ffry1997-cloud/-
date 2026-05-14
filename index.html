@@ -1083,68 +1083,72 @@
             word-break: break-word;
         }
         .action-panel {
+            position: absolute;
+            background: rgba(255,255,255,var(--opacity-card));
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 16px;
+            padding: 8px;
+            z-index: 999;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+            animation: fadeIn 0.2s ease;
+            min-width: 180px;
+            border: 1px solid var(--border);
+        }
+        .action-overlay {
             position: fixed;
-            bottom: 0;
+            top: 0;
             left: 0;
             right: 0;
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 24px 24px 0 0;
-            padding: 20px 16px 30px;
-            z-index: 999;
-            box-shadow: 0 -4px 24px rgba(0,0,0,0.1);
-            animation: slideUp 0.3s ease;
-        }
-        @keyframes slideUp {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
+            bottom: 0;
+            z-index: 998;
         }
         .action-panel-title {
-            font-size: 14px;
+            font-size: 12px;
             color: var(--text-secondary);
-            margin-bottom: 16px;
+            padding: 8px 12px 4px;
             text-align: center;
             font-style: italic;
-            padding-right: 30px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
         }
         .action-panel-buttons {
             display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
+            flex-direction: column;
+            gap: 2px;
         }
         .action-panel-btn {
-            padding: 12px 20px;
-            border-radius: 16px;
+            padding: 10px 14px;
+            border-radius: 12px;
             border: none;
-            font-size: 14px;
+            font-size: 13px;
             cursor: pointer;
             font-family: var(--font);
-            font-weight: 600;
+            font-weight: 500;
             transition: all 0.2s;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
+            background: transparent;
+            color: var(--text);
+            text-align: left;
+            width: 100%;
         }
-        .action-panel-btn:active {
-            transform: scale(0.95);
+        .action-panel-btn:hover {
+            background: var(--bg);
         }
-        .action-panel-btn.edit { background: var(--accent-light); color: var(--accent); }
-        .action-panel-btn.copy { background: #e8f0fe; color: #1a73e8; }
-        .action-panel-btn.subtask { background: var(--success-light); color: var(--success); }
-        .action-panel-btn.tomorrow { background: var(--warning-light); color: var(--warning); }
-        .action-panel-btn.delete { background: var(--danger-light); color: var(--danger); }
+        .action-panel-btn.delete {
+            color: var(--danger);
+        }
+        .action-panel-btn.delete:hover {
+            background: var(--danger-light);
+        }
         .action-panel-close {
-            position: absolute;
-            top: 12px;
-            right: 16px;
-            background: none;
-            border: none;
-            font-size: 18px;
-            cursor: pointer;
-            color: var(--text-secondary);
-            padding: 8px;
+            display: none;
         }
         
 
@@ -1226,6 +1230,7 @@
                 <div id="taskList"></div>
                 <button class="btn-sm" id="btnBackToFolders">← Назад к папкам</button>
             </div>
+            <div class="action-overlay" id="actionOverlay" style="display:none;" onclick="App.doAction('close')"></div>
             <div class="action-panel" id="actionPanel" style="display:none;">
                 <div class="action-panel-title" id="actionPanelTitle"></div>
                 <div class="action-panel-buttons" id="actionPanelButtons"></div>
@@ -1777,34 +1782,44 @@
                 UI.showToast('📁 Папка не найдена: ' + folderName);
             },
             showActionPanel: function(e,taskId,folderId,taskText,isTrash){
-                    if(e.target.closest('.task-checkbox')||e.target.closest('.subtask-item')||e.target.closest('[data-action]')){
-                        return;
-                     }
-                    e.stopPropagation();
-                    var panel=document.getElementById('actionPanel');
-                    var title=document.getElementById('actionPanelTitle');
-                    var buttons=document.getElementById('actionPanelButtons');
+                if(e.target.closest('.task-checkbox')||e.target.closest('.subtask-item')||e.target.closest('[data-action]')){
+                    return;
+                }
+                e.stopPropagation();
     
-                    title.textContent=taskText;
+                var panel=document.getElementById('actionPanel');
+                var title=document.getElementById('actionPanelTitle');
+                var buttons=document.getElementById('actionPanelButtons');
+                var overlay=document.getElementById('actionOverlay');
     
-                    if(isTrash){
-                        buttons.innerHTML=
-                            '<button class="action-panel-btn edit" onclick="App.doAction(\'restore-task\',\''+taskId+'\')">↩️ Восстановить</button>'+
-                            '<button class="action-panel-btn delete" onclick="App.doAction(\'delete-forever\',\''+taskId+'\')">💥 Удалить навсегда</button>';
-                    }else{
-                        buttons.innerHTML=
-                            '<button class="action-panel-btn edit" onclick="App.doAction(\'edit-task\',\''+taskId+'\')">✏️ Изменить</button>'+
-                            '<button class="action-panel-btn copy" onclick="App.doAction(\'duplicate-task\',\''+taskId+'\')">📋 Копия</button>'+
-                            '<button class="action-panel-btn subtask" onclick="App.doAction(\'add-subtask\',\''+taskId+'\')">➕ Подзадача</button>'+
-                            '<button class="action-panel-btn tomorrow" onclick="App.doAction(\'move-to-tomorrow\',\''+taskId+'\')">📅 На завтра</button>'+
-                            '<button class="action-panel-btn delete" onclick="App.doAction(\'delete-task\',\''+taskId+'\')">✕ Удалить</button>';
+                title.textContent=taskText;
+    
+                if(isTrash){
+                    buttons.innerHTML=
+                        '<button class="action-panel-btn" onclick="App.doAction(\'restore-task\',\''+taskId+'\')">↩️ Восстановить</button>'+
+                        '<button class="action-panel-btn delete" onclick="App.doAction(\'delete-forever\',\''+taskId+'\')">💥 Удалить навсегда</button>';
+                }else{
+                    buttons.innerHTML=
+                        '<button class="action-panel-btn" onclick="App.doAction(\'edit-task\',\''+taskId+'\')">✏️ Изменить</button>'+
+                        '<button class="action-panel-btn" onclick="App.doAction(\'duplicate-task\',\''+taskId+'\')">📋 Копия</button>'+
+                        '<button class="action-panel-btn" onclick="App.doAction(\'add-subtask\',\''+taskId+'\')">➕ Подзадача</button>'+
+                        '<button class="action-panel-btn" onclick="App.doAction(\'move-to-tomorrow\',\''+taskId+'\')">📅 На завтра</button>'+
+                        '<button class="action-panel-btn delete" onclick="App.doAction(\'delete-task\',\''+taskId+'\')">✕ Удалить</button>';
                     }
     
-                    panel.style.display='block';
+                var rect=e.currentTarget.getBoundingClientRect();
+                panel.style.position='fixed';
+                panel.style.top=(rect.bottom+4)+'px';
+                panel.style.left=Math.min(rect.left,window.innerWidth-200)+'px';
+    
+                overlay.style.display='block';
+                panel.style.display='block';
+                    
             },
 
             doAction: function(action,taskId){
                 document.getElementById('actionPanel').style.display='none';
+                document.getElementById('actionOverlay').style.display='none';
                 handleAction(action,{taskId:taskId});
                 UI.renderAll();
              },
