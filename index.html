@@ -418,9 +418,19 @@
         .scroll-top-btn.visible { opacity: 1; pointer-events: auto; }
         .menu-wrapper { position: relative; }
         .menu-dropdown {
-            position: absolute; top: 50px; right: 0; background: var(--card); border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.15); z-index: 100; min-width: 180px;
-            padding: 6px; display: none; border: 1px solid var(--border);
+            position: absolute; top: 50px; right: 0;
+            background: rgba(255,255,255,var(--opacity-card));
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            z-index: 100; min-width: 190px;
+            padding: 8px; display: none;
+            border: 1px solid var(--border);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .dark .menu-dropdown {
+            background: rgba(46,44,41,var(--opacity-card));
+            border-color: var(--border);
         }
         .menu-dropdown.show { display: block; }
         .menu-item {
