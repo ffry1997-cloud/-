@@ -91,12 +91,14 @@
             font-weight: 400;
             letter-spacing: 0.3px;
             line-height: 1.5;
-            transition: all 0.3s ease;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
             min-height: 48px;
         }
         .custom-quote-box:hover {
-            border-color: var(--accent); background: var(--accent-light);
-            box-shadow: 0 4px 12px rgba(126,184,201,0.1);
+            transform: translateY(-2px);
+            border-color: var(--accent);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+            background: transparent;
         }
         #customQuoteLeft, #customQuoteCenter, #customQuoteRight { background: transparent; border: 1.5px solid var(--border); }
         #customQuoteLeft:hover, #customQuoteCenter:hover, #customQuoteRight:hover { background: transparent; border-color: var(--accent); }
