@@ -32,6 +32,9 @@
             --radius: 20px;
             --radius-sm: 14px;
             --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            --opacity-card: 0.75;
+            --opacity-tabs: 0.7;
+            --opacity-btn: 0.7;
             --star-color: #e8c560;
             --overdue: #d4949a;
             --today-color: #c9a96e;
@@ -207,13 +210,14 @@
 
         .tabs {
             display: flex;
-            background: var(--card);
+            background: rgba(255,255,255,var(--opacity-tabs));
             border-radius: 30px;
             padding: 5px;
             box-shadow: var(--shadow);
             gap: 2px;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
+            border: 1.5px solid var(--border);
         }
 
         .tab {
@@ -266,22 +270,16 @@
             -webkit-backdrop-filter: none;
         }
         .folder-card, .task-item, .client-card, .note-card, .card, .stats-card {
-            background: rgba(255,255,255,0.75);
+            background: rgba(255,255,255,var(--opacity-card));
         }
         .dark .folder-card, .dark .task-item, .dark .client-card, .dark .note-card, .dark .card, .dark .stats-card {
-            background: rgba(46,44,41,0.75);
+            background: rgba(46,44,41,var(--opacity-card));
         }
         .icon-btn {
-            background: rgba(255,255,255,0.7);
+            background: rgba(255,255,255,var(--opacity-btn));
         }
         .dark .icon-btn {
-            background: rgba(46,44,41,0.7);
-        }
-        .tabs {
-            background: rgba(255,255,255,0.7);
-        }
-        .dark .tabs {
-            background: rgba(46,44,41,0.7);
+            background: rgba(46,44,41,var(--opacity-btn));
         }
 
         .search-container {
@@ -1114,6 +1112,7 @@
                     <button class="menu-item" id="btnNewNoteMenu"><span class="menu-icon">💡</span> Новая заметка</button>
                     <button class="menu-item" id="btnThemeCustom"><span class="menu-icon">🎨</span> Оформление</button>
                     <button class="menu-item" id="btnThemeMenu"><span class="menu-icon">🌓</span> Тема</button>
+                    <button class="menu-item" id="btnOpacityMenu"><span class="menu-icon">🔲</span> Прозрачность</button>
                     <button class="menu-item" id="btnExportMenu"><span class="menu-icon">📤</span> Экспорт</button>
                     <button class="menu-item" id="btnImportMenu"><span class="menu-icon">📥</span> Импорт</button>
                 </div>
@@ -1742,6 +1741,17 @@
             document.getElementById('btnThemeCustom').addEventListener('click',Actions.changeTheme);
             document.getElementById('btnExportMenu').addEventListener('click',Actions.exportData);
             document.getElementById('btnImportMenu').addEventListener('click',Actions.importData);
+            document.getElementById('btnOpacityMenu').addEventListener('click',function(){
+                    var val=prompt('Прозрачность (0.1 - 1.0):',getComputedStyle(document.documentElement).getPropertyValue('--opacity-card').trim()||'0.75');
+                    if(!val)return;
+                    var num=parseFloat(val);
+                    if(isNaN(num)||num<0.1||num>1){UI.showToast('❌ Введите число от 0.1 до 1');return;}
+                    document.documentElement.style.setProperty('--opacity-card',num);
+                    document.documentElement.style.setProperty('--opacity-tabs',num);
+                    document.documentElement.style.setProperty('--opacity-btn',num);
+                    localStorage.setItem('opacity',num);
+                    UI.showToast('🔲 Прозрачность: '+num);
+            });
             document.getElementById('btnMenu').addEventListener('click',function(e){e.stopPropagation();document.getElementById('menuDropdown').classList.toggle('show');});
             document.addEventListener('click',function(e){if(!e.target.closest('.menu-wrapper')){document.getElementById('menuDropdown').classList.remove('show');}});
             document.getElementById('btnPrevMonth').addEventListener('click',function(){AppState.calendarMonth--;if(AppState.calendarMonth<0){AppState.calendarMonth=11;AppState.calendarYear--;}AppState.selectedDate=null;UI.renderCalendar(AppState.calendarYear,AppState.calendarMonth,null);});
@@ -1836,7 +1846,13 @@
                         document.body.style.backgroundImage='url('+savedBg+')';
                         document.body.classList.add('bg-image');
                         if(localStorage.getItem('theme')==='dark'){document.body.classList.add('dark');}
+                        }
                     }
+                var savedOpacity=localStorage.getItem('opacity');
+                if(savedOpacity){
+                    document.documentElement.style.setProperty('--opacity-card',savedOpacity);
+                    document.documentElement.style.setProperty('--opacity-tabs',savedOpacity);
+                    document.documentElement.style.setProperty('--opacity-btn',savedOpacity);
                 }
                 State.load();
                 Services.processRepeats();
