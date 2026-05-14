@@ -436,7 +436,7 @@
         .menu-wrapper { position: relative; }
         .menu-dropdown {
             position: absolute; top: 50px; right: 0;
-            background: rgba(255,255,255,var(--opacity-card));
+            background: rgba(255, 255, 255, 0.92);
             border-radius: 16px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.08);
             z-index: 100; min-width: 190px;
@@ -444,7 +444,7 @@
             border: 1px solid var(--border);
         }
         .dark .menu-dropdown {
-            background: rgba(46,44,41,var(--opacity-card));
+            background: rgba(35, 34, 32, 0.92);
             border-color: var(--border);
         }
         .menu-dropdown.show { display: block; }
@@ -472,12 +472,16 @@
            ПАНЕЛЬ ДЕЙСТВИЙ (ВСПЛЫВАЮЩЕЕ МЕНЮ)
            ======================================== */
         .action-panel {
-            position: absolute; background: rgba(255,255,255,var(--opacity-card));
+            position: absolute; background: rgba(255, 255, 255, 0.92);
             border-radius: 18px; padding: 10px; z-index: 999;
             box-shadow: 0 8px 28px rgba(0,0,0,0.12); animation: fadeIn 0.2s ease;
             min-width: 200px; border: 1px solid var(--border);
         }
-        .action-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 998; }
+        .dark .action-panel { background: rgba(35, 34, 32, 0.92); }
+        .action-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 998;
+            background: rgba(0, 0, 0, 0.2);
+        }
         .action-panel-title { display: none; }
         .action-panel-buttons { display: flex; flex-direction: column; gap: 2px; }
         .action-panel-btn {
