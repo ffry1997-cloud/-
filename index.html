@@ -106,13 +106,20 @@
            ======================================== */
         .header-actions { display: flex; justify-content: center; gap: 12px; padding: 4px 0 8px; flex-wrap: wrap; }
         .icon-btn {
-            width: 42px; height: 42px; border-radius: 50%; border: none;
-            background: rgba(255,255,255,var(--opacity-btn)); font-size: 19px; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow);
-            color: var(--text); transition: transform 0.15s, box-shadow 0.15s;
+            width: 42px; height: 42px; border-radius: 50%;
+            border: 1.5px solid var(--border);
+            background: rgba(255,255,255,var(--opacity-btn));
+            font-size: 18px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: none; color: var(--text-secondary);
+            transition: all 0.25s ease;
         }
         .dark .icon-btn { background: rgba(46,44,41,var(--opacity-btn)); }
-        .icon-btn:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+        .icon-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
         .icon-btn:active { transform: scale(0.94); }
         .icon-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
