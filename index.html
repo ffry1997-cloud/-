@@ -292,12 +292,7 @@
         .folder-grid .folder-info { display: flex; flex-direction: column; align-items: center; }
         .folder-grid .folder-stats { justify-content: center; }
         .folder-list { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
-        .view-toggle { display: flex; gap: 6px; margin-bottom: 8px; }
-        .view-toggle-btn {
-            padding: 6px 12px; border-radius: 16px; border: 1px solid var(--border);
-            background: var(--card); cursor: pointer; font-size: 14px; transition: all 0.2s;
-        }
-        .view-toggle-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+        .view-toggle { display: none; }
 
         /* ========================================
            ЗАДАЧИ И ПОДЗАДАЧИ
@@ -552,6 +547,7 @@
                     <button class="menu-item" id="btnOpacityMenu"><span class="menu-icon">🔲</span> Прозрачность</button>
                     <button class="menu-item" id="btnExportMenu"><span class="menu-icon">📤</span> Экспорт</button>
                     <button class="menu-item" id="btnImportMenu"><span class="menu-icon">📥</span> Импорт</button>
+                    <button class="menu-item" id="btnViewMenu"><span class="menu-icon">📋</span> Вид: Список</button>
                 </div>
             </div>
             <button class="icon-btn" id="btnNotify" aria-label="Уведомления">🔔</button>
@@ -2253,6 +2249,19 @@
             getEl('btnThemeCustom').addEventListener('click', Actions.changeTheme);
             getEl('btnExportMenu').addEventListener('click', Actions.exportData);
             getEl('btnImportMenu').addEventListener('click', Actions.importData);
+            getEl('btnViewMenu').addEventListener('click', function() {
+                const currentMode = State.getFolderViewMode();
+                const newMode = currentMode === 'list' ? 'grid' : 'list';
+                State.setFolderViewMode(newMode);
+                State.save();
+                UI.renderFolderList();
+                // Обновим текст кнопки
+                const btn = getEl('btnViewMenu');
+                const icon = newMode === 'list' ? '📋' : '🔲';
+                const label = newMode === 'list' ? 'Список' : 'Сетка';
+                btn.innerHTML = '<span class="menu-icon">' + icon + '</span> Вид: ' + label;
+                UI.showToast(newMode === 'list' ? '📋 Вид: Список' : '🔲 Вид: Сетка');
+            });
 
             getEl('actionPanelClose').addEventListener('click', function() {
                 getEl('actionPanel').style.display = 'none';
@@ -2445,8 +2454,16 @@
                 }
 
                 State.load();
+                // Обновим текст кнопки вида в меню
+                const currentMode = State.getFolderViewMode();
+                const viewIcon = currentMode === 'list' ? '📋' : '🔲';
+                const viewLabel = currentMode === 'list' ? 'Список' : 'Сетка';
+                const viewBtn = getEl('btnViewMenu');
+                if (viewBtn) viewBtn.innerHTML = '<span class="menu-icon">' + viewIcon + '</span> Вид: ' + viewLabel;
+                
                 Services.processRepeats();
                 setupEventListeners();
+                
                 UI.renderAll({ year: AppState.calendarYear, month: AppState.calendarMonth, selectedDate: AppState.selectedDate });
                 State.save();
             } catch (e) { console.error('Init error:', e); }
