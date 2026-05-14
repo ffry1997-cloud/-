@@ -251,35 +251,39 @@
             display: flex;
         }
 
+        /* === Базовые стили карточек === */
         .card {
             background: var(--card);
             border-radius: var(--radius);
             padding: 16px 18px;
-            box-shadow: var(--shadow);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
             display: flex;
             flex-direction: column;
             gap: 10px;
             border: 1px solid var(--border);
         }
-        .folder-card, .task-item, .client-card, .note-card, .card, .stats-card {
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
-        }
 
-        .folder-card, .task-item, .client-card, .note-card, .card, .stats-card, .icon-btn, .tabs, .custom-quote-box {
+        /* Общие стили для всех карточек и элементов */
+        .folder-card, .task-item, .client-card, .note-card, .stats-card,
+        .icon-btn, .tabs, .custom-quote-box {
             backdrop-filter: none;
             -webkit-backdrop-filter: none;
-        }
-        .folder-card, .task-item, .client-card, .note-card, .card, .stats-card {
-            background: rgba(255,255,255,var(--opacity-card));
-        }
-        .dark .folder-card, .dark .task-item, .dark .client-card, .dark .note-card, .dark .card, .dark .stats-card {
-            background: rgba(46,44,41,var(--opacity-card));
         }
         .icon-btn {
             background: rgba(255,255,255,var(--opacity-btn));
         }
         .dark .icon-btn {
             background: rgba(46,44,41,var(--opacity-btn));
+        }
+
+        .folder-card, .task-item, .client-card, .note-card, .stats-card {
+            background: rgba(255, 255, 255, var(--opacity-card));
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+        }
+
+        .dark .folder-card, .dark .task-item, .dark .client-card,
+        .dark .note-card, .dark .stats-card {
+            background: rgba(46, 44, 41, var(--opacity-card));
         }
 
         .search-container {
@@ -912,6 +916,7 @@
         .folder-card.smart-today { border-left: 4px solid var(--accent); background: var(--accent-light); }
         .folder-card.smart-overdue { border-left: 4px solid var(--overdue); background: #fef8f8; }
 
+        /* === Кнопка прокрутки вверх === */
         .scroll-top-btn {
             position: fixed;
             bottom: 70px;
@@ -930,8 +935,10 @@
             pointer-events: none;
             transition: opacity 0.3s;
         }
-        
-        .scroll-top-btn.visible { opacity: 1; pointer-events: auto; }
+        .scroll-top-btn.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
 
         .week-overview {
             display: flex;
