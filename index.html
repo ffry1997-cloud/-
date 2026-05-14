@@ -264,8 +264,14 @@
         .folder-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
         .folder-card:active { transform: scale(0.98); background: var(--bg); }
         .folder-card.drag-over { background: var(--accent-light); border: 2px dashed var(--accent); transform: scale(1.01); }
-        .folder-card.smart-today { border-left: 4px solid var(--warning) !important; background: var(--warning-light) !important; }
-        .folder-card.smart-overdue { border-left: 4px solid var(--danger) !important; background: var(--danger-light) !important; }
+        .folder-card.smart-today {
+            border-left: 4px solid var(--warning) !important;
+            background: rgba(200, 170, 110, 0.12) !important;
+        }
+        .folder-card.smart-overdue {
+            border-left: 4px solid var(--danger) !important;
+            background: rgba(212, 148, 154, 0.12) !important;
+        }
         .folder-icon-circle {
             width: 48px; height: 48px; border-radius: 50%; background: var(--accent-light);
             display: flex; align-items: center; justify-content: center; font-size: 24px;
@@ -351,23 +357,27 @@
            ======================================== */
         .search-container { margin-bottom: 4px; }
         .search-input {
-            width: 100%; padding: 12px 16px; border-radius: 26px; border: 2px solid var(--border);
-            font-size: 15px; font-family: var(--font); background: var(--card); color: var(--text);
-            outline: none; transition: border-color 0.2s;
+            width: 100%; padding: 12px 16px; border-radius: 26px; border: 1.5px solid var(--border);
+            font-size: 15px; font-family: var(--font); background: rgba(255,255,255,var(--opacity-card));
+            color: var(--text); outline: none; transition: border-color 0.2s;
         }
+        .dark .search-input { background: rgba(46,44,41,var(--opacity-card)); }
         .search-input:focus { border-color: var(--accent); }
         .search-stats { font-size: 11px; color: var(--text-secondary); text-align: center; margin-top: 6px; display: none; }
-        .input {
+       .input {
             flex: 1; min-width: 80px; padding: 12px 16px; border-radius: 24px;
-            border: 2px solid var(--border); font-size: 15px; font-family: var(--font);
-            background: var(--card); color: var(--text); outline: none; transition: border-color 0.2s;
+            border: 1.5px solid var(--border); font-size: 15px; font-family: var(--font);
+            background: rgba(255,255,255,var(--opacity-card)); color: var(--text);
+            outline: none; transition: border-color 0.2s;
         }
+        .dark .input { background: rgba(46,44,41,var(--opacity-card)); }
         .input:focus { border-color: var(--accent); }
         .input-time {
-            padding: 12px 14px; border-radius: 24px; border: 2px solid var(--border);
-            font-size: 14px; font-family: var(--font); background: var(--card); color: var(--text);
-            cursor: pointer; max-width: 100px; outline: none;
+            padding: 12px 14px; border-radius: 24px; border: 1.5px solid var(--border);
+            font-size: 14px; font-family: var(--font); background: rgba(255,255,255,var(--opacity-card));
+            color: var(--text); cursor: pointer; max-width: 100px; outline: none;
         }
+        .dark .input-time { background: rgba(46,44,41,var(--opacity-card)); }
         .input-time:focus { border-color: var(--accent); }
         .btn-sm {
             padding: 8px 16px; border-radius: 22px; border: none; font-size: 12px;
@@ -400,9 +410,11 @@
         .calendar-day.today.has-tasks::after { background: #fff; }
         .calendar-day.selected { background: var(--accent-light); outline: none; font-weight: 700; color: var(--accent); }
         .note-textarea {
-            width: 100%; border: none; background: transparent; font-family: var(--font);
+            width: 100%; border: 1.5px solid var(--border); border-radius: 14px; padding: 10px;
+            background: rgba(255,255,255,var(--opacity-card)); font-family: var(--font);
             font-size: 15px; resize: vertical; min-height: 50px; outline: none; color: var(--text);
         }
+        .dark .note-textarea { background: rgba(46,44,41,var(--opacity-card)); }
 
         /* ========================================
            TOAST, МЕНЮ, ПРОКРУТКА
@@ -486,7 +498,11 @@
            ФОНОВОЕ ИЗОБРАЖЕНИЕ
            ======================================== */
         body.bg-image { background-size: cover; background-position: center; background-attachment: fixed; position: relative; }
-        body.bg-image::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.15); z-index: 0; }
+        body.bg-image::before {
+            content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.15); z-index: 0;
+            backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+        }
         body.bg-image .app-container { position: relative; z-index: 1; }
         body.dark.bg-image::before { background: rgba(0,0,0,0.3); }
         body.no-transition * { transition: none !important; }
