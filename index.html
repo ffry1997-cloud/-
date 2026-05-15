@@ -119,7 +119,6 @@
         /* ========================================
            КНОПКИ ДЕЙСТВИЙ
            ======================================== */
-        .header-actions { display: flex; justify-content: center; gap: 12px; padding: 4px 0 8px; flex-wrap: wrap; }
         .icon-btn {
             width: 42px; height: 42px; border-radius: 50%;
             border: 1.5px solid var(--border);
@@ -556,31 +555,31 @@
 </head>
 <body>
     <div class="app-container" id="appContainer">
+        <!-- Кнопка-бургер в правом верхнем углу -->
+        <div class="menu-wrapper" style="position:absolute;top:12px;right:8px;z-index:50;">
+            <button class="icon-btn" id="btnMenu" aria-label="Меню">☰</button>
+            <div class="menu-dropdown" id="menuDropdown">
+                <button class="menu-item" id="btnSearchMenu"><span class="menu-icon">🔍</span> Поиск</button>
+                <button class="menu-item" id="btnWeekViewMenu"><span class="menu-icon">🗓️</span> Обзор недели</button>
+                <button class="menu-item" id="btnNotifyMenu"><span class="menu-icon">🔔</span> Уведомления</button>
+                <div style="height:1px;background:var(--border);margin:4px 0;"></div>
+                <button class="menu-item" id="btnNewFolderMenu"><span class="menu-icon">📁</span> Новая папка</button>
+                <button class="menu-item" id="btnNewNoteMenu"><span class="menu-icon">💡</span> Новая заметка</button>
+                <button class="menu-item" id="btnThemeCustom"><span class="menu-icon">🎨</span> Оформление</button>
+                <button class="menu-item" id="btnThemeMenu"><span class="menu-icon">🌓</span> Тема</button>
+                <button class="menu-item" id="btnOpacityMenu"><span class="menu-icon">🔲</span> Прозрачность</button>
+                <button class="menu-item" id="btnExportMenu"><span class="menu-icon">📤</span> Экспорт</button>
+                <button class="menu-item" id="btnImportMenu"><span class="menu-icon">📥</span> Импорт</button>
+                <button class="menu-item" id="btnViewMenu"><span class="menu-icon">📋</span> Вид: Список</button>
+            </div>
+        </div>
+
         <div class="app-title">День за днём</div>
         <div class="bg-quote" id="bgQuote"></div>
         <div class="custom-quotes">
             <div class="custom-quote-box" id="customQuoteLeft" data-action="edit-custom-quote" data-side="left">💬 Своя цитата слева</div>
             <div class="custom-quote-box" id="customQuoteCenter" data-action="edit-custom-quote" data-side="center">💬 Своя цитата центр</div>
             <div class="custom-quote-box" id="customQuoteRight" data-action="edit-custom-quote" data-side="right">💬 Своя цитата справа</div>
-        </div>
-        <div class="header-actions">
-            <div class="menu-wrapper">
-                <button class="icon-btn" id="btnMenu" aria-label="Меню">☰</button>
-                <div class="menu-dropdown" id="menuDropdown">
-                    <button class="menu-item" id="btnSearchMenu"><span class="menu-icon">🔍</span> Поиск</button>
-                    <button class="menu-item" id="btnWeekViewMenu"><span class="menu-icon">🗓️</span> Обзор недели</button>
-                    <button class="menu-item" id="btnNotifyMenu"><span class="menu-icon">🔔</span> Уведомления</button>
-                    <div style="height:1px;background:var(--border);margin:4px 0;"></div>
-                    <button class="menu-item" id="btnNewFolderMenu"><span class="menu-icon">📁</span> Новая папка</button>
-                    <button class="menu-item" id="btnNewNoteMenu"><span class="menu-icon">💡</span> Новая заметка</button>
-                    <button class="menu-item" id="btnThemeCustom"><span class="menu-icon">🎨</span> Оформление</button>
-                    <button class="menu-item" id="btnThemeMenu"><span class="menu-icon">🌓</span> Тема</button>
-                    <button class="menu-item" id="btnOpacityMenu"><span class="menu-icon">🔲</span> Прозрачность</button>
-                    <button class="menu-item" id="btnExportMenu"><span class="menu-icon">📤</span> Экспорт</button>
-                    <button class="menu-item" id="btnImportMenu"><span class="menu-icon">📥</span> Импорт</button>
-                    <button class="menu-item" id="btnViewMenu"><span class="menu-icon">📋</span> Вид: Список</button>
-                </div>
-            </div>
         </div>
         <div class="tabs" id="mainTabs">
             <div class="tab active" data-tab="tasks">📂 Папки</div>
