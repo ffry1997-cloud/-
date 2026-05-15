@@ -1407,7 +1407,7 @@
                 let h = '<ul class="subtask-list">';
                 task.subtasks.forEach(st => {
                     if (!st) return;
-                    h += '<li class="subtask-item ' + (st.completed ? 'completed' : '') + '" oncontextmenu="event.stopPropagation();event.preventDefault();App.showSubtaskPanel(event,\'' + task.id + '\',\'' + st.id + '\');return false;" ontouchstart="event.stopPropagation();App._subtaskTouchStart(event,\'' + task.id + '\',\'' + st.id + '\')" ontouchend="App._subtaskTouchEnd(event)">' +
+                    h += '<li class="subtask-item ' + (st.completed ? 'completed' : '') + '" ondblclick="event.stopPropagation();App.showSubtaskPanel(event,\'' + task.id + '\',\'' + st.id + '\')" oncontextmenu="event.stopPropagation();event.preventDefault();App.showSubtaskPanel(event,\'' + task.id + '\',\'' + st.id + '\');return false;">' +
                         '<div class="subtask-checkbox" data-action="' + A.TOGGLE_SUBTASK +
                         '" data-task-id="' + task.id + '" data-subtask-id="' + st.id + '">' + (st.completed ? '✓' : '') + '</div>' +
                         '<span class="subtask-text">' + Utils.escapeHtml(st.text) + '</span>' +
@@ -2201,7 +2201,6 @@
                 if (e.target.closest('.task-checkbox') || e.target.closest('.subtask-item') || e.target.closest('[data-action]')) {
                     return;
                 }
-                if (window.App.__stActive) return;
                 e.stopPropagation();
                 e.preventDefault();
         
@@ -2391,17 +2390,6 @@
                 } else if (action === 'delete') {
                     Actions.deleteSubtask(taskId, subtaskId);
                 }
-            },
-            _subtaskTouchStart: function(e, taskId, subtaskId) {
-                this.__stActive = true;
-                this.__stTimer = setTimeout(() => {
-                    this.__stActive = false;
-                    this.showSubtaskPanel(e, taskId, subtaskId);
-                }, 500);
-            },
-            _subtaskTouchEnd: function(e) {
-                clearTimeout(this.__stTimer);
-                setTimeout(() => { this.__stActive = false; }, 100);
             }
         };
        
