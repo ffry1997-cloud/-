@@ -555,7 +555,7 @@
 </head>
 <body>
         <!-- Кнопка-бургер (fixed — на телефоне и компе одинаково) -->
-        <div class="menu-wrapper" style="position:fixed;top:12px;right:16px;z-index:150;>
+        <div class="menu-wrapper" style="position:fixed;top:12px;right:16px;z-index:150;">
             <button class="icon-btn" id="btnMenu" aria-label="Меню">☰</button>
             <div class="menu-dropdown" id="menuDropdown">
                 <button class="menu-item" id="btnSearchMenu"><span class="menu-icon">🔍</span> Поиск</button>
@@ -1409,11 +1409,7 @@
                         '<div class="subtask-checkbox" data-action="' + A.TOGGLE_SUBTASK +
                         '" data-task-id="' + task.id + '" data-subtask-id="' + st.id + '">' + (st.completed ? '✓' : '') + '</div>' +
                         '<span class="subtask-text">' + Utils.escapeHtml(st.text) + '</span>' +
-                        '<div class="subtask-actions">' +
-                        '<button class="btn-xs" data-action="' + A.EDIT_SUBTASK +
-                        '" data-task-id="' + task.id + '" data-subtask-id="' + st.id + '">✏️</button>' +
-                        '<button class="btn-xs" data-action="' + A.DELETE_SUBTASK +
-                        '" data-task-id="' + task.id + '" data-subtask-id="' + st.id + '">✕</button></div></li>';
+                        '<div class="subtask-actions" onclick="event.stopPropagation();App.showSubtaskPanel(event,\'' + task.id + '\',\'' + st.id + '\')" style="cursor:pointer;padding:2px 6px;border-radius:8px;font-size:12px;color:var(--text-secondary);">⚙️</div></li>';
                 });
                 return h + '</ul>';
             }
@@ -2351,6 +2347,45 @@
                     Actions.emailClient(clientId);
                 } else if (action === 'delete') {
                     Actions.deleteClient(clientId);
+                }
+            },
+            /** Показать панель для подзадачи */
+            showSubtaskPanel: function(e, taskId, subtaskId) {
+                e.stopPropagation();
+                e.preventDefault();
+                
+                const panel = getEl('actionPanel');
+                const title = getEl('actionPanelTitle');
+                const buttons = getEl('actionPanelButtons');
+                const overlay = getEl('actionOverlay');
+                
+                title.textContent = 'Подзадача';
+                
+                buttons.innerHTML =
+                    '<button class="action-panel-btn" onclick="App.doSubtaskAction(\'edit\',\'' + taskId + '\',\'' + subtaskId + '\')">✏️ Изменить</button>' +
+                    '<button class="action-panel-btn delete" onclick="App.doSubtaskAction(\'delete\',\'' + taskId + '\',\'' + subtaskId + '\')">✕ Удалить</button>';
+                
+                const rect = e.currentTarget.getBoundingClientRect();
+                let topPosition = rect.top - 110;
+                if (topPosition < 10) topPosition = rect.bottom + 4;
+                const leftPosition = Math.min(rect.left, window.innerWidth - 180);
+                
+                panel.style.position = 'fixed';
+                panel.style.top = topPosition + 'px';
+                panel.style.left = leftPosition + 'px';
+                
+                overlay.style.display = 'block';
+                panel.style.display = 'block';
+            },
+            /** Выполнить действие над подзадачей */
+            doSubtaskAction: function(action, taskId, subtaskId) {
+                getEl('actionPanel').style.display = 'none';
+                getEl('actionOverlay').style.display = 'none';
+                
+                if (action === 'edit') {
+                    Actions.editSubtask(taskId, subtaskId);
+                } else if (action === 'delete') {
+                    Actions.deleteSubtask(taskId, subtaskId);
                 }
             }
         };
