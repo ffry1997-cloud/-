@@ -1407,7 +1407,7 @@
                 let h = '<ul class="subtask-list">';
                 task.subtasks.forEach(st => {
                     if (!st) return;
-                    h += '<li class="subtask-item ' + (st.completed ? 'completed' : '') + '" oncontextmenu="event.stopPropagation();event.preventDefault();App.showSubtaskPanel(event,\'' + task.id + '\',\'' + st.id + '\');return false;" ontouchstart="event.stopPropagation();App._subtaskTouchStart(event,\'' + task.id + '\',\'' + st.id + '\')" ontouchend="App._subtaskTouchEnd(event)">' +
+                    h += '<li class="subtask-item ' + (st.completed ? 'completed' : '') + '" onclick="if(\'ontouchstart\' in window)return;event.stopPropagation();App.showSubtaskPanel(event,\'' + task.id + '\',\'' + st.id + '\')" oncontextmenu="event.stopPropagation();event.preventDefault();App.showSubtaskPanel(event,\'' + task.id + '\',\'' + st.id + '\');return false;" ontouchstart="event.stopPropagation();App._subtaskTouchStart(event,\'' + task.id + '\',\'' + st.id + '\')" ontouchend="App._subtaskTouchEnd(event)">' +
                         '<div class="subtask-checkbox" data-action="' + A.TOGGLE_SUBTASK +
                         '" data-task-id="' + task.id + '" data-subtask-id="' + st.id + '">' + (st.completed ? '✓' : '') + '</div>' +
                         '<span class="subtask-text">' + Utils.escapeHtml(st.text) + '</span>' +
@@ -2393,8 +2393,6 @@
                 }
             },
             _subtaskTouchStart: function(e, taskId, subtaskId) {
-                e.preventDefault();
-                e.stopPropagation();
                 this.__stActive = true;
                 this.__stTimer = setTimeout(() => {
                     this.__stActive = false;
