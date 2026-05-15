@@ -486,7 +486,7 @@
            ПАНЕЛЬ ДЕЙСТВИЙ (ВСПЛЫВАЮЩЕЕ МЕНЮ)
            ======================================== */
         .action-panel {
-            position: absolute; background: rgba(255, 255, 255, 0.92);
+            position: fixed; background: rgba(255, 255, 255, 0.92);
             border-radius: 18px; padding: 10px; z-index: 999;
             box-shadow: 0 8px 28px rgba(0,0,0,0.12); animation: fadeIn 0.2s ease;
             min-width: 200px; border: 1px solid var(--border);
@@ -624,12 +624,6 @@
                 <div id="taskList"></div>
                 <button class="btn-sm" id="btnBackToFolders">← Назад к папкам</button>
             </div>
-            <div class="action-overlay" id="actionOverlay" style="display:none;" onclick="App.doAction('close')"></div>
-            <div class="action-panel" id="actionPanel" style="display:none;">
-                <div class="action-panel-title" id="actionPanelTitle"></div>
-                <div class="action-panel-buttons" id="actionPanelButtons"></div>
-                <button class="action-panel-close" id="actionPanelClose">✕</button>
-            </div>
         </div>
         <div class="section" id="section-calendar">
             <div class="card">
@@ -673,7 +667,14 @@
             <button class="btn-sm btn-add" id="btnAddNote">+ Добавить заметку</button>
             <div id="notesList"></div>
         </div>
-    </div>
+        <!-- ПАНЕЛЬ ДЕЙСТВИЙ (вне секций) -->
+        <div class="action-overlay" id="actionOverlay" style="display:none;" onclick="App._closePanel()"></div>
+        <div class="action-panel" id="actionPanel" style="display:none;">
+            <div class="action-panel-title" id="actionPanelTitle"></div>
+            <div class="action-panel-buttons" id="actionPanelButtons"></div>
+            <button class="action-panel-close" id="actionPanelClose">✕</button>
+        </div>
+    </div> <!-- конец app-container -->
     <div class="toast" id="toast"></div>
     <button class="scroll-top-btn" id="scrollTopBtn" title="Наверх">⬆</button>
 
