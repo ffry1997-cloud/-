@@ -564,11 +564,13 @@
             <div class="custom-quote-box" id="customQuoteRight" data-action="edit-custom-quote" data-side="right">💬 Своя цитата справа</div>
         </div>
         <div class="header-actions">
-            <button class="icon-btn" id="btnSearch" aria-label="Поиск">🔍</button>
-            <button class="icon-btn" id="btnWeekView" aria-label="Обзор недели">🗓️</button>
             <div class="menu-wrapper">
-                <button class="icon-btn" id="btnMenu" aria-label="Меню">⚙️</button>
+                <button class="icon-btn" id="btnMenu" aria-label="Меню">☰</button>
                 <div class="menu-dropdown" id="menuDropdown">
+                    <button class="menu-item" id="btnSearchMenu"><span class="menu-icon">🔍</span> Поиск</button>
+                    <button class="menu-item" id="btnWeekViewMenu"><span class="menu-icon">🗓️</span> Обзор недели</button>
+                    <button class="menu-item" id="btnNotifyMenu"><span class="menu-icon">🔔</span> Уведомления</button>
+                    <div style="height:1px;background:var(--border);margin:4px 0;"></div>
                     <button class="menu-item" id="btnNewFolderMenu"><span class="menu-icon">📁</span> Новая папка</button>
                     <button class="menu-item" id="btnNewNoteMenu"><span class="menu-icon">💡</span> Новая заметка</button>
                     <button class="menu-item" id="btnThemeCustom"><span class="menu-icon">🎨</span> Оформление</button>
@@ -579,7 +581,6 @@
                     <button class="menu-item" id="btnViewMenu"><span class="menu-icon">📋</span> Вид: Список</button>
                 </div>
             </div>
-            <button class="icon-btn" id="btnNotify" aria-label="Уведомления">🔔</button>
         </div>
         <div class="tabs" id="mainTabs">
             <div class="tab active" data-tab="tasks">📂 Папки</div>
@@ -2376,9 +2377,18 @@
             getEl('btnEditFolder').addEventListener('click', Actions.editFolder);
             getEl('btnAddClient').addEventListener('click', Actions.addClient);
             getEl('btnAddNote').addEventListener('click', Actions.addNote);
-            getEl('btnSearch').addEventListener('click', Actions.toggleSearch);
-            getEl('btnNotify').addEventListener('click', Actions.requestNotification);
-            getEl('btnWeekView').addEventListener('click', Actions.toggleWeekView);
+            getEl('btnSearchMenu').addEventListener('click', function() {
+                getEl('menuDropdown').classList.remove('show');
+                Actions.toggleSearch();
+            });
+            getEl('btnWeekViewMenu').addEventListener('click', function() {
+                getEl('menuDropdown').classList.remove('show');
+                Actions.toggleWeekView();
+            });
+            getEl('btnNotifyMenu').addEventListener('click', function() {
+                getEl('menuDropdown').classList.remove('show');
+                Actions.requestNotification();
+            });
             getEl('btnBackToFolders').addEventListener('click', Actions.goBackToFolders);
             getEl('btnNewFolderMenu').addEventListener('click', Actions.addFolder);
             getEl('btnNewNoteMenu').addEventListener('click', function() {
