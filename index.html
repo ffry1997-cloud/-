@@ -113,7 +113,7 @@
         .icon-btn {
             width: 42px; height: 42px; border-radius: 50%;
             border: 1.5px solid var(--border);
-            background: rgba(255,255,255,var(--opacity-btn));
+            background: rgba(46,44,41,var(--opacity-btn));
             font-size: 18px; cursor: pointer;
             display: flex; align-items: center; justify-content: center;
             box-shadow: none; color: var(--text-secondary);
@@ -131,7 +131,7 @@
            ТАБЫ (ВКЛАДКИ)
            ======================================== */
         .tabs {
-            display: flex; background: rgba(255,255,255,var(--opacity-tabs)); border-radius: 30px;
+            display: flex; background: rgba(46,44,41,var(--opacity-tabs)); border-radius: 30px;
             padding: 5px; box-shadow: none; gap: 2px; overflow-x: auto;
             -webkit-overflow-scrolling: touch; border: 1.5px solid var(--border);
         }
@@ -153,23 +153,23 @@
         .section-header { display: flex; align-items: center; gap: 10px; padding: 8px 4px 4px; font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.6px; }
         .section-header::after { content: ''; flex: 1; height: 1px; background: var(--border); }
         .card {
-            background: rgba(255,255,255,var(--opacity-card)); border-radius: var(--radius);
+            background: rgba(46,44,41,var(--opacity-card)); border-radius: var(--radius);
             padding: 16px 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex;
             flex-direction: column; gap: 10px; border: 1px solid var(--border);
         }
         .stats-card {
-            background: rgba(255,255,255,var(--opacity-card)); border-radius: var(--radius);
+            background: rgba(46,44,41,var(--opacity-card)); border-radius: var(--radius);
             padding: 18px 20px; box-shadow: var(--shadow); border: 1px solid var(--border);
         }
         .client-card {
-            background: rgba(255,255,255,var(--opacity-card)); border-radius: var(--radius);
+            background: rgba(46,44,41,var(--opacity-card)); border-radius: var(--radius);
             padding: 14px; margin-bottom: 8px; border: 1px solid var(--border);
             word-wrap: break-word; overflow-wrap: break-word; line-height: 1.5;
         }
         .client-card > div { flex-wrap: wrap; gap: 8px; }
         .client-card span { display: block; margin-top: 2px; }
         .note-card {
-            background: rgba(255,255,255,var(--opacity-card)); border-left: 4px solid #f0c8a0;
+            background: rgba(46,44,41,var(--opacity-card)); border-left: 4px solid #f0c8a0;
             border-radius: var(--radius); padding: 14px; border: 1px solid var(--border);
         }
 
@@ -194,7 +194,7 @@
             font-weight: 600;
             white-space: nowrap;
             border: 1.5px solid var(--border);
-            background: rgba(255,255,255,var(--opacity-btn));
+            background: rgba(46,44,41,var(--opacity-btn));
             color: var(--text-secondary);
         }
         .days-badge.overdue {
@@ -226,7 +226,7 @@
            ПАПКИ
            ======================================== */
         .folder-card {
-            background: rgba(255,255,255,var(--opacity-card)); border-radius: var(--radius);
+            background: rgba(46,44,41,var(--opacity-card)); border-radius: var(--radius);
             padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer;
             transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
             box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 8px;
@@ -274,7 +274,7 @@
            ======================================== */
         .task-item {
             display: flex; align-items: flex-start !important; gap: 10px; padding: 12px 14px;
-            background: rgba(255,255,255,var(--opacity-card)); border-radius: var(--radius);
+            background: rgba(46,44,41,var(--opacity-card)); border-radius: var(--radius);
             font-size: 15px; margin: 4px 0; border: 1px solid var(--border);
             flex-wrap: wrap; transition: opacity 0.2s, transform 0.2s;
         }
@@ -327,7 +327,7 @@
         .search-container { margin-bottom: 4px; }
         .search-input {
             width: 100%; padding: 12px 16px; border-radius: 26px; border: 1.5px solid var(--border);
-            font-size: 15px; font-family: var(--font); background: rgba(255,255,255,var(--opacity-card));
+            font-size: 15px; font-family: var(--font); background: rgba(46,44,41,var(--opacity-card));
             color: var(--text); outline: none; transition: border-color 0.2s;
         }
         .search-input:focus { border-color: var(--accent); }
@@ -335,13 +335,13 @@
        .input {
             flex: 1; min-width: 80px; padding: 12px 16px; border-radius: 24px;
             border: 1.5px solid var(--border); font-size: 15px; font-family: var(--font);
-            background: rgba(255,255,255,var(--opacity-card)); color: var(--text);
+            background: rgba(46,44,41,var(--opacity-card)); color: var(--text);
             outline: none; transition: border-color 0.2s;
         }
         .input:focus { border-color: var(--accent); }
         .input-time {
             padding: 12px 14px; border-radius: 24px; border: 1.5px solid var(--border);
-            font-size: 14px; font-family: var(--font); background: rgba(255,255,255,var(--opacity-card));
+            font-size: 14px; font-family: var(--font); background: rgba(46,44,41,var(--opacity-card));
             color: var(--text); cursor: pointer; max-width: 100px; outline: none;
         }
         .input-time:focus { border-color: var(--accent); }
@@ -377,7 +377,7 @@
         .calendar-day.selected { background: var(--accent-light); outline: none; font-weight: 700; color: var(--accent); }
         .note-textarea {
             width: 100%; border: 1.5px solid var(--border); border-radius: 14px; padding: 10px;
-            background: rgba(255,255,255,var(--opacity-card)); font-family: var(--font);
+            background: rgba(46,44,41,var(--opacity-card)); font-family: var(--font);
             font-size: 15px; resize: vertical; min-height: 50px; outline: none; color: var(--text);
         }
 
@@ -401,7 +401,7 @@
         .menu-wrapper { position: relative; }
         .menu-dropdown {
             position: absolute; top: 50px; right: 0;
-            background: rgba(255, 255, 255, 0.92);
+            background: rgba(35, 34, 32, 0.92);
             border-radius: 16px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.08);
             z-index: 100; min-width: 190px;
@@ -433,7 +433,7 @@
            ПАНЕЛЬ ДЕЙСТВИЙ (ВСПЛЫВАЮЩЕЕ МЕНЮ)
            ======================================== */
         .action-panel {
-            position: absolute; background: rgba(255, 255, 255, 0.92);
+            position: absolute; background: rgba(35, 34, 32, 0.92);
             border-radius: 18px; padding: 10px; z-index: 999;
             box-shadow: 0 8px 28px rgba(0,0,0,0.12); animation: fadeIn 0.2s ease;
             min-width: 200px; border: 1px solid var(--border);
@@ -461,7 +461,7 @@
         body.bg-image { background-size: cover; background-position: center; background-attachment: fixed; position: relative; }
         body.bg-image::before {
             content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.15); z-index: 0;
+            background: rgba(0,0,0,0.3);; z-index: 0;
         }
         body.bg-image .app-container { position: relative; z-index: 1; }
         body.no-transition * { transition: none !important; }
