@@ -2301,6 +2301,7 @@
             /** Показать панель управления клиентом */
             showClientPanel: function(e, clientId, clientName) {
                 e.stopPropagation();
+                e.preventDefault();
                 
                 const panel = getEl('actionPanel');
                 const title = getEl('actionPanelTitle');
@@ -2314,12 +2315,14 @@
                     '<button class="action-panel-btn" onclick="App.doClientAction(\'email\',\'' + clientId + '\')">📧 Отправить</button>' +
                     '<button class="action-panel-btn delete" onclick="App.doClientAction(\'delete\',\'' + clientId + '\')">✕ Удалить</button>';
 
-                const rect = e.currentTarget.getBoundingClientRect();
+                const card = e.target.closest('.client-card');
+                const rect = card ? card.getBoundingClientRect() : e.currentTarget.getBoundingClientRect();
+                
                 let topPosition = rect.bottom + 4;
-                const leftPosition = Math.min(rect.left, window.innerWidth - 200);
+                let leftPosition = Math.min(rect.left, window.innerWidth - 220);
 
-                if (topPosition + 160 > window.innerHeight) {
-                    topPosition = rect.top - 160;
+                if (topPosition + 180 > window.innerHeight) {
+                    topPosition = rect.top - 180;
                 }
 
                 panel.style.position = 'fixed';
