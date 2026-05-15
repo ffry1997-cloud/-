@@ -20,15 +20,6 @@
            ПЕРЕМЕННЫЕ И БАЗОВЫЕ СТИЛИ
            ======================================== */
         :root {
-            --bg: #f5f2ee; --card: #ffffff; --text: #2d2a26; --text-secondary: #6b6560;
-            --accent: #5c3d2e; --accent-light: rgba(92, 61, 46, 0.12); --danger: #d4949a; --danger-light: #faf0f1;
-            --success: #9cbfa7; --success-light: #eef5f0; --warning: #e8d5a3; --warning-light: #fdf9f0;
-            --border: #e8e4dd; --shadow: 0 2px 12px rgba(0,0,0,0.04); --radius: 20px; --radius-sm: 14px;
-            --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            --opacity-card: 0.75; --opacity-tabs: 0.7; --opacity-btn: 0.7;
-            --star-color: #e8c560; --overdue: #d4949a; --today-color: #c9a96e; --upcoming: #9cbfa7;
-        }
-        .dark {
             --bg: #232220; --card: #2e2c29; --text: #e8e4dd; --text-secondary: #9e9890;
             --accent: #6b4c3b; --accent-light: rgba(107, 76, 59, 0.3); --danger: #c9888e; --danger-light: #3a2f30;
             --success: #8aad95; --success-light: #2d332f; --warning: #c9b888; --warning-light: #33302a;
@@ -128,7 +119,6 @@
             box-shadow: none; color: var(--text-secondary);
             transition: all 0.25s ease;
         }
-        .dark .icon-btn { background: rgba(46,44,41,var(--opacity-btn)); }
         .icon-btn:hover {
             border-color: var(--accent);
             color: var(--accent);
@@ -145,7 +135,6 @@
             padding: 5px; box-shadow: none; gap: 2px; overflow-x: auto;
             -webkit-overflow-scrolling: touch; border: 1.5px solid var(--border);
         }
-        .dark .tabs { background: rgba(46,44,41,var(--opacity-tabs)); }
         .tab {
             flex: 1; text-align: center; padding: 12px 10px; border-radius: 26px; font-size: 13px;
             font-weight: 600; cursor: pointer; color: var(--text-secondary); white-space: nowrap;
@@ -168,25 +157,21 @@
             padding: 16px 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex;
             flex-direction: column; gap: 10px; border: 1px solid var(--border);
         }
-        .dark .card { background: rgba(46,44,41,var(--opacity-card)); }
         .stats-card {
             background: rgba(255,255,255,var(--opacity-card)); border-radius: var(--radius);
             padding: 18px 20px; box-shadow: var(--shadow); border: 1px solid var(--border);
         }
-        .dark .stats-card { background: rgba(46,44,41,var(--opacity-card)); }
         .client-card {
             background: rgba(255,255,255,var(--opacity-card)); border-radius: var(--radius);
             padding: 14px; margin-bottom: 8px; border: 1px solid var(--border);
             word-wrap: break-word; overflow-wrap: break-word; line-height: 1.5;
         }
-        .dark .client-card { background: rgba(46,44,41,var(--opacity-card)); }
         .client-card > div { flex-wrap: wrap; gap: 8px; }
         .client-card span { display: block; margin-top: 2px; }
         .note-card {
             background: rgba(255,255,255,var(--opacity-card)); border-left: 4px solid #f0c8a0;
             border-radius: var(--radius); padding: 14px; border: 1px solid var(--border);
         }
-        .dark .note-card { background: rgba(46,44,41,var(--opacity-card)); }
 
         /* Статистика */
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; text-align: center; }
@@ -232,33 +217,6 @@
             border-color: var(--accent);
             color: var(--accent);
         }
-
-        /* === Тёмная тема (приглушённее, но контрастнее) === */
-        .dark .days-badge, .dark .repeat-badge {
-            background: rgba(255,255,255,0.08);
-            color: #ccc;
-            border-color: var(--border);
-        }
-        .dark .days-badge.overdue {
-            background: rgba(212, 148, 154, 0.2);
-            color: #e0a0a5;
-            border-color: var(--danger);
-        }
-        .dark .days-badge.today {
-            background: rgba(200, 170, 110, 0.2);
-            color: #d4b87a;
-            border-color: var(--warning);
-        }
-        .dark .days-badge.upcoming {
-            background: rgba(156, 191, 167, 0.2);
-            color: #a0c4a8;
-            border-color: var(--success);
-        }
-        .dark .repeat-badge {
-            background: rgba(126, 184, 201, 0.2);
-            color: #8cc4d4;
-            border-color: var(--accent);
-        }
         
         .stat-badge { font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
         .stat-active { color: var(--accent) !important; background: var(--accent-light) !important; padding: 2px 8px; border-radius: 10px; }
@@ -273,7 +231,6 @@
             transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
             box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 8px;
         }
-        .dark .folder-card { background: rgba(46,44,41,var(--opacity-card)); }
         .folder-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
         .folder-card:active { transform: scale(0.98); background: var(--bg); }
         .folder-card.drag-over { background: var(--accent-light); border: 2px dashed var(--accent); transform: scale(1.01); }
@@ -321,7 +278,6 @@
             font-size: 15px; margin: 4px 0; border: 1px solid var(--border);
             flex-wrap: wrap; transition: opacity 0.2s, transform 0.2s;
         }
-        .dark .task-item { background: rgba(46,44,41,var(--opacity-card)); }
         .task-item.completed { opacity: 0.45; background: var(--bg); }
         .task-item.completed { background: var(--success-light) !important; transition: all 0.3s; }
         .task-item.completed .task-text { text-decoration: line-through; }
@@ -374,7 +330,6 @@
             font-size: 15px; font-family: var(--font); background: rgba(255,255,255,var(--opacity-card));
             color: var(--text); outline: none; transition: border-color 0.2s;
         }
-        .dark .search-input { background: rgba(46,44,41,var(--opacity-card)); }
         .search-input:focus { border-color: var(--accent); }
         .search-stats { font-size: 11px; color: var(--text-secondary); text-align: center; margin-top: 6px; display: none; }
        .input {
@@ -383,14 +338,12 @@
             background: rgba(255,255,255,var(--opacity-card)); color: var(--text);
             outline: none; transition: border-color 0.2s;
         }
-        .dark .input { background: rgba(46,44,41,var(--opacity-card)); }
         .input:focus { border-color: var(--accent); }
         .input-time {
             padding: 12px 14px; border-radius: 24px; border: 1.5px solid var(--border);
             font-size: 14px; font-family: var(--font); background: rgba(255,255,255,var(--opacity-card));
             color: var(--text); cursor: pointer; max-width: 100px; outline: none;
         }
-        .dark .input-time { background: rgba(46,44,41,var(--opacity-card)); }
         .input-time:focus { border-color: var(--accent); }
         .btn-sm {
             padding: 8px 16px; border-radius: 22px; border: none; font-size: 12px;
@@ -427,7 +380,6 @@
             background: rgba(255,255,255,var(--opacity-card)); font-family: var(--font);
             font-size: 15px; resize: vertical; min-height: 50px; outline: none; color: var(--text);
         }
-        .dark .note-textarea { background: rgba(46,44,41,var(--opacity-card)); }
 
         /* ========================================
            TOAST, МЕНЮ, ПРОКРУТКА
@@ -455,10 +407,6 @@
             z-index: 100; min-width: 190px;
             padding: 8px; display: none;
             border: 1px solid var(--border);
-        }
-        .dark .menu-dropdown {
-            background: rgba(35, 34, 32, 0.92);
-            border-color: var(--border);
         }
         .menu-dropdown.show { display: block; }
         .menu-item {
@@ -490,7 +438,6 @@
             box-shadow: 0 8px 28px rgba(0,0,0,0.12); animation: fadeIn 0.2s ease;
             min-width: 200px; border: 1px solid var(--border);
         }
-        .dark .action-panel { background: rgba(35, 34, 32, 0.92); }
         .action-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 998;
             background: rgba(0, 0, 0, 0.2);
@@ -517,7 +464,6 @@
             background: rgba(255,255,255,0.15); z-index: 0;
         }
         body.bg-image .app-container { position: relative; z-index: 1; }
-        body.dark.bg-image::before { background: rgba(0,0,0,0.3); }
         body.no-transition * { transition: none !important; }
 
         /* ========================================
@@ -571,7 +517,6 @@
                     <button class="menu-item" id="btnNewFolderMenu"><span class="menu-icon">📁</span> Новая папка</button>
                     <button class="menu-item" id="btnNewNoteMenu"><span class="menu-icon">💡</span> Новая заметка</button>
                     <button class="menu-item" id="btnThemeCustom"><span class="menu-icon">🎨</span> Оформление</button>
-                    <button class="menu-item" id="btnThemeMenu"><span class="menu-icon">🌓</span> Тема</button>
                     <button class="menu-item" id="btnOpacityMenu"><span class="menu-icon">🔲</span> Прозрачность</button>
                     <button class="menu-item" id="btnExportMenu"><span class="menu-icon">📤</span> Экспорт</button>
                     <button class="menu-item" id="btnImportMenu"><span class="menu-icon">📥</span> Импорт</button>
@@ -2065,10 +2010,6 @@
                 inp.click();
             },
             syncData() { Actions.exportData(); },
-            toggleTheme() {
-                document.body.classList.toggle('dark');
-                localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
-            },
             requestNotification() {
                 if (!('Notification' in window)) { UI.showToast('❌ Не поддерживаются'); return; }
                 if (Notification.permission === 'granted') { Actions.checkAndNotify(); }
@@ -2334,7 +2275,6 @@
                 UI.renderAll();
                 setTimeout(() => getEl('noteText').focus(), 200);
             });
-            getEl('btnThemeMenu').addEventListener('click', Actions.toggleTheme);
             getEl('btnThemeCustom').addEventListener('click', Actions.changeTheme);
             getEl('btnExportMenu').addEventListener('click', Actions.exportData);
             getEl('btnImportMenu').addEventListener('click', Actions.importData);
@@ -2446,9 +2386,6 @@
                     if (n) { n.text = e.target.value; n.updatedAt = Date.now(); State.save(); }
                 }, 600);
             });
-
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') document.body.classList.add('dark');
 
             const stb = getEl('scrollTopBtn');
             window.addEventListener('scroll', function() { stb.classList.toggle('visible', window.scrollY > 300); });
@@ -2562,7 +2499,7 @@
                 if (quoteEl) {
                     quoteEl.textContent = '«' + QUOTES[Math.floor(Math.random() * QUOTES.length)] + '»';
                     quoteEl.style.opacity = '1';
-                    quoteEl.style.color = document.body.classList.contains('dark') ? '#e8e4dd' : '#2d2a26';
+                    quoteEl.style.color = '#e8e4dd';
                     quoteEl.style.display = 'block';
                 }
                 setInterval(() => {
