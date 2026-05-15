@@ -2391,12 +2391,15 @@
                 }
             },
             _subtaskTouchStart: function(e, taskId, subtaskId) {
+                this.__stActive = true;
                 this.__stTimer = setTimeout(() => {
+                    this.__stActive = false;
                     this.showSubtaskPanel(e, taskId, subtaskId);
                 }, 500);
             },
             _subtaskTouchEnd: function(e) {
                 clearTimeout(this.__stTimer);
+                setTimeout(() => { this.__stActive = false; }, 100);
             }
         };
        
