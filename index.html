@@ -2199,6 +2199,7 @@
                 if (e.target.closest('.task-checkbox') || e.target.closest('.subtask-item') || e.target.closest('[data-action]')) {
                     return;
                 }
+                if (window.App.__stActive) return;
                 e.stopPropagation();
                 e.preventDefault();
         
