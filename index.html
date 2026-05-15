@@ -2154,14 +2154,14 @@
                     const d = JSON.parse(e.dataTransfer.getData('text/plain'));
                     const { taskId, fromFolderId } = d;
                     if (fromFolderId === toFid || Utils.isSmartFolder(toFid)) return;
-
+        
                     const ff = State.getFolderById(fromFolderId);
                     const tf = State.getFolderById(toFid);
                     if (!ff || !tf) return;
-
+        
                     const idx = ff.tasks.findIndex(t => t && t.id === taskId);
                     if (idx === -1) return;
-
+        
                     const task = ff.tasks.splice(idx, 1)[0];
                     tf.tasks.push(task);
                     State.save();
@@ -2189,21 +2189,28 @@
                 }
                 UI.showToast('📁 Папка не найдена: ' + folderName);
             },
-
+        
+            _closePanel: function() {
+                getEl('actionPanel').style.display = 'none';
+                getEl('actionOverlay').style.display = 'none';
+            },
+        
             /** Показать всплывающую панель действий */
             showActionPanel: function(e, taskId, folderId, taskText, isTrash) {
+                // Пропускаем только клики по интерактивным элементам внутри задачи
                 if (e.target.closest('.task-checkbox') || e.target.closest('.subtask-item') || e.target.closest('[data-action]')) {
                     return;
                 }
                 e.stopPropagation();
-
+                e.preventDefault();
+        
                 const panel = getEl('actionPanel');
                 const title = getEl('actionPanelTitle');
                 const buttons = getEl('actionPanelButtons');
                 const overlay = getEl('actionOverlay');
-
+        
                 title.textContent = taskText;
-
+        
                 if (isTrash) {
                     buttons.innerHTML =
                         '<button class="action-panel-btn" onclick="App.doAction(\'restore-task\',\'' + taskId + '\')">↩️ Восстановить</button>' +
@@ -2216,24 +2223,23 @@
                         '<button class="action-panel-btn" onclick="App.doAction(\'move-to-tomorrow\',\'' + taskId + '\')">📅 На завтра</button>' +
                         '<button class="action-panel-btn delete" onclick="App.doAction(\'delete-task\',\'' + taskId + '\')">✕ Удалить</button>';
                 }
-
+        
                 const rect = e.currentTarget.getBoundingClientRect();
                 let topPosition = rect.bottom + 4;
                 const leftPosition = Math.min(rect.left, window.innerWidth - 200);
-
-                // Если меню не помещается снизу — показываем над задачей
+        
                 if (topPosition + 220 > window.innerHeight) {
                     topPosition = rect.top - 220;
                 }
-
+        
                 panel.style.position = 'fixed';
                 panel.style.top = topPosition + 'px';
                 panel.style.left = leftPosition + 'px';
-
+        
                 overlay.style.display = 'block';
                 panel.style.display = 'block';
             },
-
+        
             /** Выполнить действие из панели */
             doAction: function(action, taskId) {
                 getEl('actionPanel').style.display = 'none';
@@ -2260,28 +2266,29 @@
                 const title = getEl('actionPanelTitle');
                 const buttons = getEl('actionPanelButtons');
                 const overlay = getEl('actionOverlay');
-
+        
                 title.textContent = folderName;
-
+        
                 buttons.innerHTML =
                     '<div style="padding:8px 14px;font-size:12px;color:var(--text-secondary);text-align:center;">' +
                     '📋 Активных: ' + active + ' / ✅ Завершено: ' + completed + '</div>' +
                     '<button class="action-panel-btn" onclick="App.doFolderAction(\'rename\',\'' + folderId + '\')">✏️ Переименовать</button>' +
                     '<button class="action-panel-btn" onclick="App.doFolderAction(\'icon\',\'' + folderId + '\')">🎨 Сменить иконку/цвет</button>' +
                     '<button class="action-panel-btn delete" onclick="App.doFolderAction(\'delete\',\'' + folderId + '\')">🗑️ Удалить папку</button>';
-
-                const rect = e.target.closest('.folder-card').getBoundingClientRect();
+        
+                const card = e.target.closest('.folder-card');
+                const rect = card ? card.getBoundingClientRect() : { top: 100, left: 100, bottom: 150 };
                 let topPosition = rect.bottom + 4;
                 const leftPosition = Math.min(rect.left, window.innerWidth - 200);
-
+        
                 if (topPosition + 200 > window.innerHeight) {
                     topPosition = rect.top - 200;
                 }
-
+        
                 panel.style.position = 'fixed';
                 panel.style.top = topPosition + 'px';
                 panel.style.left = leftPosition + 'px';
-
+        
                 overlay.style.display = 'block';
                 panel.style.display = 'block';
             },
@@ -2307,28 +2314,28 @@
                 const title = getEl('actionPanelTitle');
                 const buttons = getEl('actionPanelButtons');
                 const overlay = getEl('actionOverlay');
-
+        
                 title.textContent = clientName;
-
+        
                 buttons.innerHTML =
                     '<button class="action-panel-btn" onclick="App.doClientAction(\'edit\',\'' + clientId + '\')">✏️ Редактировать</button>' +
                     '<button class="action-panel-btn" onclick="App.doClientAction(\'email\',\'' + clientId + '\')">📧 Отправить</button>' +
                     '<button class="action-panel-btn delete" onclick="App.doClientAction(\'delete\',\'' + clientId + '\')">✕ Удалить</button>';
-
+        
                 const card = e.target.closest('.client-card');
-                const rect = card ? card.getBoundingClientRect() : e.currentTarget.getBoundingClientRect();
+                const rect = card ? card.getBoundingClientRect() : { top: 100, left: 100, bottom: 150 };
                 
                 let topPosition = rect.bottom + 4;
                 let leftPosition = Math.min(rect.left, window.innerWidth - 220);
-
+        
                 if (topPosition + 180 > window.innerHeight) {
                     topPosition = rect.top - 180;
                 }
-
+        
                 panel.style.position = 'fixed';
                 panel.style.top = topPosition + 'px';
                 panel.style.left = leftPosition + 'px';
-
+        
                 overlay.style.display = 'block';
                 panel.style.display = 'block';
             },
@@ -2346,6 +2353,7 @@
                 }
             }
         };
+       
 
         // ========================================
         // НАСТРОЙКА ОБРАБОТЧИКОВ СОБЫТИЙ
