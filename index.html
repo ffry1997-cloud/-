@@ -2544,6 +2544,7 @@
                 }
 
                 State.load();
+                document.body.classList.add('dark');
                 // Обновим текст кнопки вида в меню
                 const currentMode = State.getFolderViewMode();
                 const viewIcon = currentMode === 'list' ? '📋' : '🔲';
