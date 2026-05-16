@@ -1235,7 +1235,6 @@
             }
 
             function updateQuote() {
-                if (App._settings && App._settings.showQuote === false) return;
                 const el = getEl('bgQuote');
                 if (!el) return;
                 el.textContent = '«' + QUOTES[Math.floor(Math.random() * QUOTES.length)] + '»';
@@ -2468,7 +2467,6 @@
                     '<div class="settings-row"><span>👥 Дни рождения</span><button class="settings-toggle' + (s.showClients !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showClients\', this)" style="width:36px;height:20px;min-width:36px;min-height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;background:#c4b8ad;flex-shrink:0;"></button></div>' +
                     '<div class="settings-row"><span>💡 Идеи</span><button class="settings-toggle' + (s.showIdeas !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showIdeas\', this)" style="width:36px;height:20px;min-width:36px;min-height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;background:#c4b8ad;flex-shrink:0;"></button></div>' +
                     '<div class="settings-divider"></div>' +
-                    '<div class="settings-row"><span>💬 Цитаты</span><button class="settings-toggle' + (s.showQuote !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showQuote\', this)" style="width:36px;height:20px;min-width:36px;min-height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;background:#c4b8ad;flex-shrink:0;"></button></div>' +
                     '<div class="settings-row"><span>📅 Обзор недели</span><button class="settings-toggle' + (s.showWeekOverview !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showWeekOverview\', this)" style="width:36px;height:20px;min-width:36px;min-height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;background:#c4b8ad;flex-shrink:0;"></button></div>' +
                     '<button class="settings-close" onclick="App._closePanel()">Закрыть</button>';
                 
@@ -2527,10 +2525,6 @@
                     if (tab) tab.style.display = (s[key] !== false) ? '' : 'none';
                 });
                 
-                // Цитаты
-                const quoteEl = document.getElementById('bgQuote');
-                if (quoteEl) quoteEl.style.display = (s.showQuote !== false) ? '' : 'none';
-                
                 // Обзор недели
                 const wo = document.getElementById('weekOverview');
                 if (wo) {
@@ -2541,7 +2535,6 @@
                         wo.style.display = 'flex';
                     }
                 }
-                UI.updateQuote();
             }
          };
        
@@ -2826,7 +2819,6 @@
                     quoteEl.style.display = 'block';
                 }
                 setInterval(() => {
-                    if (App._settings && App._settings.showQuote === false) return;
                     const el = getEl('bgQuote');
                     if (el) {
                         el.textContent = '«' + QUOTES[Math.floor(Math.random() * QUOTES.length)] + '»';
