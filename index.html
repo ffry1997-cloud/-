@@ -1894,76 +1894,46 @@
                 }
             },
             changeTheme() {
-                const presets = Object.keys(THEME_PRESETS);
-                let msg = 'Выберите тему:\n';
-                for (let i = 0; i < presets.length; i++) { msg += (i + 1) + '. ' + presets[i] + '\n'; }
-                msg += '\nИли:\n- Введите hex (#7eb8c9) для цвета\n- Напишите "фото" для фона\n- Напишите "сброс" для стандартной';
-                const choice = prompt(msg);
-                if (!choice) return;
-
-                const root = document.documentElement;
-                if (choice === 'фото' || choice === 'foto') {
-                    const inp = document.createElement('input');
-                    inp.type = 'file'; inp.accept = 'image/*';
-                    inp.onchange = function(e) {
-                        const file = e.target.files[0];
-                        if (!file) return;
-                        if (file.size > 500000) { UI.showToast('❌ Фото слишком большое (макс 500 КБ)'); return; }
-                        const reader = new FileReader();
-                        reader.onload = function(ev) {
-                            document.body.style.backgroundImage = 'url(' + ev.target.result + ')';
-                            document.body.classList.add('bg-image');
-                            const img = new Image();
-                            img.src = ev.target.result;
-                            img.onload = function() {
-                                const canvas = document.createElement('canvas');
-                                const maxSize = 100;
-                                canvas.width = Math.min(img.width, maxSize);
-                                canvas.height = Math.min(img.height, maxSize);
-                                const ctx = canvas.getContext('2d');
-                                ctx.drawImage(img, 0, 0);
-                                const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-                                let brightness = 0;
-                                for (let j = 0; j < data.length; j += 4) brightness += (data[j] + data[j + 1] + data[j + 2]) / 3;
-                                brightness /= (data.length / 4);
-                                if (brightness < 128) {
-                                    document.body.classList.add('dark');
-                                    localStorage.setItem('theme', 'dark');
-                                } else {
-                                    document.body.classList.remove('dark');
-                                    localStorage.setItem('theme', 'light');
-                                }
-                                UI.renderAll();
-                            };
-                            localStorage.setItem('bg_image', ev.target.result);
-                            UI.showToast('🖼️ Фон обновлён');
-                        };
-                        reader.readAsDataURL(file);
-                    };
-                    inp.click();
-                } else if (choice === 'сброс') {
-                    document.body.style.backgroundImage = '';
-                    document.body.classList.remove('bg-image');
-                    localStorage.removeItem('bg_image');
-                    localStorage.removeItem('custom_theme');
-                    localStorage.removeItem('theme_preset');
-                    location.reload();
-                } else if (choice.startsWith('#')) {
-                    ['--bg', '--accent-light', '--accent'].forEach(v => root.style.setProperty(v, choice));
-                    root.style.setProperty('--card', '#ffffff');
-                    root.style.setProperty('--text', '#2d2a26');
-                    root.style.setProperty('--text-secondary', '#7a756e');
-                    localStorage.setItem('custom_theme', choice);
-                    UI.showToast('🎨 Цвет: ' + choice);
-                } else {
-                    const idx = parseInt(choice) - 1;
-                    if (idx >= 0 && idx < presets.length) {
-                        const preset = THEME_PRESETS[presets[idx]];
-                        Object.keys(preset).forEach(key => root.style.setProperty(key, preset[key]));
-                        localStorage.setItem('theme_preset', presets[idx]);
-                        UI.showToast('🎨 Тема: ' + presets[idx]);
-                    }
-                }
+                const overlay = getEl('actionOverlay');
+                const panel = getEl('actionPanel');
+                const title = getEl('actionPanelTitle');
+                const buttons = getEl('actionPanelButtons');
+                
+                title.textContent = '🎨 Оформление';
+                title.style.display = 'block';
+                
+                const savedPreset = localStorage.getItem('theme_preset') || '';
+                
+                buttons.innerHTML =
+                    '<div style="padding:4px 0;text-align:center;font-size:13px;margin-bottom:8px;">🎨 Тема</div>' +
+                    '<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px;">' +
+                    '<button onclick="App._applyPreset(\'pastel\')" style="width:70px;padding:8px;border-radius:12px;border:2px solid ' + (savedPreset === 'pastel' ? 'var(--accent)' : 'var(--border)') + ';background:transparent;cursor:pointer;font-size:12px;">Pastel</button>' +
+                    '<button onclick="App._applyPreset(\'forest\')" style="width:70px;padding:8px;border-radius:12px;border:2px solid ' + (savedPreset === 'forest' ? 'var(--accent)' : 'var(--border)') + ';background:transparent;cursor:pointer;font-size:12px;">Forest</button>' +
+                    '<button onclick="App._applyPreset(\'sunset\')" style="width:70px;padding:8px;border-radius:12px;border:2px solid ' + (savedPreset === 'sunset' ? 'var(--accent)' : 'var(--border)') + ';background:transparent;cursor:pointer;font-size:12px;">Sunset</button>' +
+                    '<button onclick="App._applyPreset(\'ocean\')" style="width:70px;padding:8px;border-radius:12px;border:2px solid ' + (savedPreset === 'ocean' ? 'var(--accent)' : 'var(--border)') + ';background:transparent;cursor:pointer;font-size:12px;">Ocean</button>' +
+                    '</div>' +
+                    '<div style="padding:4px 0;font-size:13px;">Свой цвет (hex):</div>' +
+                    '<input type="text" id="customColorInput" placeholder="#7eb8c9" style="width:100%;padding:10px 14px;border-radius:24px;border:1.5px solid var(--border);font-size:14px;margin-bottom:8px;background:rgba(255,255,255,0.75);color:var(--text);outline:none;" onchange="App._applyCustomColor(this.value)">' +
+                    '<div class="settings-divider"></div>' +
+                    '<button class="action-panel-btn" onclick="App._pickPhoto()">🖼️ Выбрать фото для фона</button>' +
+                    '<div class="settings-divider"></div>' +
+                    '<button class="action-panel-btn delete" onclick="App._resetAppearance()">🔄 Сбросить всё оформление</button>' +
+                    '<button class="settings-close" onclick="App._closePanel()">Закрыть</button>';
+                
+                panel.style.position = 'fixed';
+                panel.style.top = '50%';
+                panel.style.left = '50%';
+                panel.style.transform = 'translate(-50%, -50%)';
+                panel.style.maxWidth = '360px';
+                panel.style.width = '90%';
+                
+                overlay.style.display = 'block';
+                panel.style.display = 'block';
+                
+                setTimeout(() => {
+                    const inp = document.getElementById('customColorInput');
+                    if (inp) inp.style.background = 'rgba(255,255,255,0.75)';
+                }, 50);
             },
             setTaskFilter(filter) { State.setCurrentTaskFilter(filter); State.save(); UI.renderTasks(); },
             addClient() {
@@ -2493,6 +2463,71 @@
                 }, 50);
             },
             
+            _applyPreset: function(name) {
+                const preset = THEME_PRESETS[name];
+                if (!preset) return;
+                Object.keys(preset).forEach(key => document.documentElement.style.setProperty(key, preset[key]));
+                localStorage.setItem('theme_preset', name);
+                localStorage.removeItem('custom_theme');
+                UI.showToast('🎨 Тема: ' + name);
+                this.changeTheme();
+            },
+            
+            _applyCustomColor: function(color) {
+                if (!color || !color.startsWith('#')) return;
+                const root = document.documentElement;
+                ['--bg','--accent-light','--accent'].forEach(v => root.style.setProperty(v, color));
+                root.style.setProperty('--card', '#ffffff');
+                root.style.setProperty('--text', '#2d2a26');
+                root.style.setProperty('--text-secondary', '#7a756e');
+                localStorage.setItem('custom_theme', color);
+                localStorage.removeItem('theme_preset');
+                UI.showToast('🎨 Цвет: ' + color);
+            },
+            
+            _pickPhoto: function() {
+                const inp = document.createElement('input');
+                inp.type = 'file';
+                inp.accept = 'image/*';
+                inp.onchange = function(e) {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    if (file.size > 500000) { UI.showToast('❌ Фото слишком большое (макс 500 КБ)'); return; }
+                    const reader = new FileReader();
+                    reader.onload = function(ev) {
+                        document.body.style.backgroundImage = 'url(' + ev.target.result + ')';
+                        document.body.classList.add('bg-image');
+                        localStorage.setItem('bg_image', ev.target.result);
+                        UI.showToast('🖼️ Фон обновлён');
+                    };
+                    reader.readAsDataURL(file);
+                };
+                inp.click();
+            },
+            
+            _resetAppearance: function() {
+                document.body.style.backgroundImage = '';
+                document.body.classList.remove('bg-image');
+                localStorage.removeItem('bg_image');
+                localStorage.removeItem('custom_theme');
+                localStorage.removeItem('theme_preset');
+                const root = document.documentElement;
+                const preset = THEME_PRESETS['pastel'];
+                Object.keys(preset).forEach(key => root.style.setProperty(key, preset[key]));
+                UI.showToast('🔄 Оформление сброшено');
+                this.changeTheme();
+            },
+
+            _updateOpacity: function(val) {
+                const num = parseInt(val) / 100;
+                document.documentElement.style.setProperty('--opacity-card', num);
+                document.documentElement.style.setProperty('--opacity-tabs', num);
+                document.documentElement.style.setProperty('--opacity-btn', num);
+                localStorage.setItem('opacity', num);
+                const pct = document.getElementById('opacityValue');
+                if (pct) pct.textContent = val + '%';
+            },
+
             _settings: JSON.parse(localStorage.getItem('app_settings') || '{}'),
             
             _toggleSetting: function(key, btn) {
@@ -2617,16 +2652,31 @@
             getEl('btnOpacityMenu').addEventListener('click', function() {
                 getEl('menuDropdown').classList.remove('show');
                 getEl('appearanceSubmenu').style.display = 'none';
-                const val = prompt('Прозрачность (0.1 - 1.0):',
-                    getComputedStyle(document.documentElement).getPropertyValue('--opacity-card').trim() || '0.75');
-                if (!val) return;
-                const num = parseFloat(val);
-                if (isNaN(num) || num < 0.1 || num > 1) { UI.showToast('❌ Введите число от 0.1 до 1'); return; }
-                document.documentElement.style.setProperty('--opacity-card', num);
-                document.documentElement.style.setProperty('--opacity-tabs', num);
-                document.documentElement.style.setProperty('--opacity-btn', num);
-                localStorage.setItem('opacity', num);
-                UI.showToast('🔲 Прозрачность: ' + num);
+                
+                const overlay = getEl('actionOverlay');
+                const panel = getEl('actionPanel');
+                const title = getEl('actionPanelTitle');
+                const buttons = getEl('actionPanelButtons');
+                
+                const currentOpacity = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--opacity-card').trim()) || 0.75;
+                
+                title.textContent = '🔲 Прозрачность';
+                title.style.display = 'block';
+                
+                buttons.innerHTML =
+                    '<div id="opacityValue" style="text-align:center;font-size:24px;margin:8px 0;">' + Math.round(currentOpacity * 100) + '%</div>' +
+                    '<input type="range" id="opacitySlider" min="10" max="100" value="' + Math.round(currentOpacity * 100) + '" style="width:100%;margin:8px 0;" oninput="App._updateOpacity(this.value)">' +
+                    '<button class="settings-close" onclick="App._closePanel()">Закрыть</button>';
+                
+                panel.style.position = 'fixed';
+                panel.style.top = '50%';
+                panel.style.left = '50%';
+                panel.style.transform = 'translate(-50%, -50%)';
+                panel.style.maxWidth = '360px';
+                panel.style.width = '90%';
+                
+                overlay.style.display = 'block';
+                panel.style.display = 'block';
             });
             
             getEl('btnSettingsMenu').addEventListener('click', function() {
