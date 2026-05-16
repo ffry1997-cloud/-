@@ -1870,10 +1870,10 @@
                     '<button onclick="event.stopPropagation();App._applyPreset(\'sunset\')" style="width:70px;padding:8px;border-radius:12px;border:2px solid ' + (savedPreset === 'sunset' ? 'var(--accent)' : 'rgba(255,255,255,0.5)') + ';background:transparent;cursor:pointer;font-size:12px;position:relative;z-index:10;color:#ffffff;">Sunset</button>' +
                     '<button onclick="event.stopPropagation();App._applyPreset(\'ocean\')" style="width:70px;padding:8px;border-radius:12px;border:2px solid ' + (savedPreset === 'ocean' ? 'var(--accent)' : 'rgba(255,255,255,0.5)') + ';background:transparent;cursor:pointer;font-size:12px;position:relative;z-index:10;color:#ffffff;">Ocean</button>' +
                     '</div>' +
-                    '<div style="padding:4px 0 8px;font-size:13px;color:#ffffff;">Свой цвет</div>' +
+                    '<div style="padding:4px 0 8px;font-size:13px;color:#ffffff;">Свой тема</div>' +
                     '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">' +
                     '<input type="color" id="customColorInput" value="' + (localStorage.getItem('custom_theme') || '#6b4c3b') + '" style="width:44px;height:44px;border-radius:50%;border:1.5px solid var(--border);cursor:pointer;padding:0;overflow:hidden;background:transparent;-webkit-appearance:none;" onchange="App._applyCustomColor(this.value)">' +
-                    '<span id="customColorLabel" style="font-size:14px;color:var(--text);font-weight:400;">Выбрать свой цвет</span>' +
+                    '<span id="customColorLabel" style="font-size:14px;color:var(--text);font-weight:400;">Выбрать свою тему</span>' +
                     '</div>' +
                     '<div class="settings-divider"></div>' +
                     '<button class="action-panel-btn" onclick="App._pickPhoto()">Выбрать фото для фона</button>' +
