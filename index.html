@@ -471,7 +471,15 @@
             text-align: left; font-family: var(--font);
         }
         .menu-item:hover { background: var(--bg); }
-        .menu-item .menu-icon { font-size: 18px; width: 24px; text-align: center; }
+        .menu-item .menu-icon { 
+            font-size: 18px; 
+            width: 24px; 
+            text-align: center; 
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
         .week-overview { display: flex; gap: 8px; overflow-x: auto; padding: 8px 0; -webkit-overflow-scrolling: touch; }
         .week-day {
             flex: 0 0 auto; min-width: 100px; padding: 10px; background: var(--card);
