@@ -2398,6 +2398,7 @@
                 if (!preset) return;
                 Object.keys(preset).forEach(key => document.documentElement.style.setProperty(key, preset[key]));
                 localStorage.setItem('theme_preset', name);
+                localStorage.removeItem('custom_theme');
                 UI.showToast('🎨 Тема: ' + name);
                 const buttons = getEl('actionPanelButtons');
                 if (buttons && buttons.style.display !== 'none') {
