@@ -2417,7 +2417,6 @@
                 root.style.setProperty('--accent', color);
                 root.style.setProperty('--accent-light', color + '33');
                 localStorage.setItem('custom_theme', color);
-                localStorage.removeItem('theme_preset');
                 UI.showToast('🎨 Цвет: ' + color);
                 const picker = document.getElementById('customColorInput');
                 if (picker) picker.value = color;
