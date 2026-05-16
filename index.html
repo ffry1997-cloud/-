@@ -1863,20 +1863,20 @@
                 const savedPreset = localStorage.getItem('theme_preset') || '';
                 
                 buttons.innerHTML =
-                    '<div style="padding:4px 0;text-align:center;font-size:13px;margin-bottom:8px;color:#ffffff;">🎨 Тема</div>' +
-                    '<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px;">' +
+                    '<div style="padding:4px 0 12px;text-align:center;font-size:15px;font-weight:600;color:#ffffff;">Тема</div>' +
+                    '<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;">' +
                     '<button onclick="event.stopPropagation();App._applyPreset(\'basic\')" style="width:70px;padding:8px;border-radius:12px;border:2px solid ' + (savedPreset === 'basic' ? 'var(--accent)' : 'rgba(255,255,255,0.5)') + ';background:transparent;cursor:pointer;font-size:12px;position:relative;z-index:10;color:#ffffff;">Basic</button>' +
                     '<button onclick="event.stopPropagation();App._applyPreset(\'forest\')" style="width:70px;padding:8px;border-radius:12px;border:2px solid ' + (savedPreset === 'forest' ? 'var(--accent)' : 'rgba(255,255,255,0.5)') + ';background:transparent;cursor:pointer;font-size:12px;position:relative;z-index:10;color:#ffffff;">Forest</button>' +
                     '<button onclick="event.stopPropagation();App._applyPreset(\'sunset\')" style="width:70px;padding:8px;border-radius:12px;border:2px solid ' + (savedPreset === 'sunset' ? 'var(--accent)' : 'rgba(255,255,255,0.5)') + ';background:transparent;cursor:pointer;font-size:12px;position:relative;z-index:10;color:#ffffff;">Sunset</button>' +
                     '<button onclick="event.stopPropagation();App._applyPreset(\'ocean\')" style="width:70px;padding:8px;border-radius:12px;border:2px solid ' + (savedPreset === 'ocean' ? 'var(--accent)' : 'rgba(255,255,255,0.5)') + ';background:transparent;cursor:pointer;font-size:12px;position:relative;z-index:10;color:#ffffff;">Ocean</button>' +
                     '</div>' +
-                    '<div style="padding:4px 0;font-size:13px;color:#ffffff;">Свой цвет (hex):</div>' +
-                    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">' +
+                    '<div style="padding:4px 0 8px;font-size:13px;color:#ffffff;">Свой цвет</div>' +
+                    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">' +
                     '<input type="color" id="customColorInput" value="' + (localStorage.getItem('custom_theme') || '#6b4c3b') + '" style="width:44px;height:44px;border-radius:50%;border:1.5px solid var(--border);cursor:pointer;padding:0;overflow:hidden;background:transparent;-webkit-appearance:none;" onchange="App._applyCustomColor(this.value)">' +
                     '<span id="customColorLabel" style="font-size:14px;color:var(--text);font-weight:400;">Выбрать свой цвет</span>' +
                     '</div>' +
                     '<div class="settings-divider"></div>' +
-                    '<button class="action-panel-btn" onclick="App._pickPhoto()">🖼️ Выбрать фото для фона</button>' +
+                    '<button class="action-panel-btn" onclick="App._pickPhoto()">Выбрать фото для фона</button>' +
                     '<div class="settings-divider"></div>' +
                     '<button class="settings-close" onclick="App._closePanel()">Закрыть</button>';
                 
