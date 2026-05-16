@@ -2523,11 +2523,14 @@
                 const customEl = document.querySelector('.custom-quotes');
                 if (customEl) customEl.style.display = (s.showCustomQuotes !== false) ? '' : 'none';
                 
-                // Обзор недели — если выключен, скрываем
+                // Обзор недели
                 const wo = document.getElementById('weekOverview');
                 if (wo) {
                     if (s.showWeekOverview === false) {
                         wo.style.display = 'none';
+                    } else {
+                        // Если настройка включена — показываем
+                        wo.style.display = 'flex';
                     }
                 }
             }
