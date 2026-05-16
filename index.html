@@ -570,7 +570,6 @@
                 <div id="appearanceSubmenu" style="display:none;">
                     <button class="menu-item" id="btnThemeCustom" style="padding-left:34px;"><span class="menu-icon">🎨</span> Оформление</button>
                     <button class="menu-item" id="btnOpacityMenu" style="padding-left:34px;"><span class="menu-icon">🔲</span> Прозрачность</button>
-                    <button class="menu-item" id="btnViewMenu" style="padding-left:34px;"><span class="menu-icon">📋</span> Вид: Список</button>
                 </div>
                 <div style="height:1px;background:var(--border);margin:4px 0;"></div>
                 <button class="menu-item" id="btnExportMenu"><span class="menu-icon">📤</span> Экспорт</button>
@@ -601,7 +600,10 @@
             </div>
             <div class="week-overview" id="weekOverview" style="display:none;"></div>
             <div id="folderList"></div>
-            <button class="btn-sm btn-add" id="btnAddFolder">+ Новая папка</button>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                <button class="btn-sm btn-add" id="btnAddFolder">+ Новая папка</button>
+                <button class="btn-sm" id="btnToggleView" style="background:rgba(107, 76, 59, 0.15);color:var(--accent);font-size:18px;padding:6px 12px;">📋</button>
+            </div>
             <div class="card" id="taskContainer" style="display:none;">
                 <div style="display:flex;justify-content:space-between;align-items:center;">
                     <span id="currentFolderName" style="font-weight:700;"></span>
@@ -2510,6 +2512,15 @@
 
             getEl('btnAddTask').addEventListener('click', Actions.addTask);
             getEl('btnAddFolder').addEventListener('click', Actions.addFolder);
+            getEl('btnToggleView').addEventListener('click', function() {
+                const currentMode = State.getFolderViewMode();
+                const newMode = currentMode === 'list' ? 'grid' : 'list';
+                State.setFolderViewMode(newMode);
+                State.save();
+                UI.renderFolderList();
+                this.textContent = newMode === 'list' ? '📋' : '🔲';
+                UI.showToast(newMode === 'list' ? '📋 Список' : '🔲 Сетка');
+            });
             getEl('btnEditFolder').addEventListener('click', Actions.editFolder);
             getEl('btnAddClient').addEventListener('click', Actions.addClient);
             getEl('btnAddNote').addEventListener('click', Actions.addNote);
@@ -2538,21 +2549,6 @@
             });
             getEl('btnExportMenu').addEventListener('click', Actions.exportData);
             getEl('btnImportMenu').addEventListener('click', Actions.importData);
-            getEl('btnViewMenu').addEventListener('click', function() {
-                getEl('menuDropdown').classList.remove('show');
-                getEl('appearanceSubmenu').style.display = 'none';
-                const currentMode = State.getFolderViewMode();
-                const newMode = currentMode === 'list' ? 'grid' : 'list';
-                State.setFolderViewMode(newMode);
-                State.save();
-                UI.renderFolderList();
-                const btn = getEl('btnViewMenu');
-                const icon = newMode === 'list' ? '📋' : '🔲';
-                const label = newMode === 'list' ? 'Список' : 'Сетка';
-                btn.innerHTML = '<span class="menu-icon">' + icon + '</span> Вид: ' + label;
-                UI.showToast(newMode === 'list' ? '📋 Вид: Список' : '🔲 Вид: Сетка');
-            });
-
             getEl('btnOpacityMenu').addEventListener('click', function() {
                 getEl('menuDropdown').classList.remove('show');
                 getEl('appearanceSubmenu').style.display = 'none';
