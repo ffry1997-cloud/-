@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -14,26 +13,20 @@
     <title>Мои планы</title>
     <meta name="apple-mobile-web-app-title" content="Мои планы">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#f5f3f0">
+    <meta name="theme-color" content="#232220">
     <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%234a90d9'/%3E%3Ctext y='.72em' x='50' text-anchor='middle' font-size='55'%3E📅%3C/text%3E%3C/svg%3E">
     <style>
         /* ========================================
-           ПЕРЕМЕННЫЕ И БАЗОВЫЕ СТИЛИ
+           ПЕРЕМЕННЫЕ И БАЗОВЫЕ СТИЛИ (ТЁМНАЯ ТЕМА)
            ======================================== */
         :root {
-            --bg: #f5f2ee; --card: #ffffff; --text: #2d2a26; --text-secondary: #6b6560;
-            --accent: #5c3d2e; --accent-light: rgba(92, 61, 46, 0.12); --danger: #d4949a; --danger-light: #faf0f1;
-            --success: #9cbfa7; --success-light: #eef5f0; --warning: #e8d5a3; --warning-light: #fdf9f0;
-            --border: #e8e4dd; --shadow: 0 2px 12px rgba(0,0,0,0.04); --radius: 20px; --radius-sm: 14px;
-            --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            --opacity-card: 0.75; --opacity-tabs: 0.7; --opacity-btn: 0.7;
-            --star-color: #e8c560; --overdue: #d4949a; --today-color: #c9a96e; --upcoming: #9cbfa7;
-        }
-        .dark {
             --bg: #232220; --card: #2e2c29; --text: #e8e4dd; --text-secondary: #9e9890;
             --accent: #6b4c3b; --accent-light: rgba(107, 76, 59, 0.3); --danger: #c9888e; --danger-light: #3a2f30;
             --success: #8aad95; --success-light: #2d332f; --warning: #c9b888; --warning-light: #33302a;
-            --border: #3d3a34;
+            --border: #3d3a34; --shadow: 0 2px 12px rgba(0,0,0,0.2); --radius: 20px; --radius-sm: 14px;
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            --opacity-card: 0.75; --opacity-tabs: 0.7; --opacity-btn: 0.7;
+            --star-color: #e8c560; --overdue: #d4949a; --today-color: #c9a96e; --upcoming: #9cbfa7;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
@@ -75,13 +68,13 @@
             display: block;
             width: calc(100% - 2em);
             height: 1px;
-            background: rgba(200, 200, 200, 0.4);
+            background: rgba(200, 200, 200, 0.2);
             margin: 10px auto 0;
             border-radius: 1px;
         }
         .bg-quote {
             text-align: center; font-style: italic; color: var(--text); padding: 8px 0;
-            font-size: 14px; min-height: 24px; font-weight: 500; text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            font-size: 14px; min-height: 24px; font-weight: 500; text-shadow: 0 1px 2px rgba(0,0,0,0.3);
             display: block !important; opacity: 1;
         }
         .custom-quotes { display: flex; gap: 10px; margin-bottom: 4px; }
@@ -110,7 +103,7 @@
         .custom-quote-box:hover {
             transform: translateY(-2px);
             border-color: var(--accent);
-            box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.3);
             background: transparent;
         }
         #customQuoteLeft, #customQuoteCenter, #customQuoteRight { background: transparent; border: 1.5px solid var(--border); }
@@ -122,17 +115,16 @@
         .icon-btn {
             width: 42px; height: 42px; border-radius: 50%;
             border: 1.5px solid var(--border);
-            background: rgba(255,255,255,var(--opacity-btn));
+            background: rgba(46,44,41,var(--opacity-btn));
             font-size: 18px; cursor: pointer;
             display: flex; align-items: center; justify-content: center;
             box-shadow: none; color: var(--text-secondary);
             transition: all 0.25s ease;
         }
-        .dark .icon-btn { background: rgba(46,44,41,var(--opacity-btn)); }
         .icon-btn:hover {
             border-color: var(--accent);
             color: var(--accent);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
         .icon-btn:active { transform: scale(0.94); }
         .icon-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
@@ -141,11 +133,10 @@
            ТАБЫ (ВКЛАДКИ)
            ======================================== */
         .tabs {
-            display: flex; background: rgba(255,255,255,var(--opacity-tabs)); border-radius: 30px;
+            display: flex; background: rgba(46,44,41,var(--opacity-tabs)); border-radius: 30px;
             padding: 5px; box-shadow: none; gap: 2px; overflow-x: auto;
             -webkit-overflow-scrolling: touch; border: 1.5px solid var(--border);
         }
-        .dark .tabs { background: rgba(46,44,41,var(--opacity-tabs)); }
         .tab {
             flex: 1; text-align: center; padding: 12px 10px; border-radius: 26px; font-size: 13px;
             font-weight: 600; cursor: pointer; color: var(--text-secondary); white-space: nowrap;
@@ -153,7 +144,7 @@
         }
         .tab.active {
             background: var(--accent); color: #fff;
-            font-weight: 600; box-shadow: 0 2px 8px rgba(126,184,201,0.3);
+            font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
 
         /* ========================================
@@ -164,29 +155,25 @@
         .section-header { display: flex; align-items: center; gap: 10px; padding: 8px 4px 4px; font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.6px; }
         .section-header::after { content: ''; flex: 1; height: 1px; background: var(--border); }
         .card {
-            background: rgba(255,255,255,var(--opacity-card)); border-radius: var(--radius);
-            padding: 16px 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex;
+            background: rgba(46,44,41,var(--opacity-card)); border-radius: var(--radius);
+            padding: 16px 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.2); display: flex;
             flex-direction: column; gap: 10px; border: 1px solid var(--border);
         }
-        .dark .card { background: rgba(46,44,41,var(--opacity-card)); }
         .stats-card {
-            background: rgba(255,255,255,var(--opacity-card)); border-radius: var(--radius);
+            background: rgba(46,44,41,var(--opacity-card)); border-radius: var(--radius);
             padding: 18px 20px; box-shadow: var(--shadow); border: 1px solid var(--border);
         }
-        .dark .stats-card { background: rgba(46,44,41,var(--opacity-card)); }
         .client-card {
-            background: rgba(255,255,255,var(--opacity-card)); border-radius: var(--radius);
+            background: rgba(46,44,41,var(--opacity-card)); border-radius: var(--radius);
             padding: 14px; margin-bottom: 8px; border: 1px solid var(--border);
             word-wrap: break-word; overflow-wrap: break-word; line-height: 1.5;
         }
-        .dark .client-card { background: rgba(46,44,41,var(--opacity-card)); }
         .client-card > div { flex-wrap: wrap; gap: 8px; }
         .client-card span { display: block; margin-top: 2px; }
         .note-card {
-            background: rgba(255,255,255,var(--opacity-card)); border-left: 4px solid #f0c8a0;
+            background: rgba(46,44,41,var(--opacity-card)); border-left: 4px solid #f0c8a0;
             border-radius: var(--radius); padding: 14px; border: 1px solid var(--border);
         }
-        .dark .note-card { background: rgba(46,44,41,var(--opacity-card)); }
 
         /* Статистика */
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; text-align: center; }
@@ -197,10 +184,10 @@
         .progress-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.3s; }
 
         /* Бейджи */
-        .star-btn { font-size: 18px; cursor: pointer; padding: 2px 4px; border: none; background: none; transition: transform 0.1s; color: #ddd; }
+        .star-btn { font-size: 18px; cursor: pointer; padding: 2px 4px; border: none; background: none; transition: transform 0.1s; color: #555; }
         .star-btn.active { color: var(--star-color); }
         .star-btn:hover { transform: scale(1.15); }
-        /* === Бейджи (общие) === */
+        
         .days-badge, .repeat-badge {
             display: inline-block;
             padding: 3px 10px;
@@ -209,55 +196,28 @@
             font-weight: 600;
             white-space: nowrap;
             border: 1.5px solid var(--border);
-            background: rgba(255,255,255,var(--opacity-btn));
-            color: var(--text-secondary);
-        }
-        .days-badge.overdue {
-            background: rgba(212, 148, 154, 0.15);
-            border-color: var(--danger);
-            color: var(--danger);
-        }
-        .days-badge.today {
-            background: rgba(200, 170, 110, 0.15);
-            border-color: var(--warning);
-            color: var(--today-color);
-        }
-        .days-badge.upcoming {
-            background: rgba(156, 191, 167, 0.15);
-            border-color: var(--success);
-            color: var(--upcoming);
-        }
-        .repeat-badge {
-            background: rgba(126, 184, 201, 0.15);
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-
-        /* === Тёмная тема (приглушённее, но контрастнее) === */
-        .dark .days-badge, .dark .repeat-badge {
             background: rgba(255,255,255,0.08);
             color: #ccc;
-            border-color: var(--border);
         }
-        .dark .days-badge.overdue {
+        .days-badge.overdue {
             background: rgba(212, 148, 154, 0.2);
-            color: #e0a0a5;
             border-color: var(--danger);
+            color: #e0a0a5;
         }
-        .dark .days-badge.today {
+        .days-badge.today {
             background: rgba(200, 170, 110, 0.2);
-            color: #d4b87a;
             border-color: var(--warning);
+            color: #d4b87a;
         }
-        .dark .days-badge.upcoming {
+        .days-badge.upcoming {
             background: rgba(156, 191, 167, 0.2);
-            color: #a0c4a8;
             border-color: var(--success);
+            color: #a0c4a8;
         }
-        .dark .repeat-badge {
+        .repeat-badge {
             background: rgba(126, 184, 201, 0.2);
-            color: #8cc4d4;
             border-color: var(--accent);
+            color: #8cc4d4;
         }
         
         .stat-badge { font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
@@ -268,13 +228,12 @@
            ПАПКИ
            ======================================== */
         .folder-card {
-            background: rgba(255,255,255,var(--opacity-card)); border-radius: var(--radius);
+            background: rgba(46,44,41,var(--opacity-card)); border-radius: var(--radius);
             padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer;
             transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
             box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 8px;
         }
-        .dark .folder-card { background: rgba(46,44,41,var(--opacity-card)); }
-        .folder-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+        .folder-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
         .folder-card:active { transform: scale(0.98); background: var(--bg); }
         .folder-card.drag-over { background: var(--accent-light); border: 2px dashed var(--accent); transform: scale(1.01); }
         .folder-card.smart-today {
@@ -317,21 +276,20 @@
            ======================================== */
         .task-item {
             display: flex; align-items: flex-start !important; gap: 10px; padding: 12px 14px;
-            background: rgba(255,255,255,var(--opacity-card)); border-radius: var(--radius);
+            background: rgba(46,44,41,var(--opacity-card)); border-radius: var(--radius);
             font-size: 15px; margin: 4px 0; border: 1px solid var(--border);
             flex-wrap: wrap; transition: opacity 0.2s, transform 0.2s;
             -webkit-touch-callout: none;
             -webkit-user-select: none;
             user-select: none;
         }
-        .dark .task-item { background: rgba(46,44,41,var(--opacity-card)); }
         .task-item.completed { opacity: 0.45; background: var(--bg); }
         .task-item.completed { background: var(--success-light) !important; transition: all 0.3s; }
         .task-item.completed .task-text { text-decoration: line-through; }
         .task-item > div:nth-child(2) { flex: 1 1 auto; min-width: 100%; }
         .task-item .btn-sm { order: 99; }
         .task-checkbox {
-            width: 22px; height: 22px; border-radius: 50%; border: 2px solid #d5ccc5;
+            width: 22px; height: 22px; border-radius: 50%; border: 2px solid #5a5550;
             flex-shrink: 0; cursor: pointer; display: flex; align-items: center;
             justify-content: center; font-size: 12px;
             transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1) !important;
@@ -359,7 +317,7 @@
         .subtask-item { display: flex; align-items: center; gap: 6px; font-size: 13px; padding: 3px 0; color: var(--text-secondary); -webkit-user-select: none; user-select: none; }
         .subtask-item.completed .subtask-text { text-decoration: line-through; opacity: 0.5; }
         .subtask-checkbox {
-            width: 15px; height: 15px; border-radius: 50%; border: 1.5px solid #ccc;
+            width: 15px; height: 15px; border-radius: 50%; border: 1.5px solid #5a5550;
             flex-shrink: 0; cursor: pointer; font-size: 9px; display: flex; align-items: center;
             justify-content: center; transition: all 0.2s;
         }
@@ -374,26 +332,23 @@
         .search-container { margin-bottom: 4px; }
         .search-input {
             width: 100%; padding: 12px 16px; border-radius: 26px; border: 1.5px solid var(--border);
-            font-size: 15px; font-family: var(--font); background: rgba(255,255,255,var(--opacity-card));
+            font-size: 15px; font-family: var(--font); background: rgba(46,44,41,var(--opacity-card));
             color: var(--text); outline: none; transition: border-color 0.2s;
         }
-        .dark .search-input { background: rgba(46,44,41,var(--opacity-card)); }
         .search-input:focus { border-color: var(--accent); }
         .search-stats { font-size: 11px; color: var(--text-secondary); text-align: center; margin-top: 6px; display: none; }
-       .input {
+        .input {
             flex: 1; min-width: 80px; padding: 12px 16px; border-radius: 24px;
             border: 1.5px solid var(--border); font-size: 15px; font-family: var(--font);
-            background: rgba(255,255,255,var(--opacity-card)); color: var(--text);
+            background: rgba(46,44,41,var(--opacity-card)); color: var(--text);
             outline: none; transition: border-color 0.2s;
         }
-        .dark .input { background: rgba(46,44,41,var(--opacity-card)); }
         .input:focus { border-color: var(--accent); }
         .input-time {
             padding: 12px 14px; border-radius: 24px; border: 1.5px solid var(--border);
-            font-size: 14px; font-family: var(--font); background: rgba(255,255,255,var(--opacity-card));
+            font-size: 14px; font-family: var(--font); background: rgba(46,44,41,var(--opacity-card));
             color: var(--text); cursor: pointer; max-width: 100px; outline: none;
         }
-        .dark .input-time { background: rgba(46,44,41,var(--opacity-card)); }
         .input-time:focus { border-color: var(--accent); }
         .btn-sm {
             padding: 8px 16px; border-radius: 22px; border: none; font-size: 12px;
@@ -404,7 +359,7 @@
         .btn-sm:active { transform: scale(0.95); }
         .btn-add { background: var(--accent-light); color: var(--accent); }
         .btn-danger { background: var(--danger-light); color: var(--danger); }
-        .btn-email { background: #e8f0fe; color: #1a73e8; }
+        .btn-email { background: #1a2530; color: #4a9eff; }
         .btn-xs {
             padding: 2px 6px; border-radius: 8px; border: none; font-size: 10px;
             cursor: pointer; background: transparent; color: var(--text-secondary);
@@ -427,41 +382,36 @@
         .calendar-day.selected { background: var(--accent-light); outline: none; font-weight: 700; color: var(--accent); }
         .note-textarea {
             width: 100%; border: 1.5px solid var(--border); border-radius: 14px; padding: 10px;
-            background: rgba(255,255,255,var(--opacity-card)); font-family: var(--font);
+            background: rgba(46,44,41,var(--opacity-card)); font-family: var(--font);
             font-size: 15px; resize: vertical; min-height: 50px; outline: none; color: var(--text);
         }
-        .dark .note-textarea { background: rgba(46,44,41,var(--opacity-card)); }
 
         /* ========================================
            TOAST, МЕНЮ, ПРОКРУТКА
            ======================================== */
         .toast {
             position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
-            background: #3a3a3a; color: #fff; padding: 12px 24px; border-radius: 26px;
+            background: #4a4a4a; color: #fff; padding: 12px 24px; border-radius: 26px;
             font-size: 13px; z-index: 200; opacity: 0; pointer-events: none;
-            transition: opacity .3s; box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            transition: opacity .3s; box-shadow: 0 4px 16px rgba(0,0,0,0.3);
         }
         .toast.show { opacity: 1; }
         .scroll-top-btn {
             position: fixed; bottom: 70px; right: 16px; z-index: 999; width: 36px;
             height: 36px; border-radius: 50%; background: var(--accent); color: #fff;
-            border: none; font-size: 16px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            border: none; font-size: 16px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.4);
             opacity: 0; pointer-events: none; transition: opacity 0.3s;
         }
         .scroll-top-btn.visible { opacity: 1; pointer-events: auto; }
         .menu-wrapper { position: relative; }
         .menu-dropdown {
             position: absolute; top: 50px; right: 0;
-            background: rgba(255, 255, 255, 0.92);
+            background: rgba(35, 34, 32, 0.95);
             border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
             z-index: 100; min-width: 190px;
             padding: 8px; display: none;
             border: 1px solid var(--border);
-        }
-        .dark .menu-dropdown {
-            background: rgba(35, 34, 32, 0.92);
-            border-color: var(--border);
         }
         .menu-dropdown.show { display: block; }
         .menu-item {
@@ -496,15 +446,14 @@
            ПАНЕЛЬ ДЕЙСТВИЙ (ВСПЛЫВАЮЩЕЕ МЕНЮ)
            ======================================== */
         .action-panel {
-            position: fixed; background: rgba(255, 255, 255, 0.92);
+            position: fixed; background: rgba(35, 34, 32, 0.95);
             border-radius: 18px; padding: 10px; z-index: 999;
-            box-shadow: 0 8px 28px rgba(0,0,0,0.12); animation: fadeIn 0.2s ease;
+            box-shadow: 0 8px 28px rgba(0,0,0,0.4); animation: fadeIn 0.2s ease;
             min-width: 200px; border: 1px solid var(--border);
         }
-        .dark .action-panel { background: rgba(35, 34, 32, 0.92); }
         .action-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 998;
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.3);
         }
         .action-panel-title { display: none; }
         .action-panel-buttons { display: flex; flex-direction: column; gap: 2px; }
@@ -522,12 +471,12 @@
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
             background: var(--card); border-radius: 18px; padding: 16px;
             z-index: 1000; min-width: 280px; max-width: 360px; width: 90%;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.15); border: 1px solid var(--border);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4); border: 1px solid var(--border);
         }
         .settings-panel input[type="text"] {
             width: 100%; padding: 12px 16px; border-radius: 24px;
             border: 1.5px solid var(--border); font-size: 15px;
-            font-family: var(--font); background: rgba(255,255,255,var(--opacity-card));
+            font-family: var(--font); background: rgba(46,44,41,var(--opacity-card));
             color: var(--text); outline: none; margin: 4px 0 8px;
         }
         .settings-panel input[type="text"]:focus { border-color: var(--accent); }
@@ -543,7 +492,7 @@
         .settings-toggle {
             width: 36px; height: 20px; border-radius: 10px; border: none;
             cursor: pointer; position: relative; transition: background 0.2s;
-            background: #c4b8ad; flex-shrink: 0; 
+            background: #5a5550; flex-shrink: 0; 
             min-width: 36px !important; 
             min-height: 20px !important;
         }
@@ -560,7 +509,6 @@
             font-size: 14px; cursor: pointer; color: var(--text);
             font-family: var(--font);
         }
-       
 
         /* ========================================
            ФОНОВОЕ ИЗОБРАЖЕНИЕ
@@ -568,10 +516,9 @@
         body.bg-image { background-size: cover; background-position: center; background-attachment: fixed; position: relative; }
         body.bg-image::before {
             content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.15); z-index: 0;
+            background: rgba(0,0,0,0.3); z-index: 0;
         }
         body.bg-image .app-container { position: relative; z-index: 1; }
-        body.dark.bg-image::before { background: rgba(0,0,0,0.3); }
         body.no-transition * { transition: none !important; }
 
         /* ========================================
@@ -599,7 +546,7 @@
         input, textarea, [contenteditable] { -webkit-user-select: text; user-select: text; }
         .app-container { -webkit-backface-visibility: hidden; backface-visibility: hidden; }
     </style>
-    <link rel="manifest" href="data:application/json;charset=utf-8,%7B%22name%22%3A%22%D0%9C%D0%BE%D0%B8%20%D0%BF%D0%BB%D0%B0%D0%BD%D1%8B%22%2C%22short_name%22%3A%22%D0%9F%D0%BB%D0%B0%D0%BD%D1%8B%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20100%20100'%3E%3Ctext%20y%3D'.9em'%20font-size%3D'90'%3E%F0%9F%93%85%3C%2Ftext%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22any%22%5D%7D%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f5f3f0%22%2C%22theme_color%22%3A%22%234a90d9%22%7D">
+    <link rel="manifest" href="data:application/json;charset=utf-8,%7B%22name%22%3A%22%D0%9C%D0%BE%D0%B8%20%D0%BF%D0%BB%D0%B0%D0%BD%D1%8B%22%2C%22short_name%22%3A%22%D0%9F%D0%BB%D0%B0%D0%BD%D1%8B%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20100%20100'%3E%3Ctext%20y%3D'.9em'%20font-size%3D'90'%3E%F0%9F%93%85%3C%2Ftext%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22any%22%5D%7D%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23232220%22%2C%22theme_color%22%3A%22%236b4c3b%22%7D">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
     <script>
         if ('serviceWorker' in navigator) {
@@ -608,8 +555,8 @@
     </script>
 </head>
 <body>
-        <!-- Кнопка-бургер (fixed — на телефоне и компе одинаково) -->
-            <div class="menu-wrapper" style="position:fixed;top:16px;right:max(16px, calc((100vw - 680px) / 2 + 4px));z-index:150;">
+        <!-- Кнопка-бургер -->
+        <div class="menu-wrapper" style="position:fixed;top:16px;right:max(16px, calc((100vw - 680px) / 2 + 4px));z-index:150;">
             <button class="icon-btn" id="btnMenu" aria-label="Меню">☰</button>
             <div class="menu-dropdown" id="menuDropdown">
                 <button class="menu-item" id="btnSearchMenu"><span class="menu-icon">🔍</span> Поиск</button>
@@ -622,7 +569,6 @@
                 <button class="menu-item" id="btnAppearanceMenu"><span class="menu-icon">🖌️</span> Внешний вид <span style="margin-left:auto;font-size:12px;">▼</span></button>
                 <div id="appearanceSubmenu" style="display:none;">
                     <button class="menu-item" id="btnThemeCustom" style="padding-left:34px;"><span class="menu-icon">🎨</span> Оформление</button>
-                    <button class="menu-item" id="btnThemeMenu" style="padding-left:34px;"><span class="menu-icon">🌓</span> Тема</button>
                     <button class="menu-item" id="btnOpacityMenu" style="padding-left:34px;"><span class="menu-icon">🔲</span> Прозрачность</button>
                     <button class="menu-item" id="btnViewMenu" style="padding-left:34px;"><span class="menu-icon">📋</span> Вид: Список</button>
                 </div>
@@ -726,14 +672,14 @@
             <button class="btn-sm btn-add" id="btnAddNote">+ Добавить заметку</button>
             <div id="notesList"></div>
         </div>
-        <!-- ПАНЕЛЬ ДЕЙСТВИЙ (вне секций) -->
+        <!-- ПАНЕЛЬ ДЕЙСТВИЙ -->
         <div class="action-overlay" id="actionOverlay" style="display:none;" onclick="App._closePanel()"></div>
         <div class="action-panel" id="actionPanel" style="display:none;">
             <div class="action-panel-title" id="actionPanelTitle"></div>
             <div class="action-panel-buttons" id="actionPanelButtons"></div>
             <button class="action-panel-close" id="actionPanelClose">✕</button>
         </div>
-    </div> <!-- конец app-container -->
+    </div>
     <div class="toast" id="toast"></div>
     <button class="scroll-top-btn" id="scrollTopBtn" title="Наверх">⬆</button>
 
@@ -745,12 +691,12 @@
         // КОНСТАНТЫ
         // ========================================
         const THEME_PRESETS = {
-            pastel:{'--bg':'#f8f6f2','--card':'#ffffff','--text':'#2d2a26','--text-secondary':'#7a756e','--accent':'#7eb8c9','--accent-light':'#eaf4f7','--danger':'#d4949a','--danger-light':'#faf0f1','--success':'#9cbfa7','--success-light':'#eef5f0','--warning':'#e8d5a3','--warning-light':'#fdf9f0','--border':'#e8e4dd'},
-            forest:{'--bg':'#f2f5f0','--card':'#ffffff','--text':'#2a2d2a','--text-secondary':'#6b7a6b','--accent':'#6b9e7a','--accent-light':'#e8f0e9','--danger':'#c97d7d','--danger-light':'#faf0f0','--success':'#7aaa7a','--success-light':'#e8f0e8','--warning':'#c9b87a','--warning-light':'#faf8e8','--border':'#dde4db'},
-            sunset:{'--bg':'#faf4f2','--card':'#ffffff','--text':'#2d2624','--text-secondary':'#8a7a70','--accent':'#d4948a','--accent-light':'#faf0ed','--danger':'#c97d8b','--danger-light':'#faf0f2','--success':'#9bba8a','--success-light':'#f0f5eb','--warning':'#d4b88a','--warning-light':'#faf6ed','--border':'#e8ded9'},
-            ocean:{'--bg':'#f2f5f8','--card':'#ffffff','--text':'#242a2d','--text-secondary':'#6b7a85','--accent':'#5b8fa8','--accent-light':'#e8f0f5','--danger':'#c97d7d','--danger-light':'#faf0f0','--success':'#7aaa9a','--success-light':'#e8f5f0','--warning':'#c9b87a','--warning-light':'#faf8e8','--border':'#d9e1e6'}
+            pastel:{'--bg':'#2a2825','--card':'#33312e','--text':'#e8e4dd','--text-secondary':'#b0a99e','--accent':'#8ab8c9','--accent-light':'rgba(138,184,201,0.2)','--danger':'#d4949a','--danger-light':'#3a2f30','--success':'#9cbfa7','--success-light':'#2d332f','--warning':'#c9b888','--warning-light':'#33302a','--border':'#4a4640'},
+            forest:{'--bg':'#252825','--card':'#30332e','--text':'#e0e4dd','--text-secondary':'#a0a898','--accent':'#7aaa7a','--accent-light':'rgba(122,170,122,0.2)','--danger':'#c97d7d','--danger-light':'#3a2f2f','--success':'#8aad8a','--success-light':'#2d332d','--warning':'#c9b87a','--warning-light':'#333028','--border':'#444840'},
+            sunset:{'--bg':'#2d2624','--card':'#38322e','--text':'#e8ddd9','--text-secondary':'#a89890','--accent':'#d4948a','--accent-light':'rgba(212,148,138,0.2)','--danger':'#c97d8b','--danger-light':'#3a2f32','--success':'#9bba8a','--success-light':'#2d332a','--warning':'#d4b88a','--warning-light':'#333028','--border':'#4a4039'},
+            ocean:{'--bg':'#242a2d','--card':'#2e3438','--text':'#dde4e8','--text-secondary':'#90a0a8','--accent':'#5b8fa8','--accent-light':'rgba(91,143,168,0.2)','--danger':'#c97d7d','--danger-light':'#3a2f2f','--success':'#7aaa9a','--success-light':'#2d3330','--warning':'#c9b87a','--warning-light':'#333028','--border':'#3d4448'}
         };
-        const STORAGE_KEY = 'my_plans_v18';
+        const STORAGE_KEY = 'my_plans_v19';
         const TOAST_DURATION = 2500;
         const FILTERS = Object.freeze({ ACTIVE: 'active', COMPLETED: 'completed' });
         const SMART_FOLDERS = Object.freeze({ TODAY: 'smart-today', OVERDUE: 'smart-overdue', TRASH: 'smart-trash' });
@@ -884,7 +830,16 @@
 
             function load() {
                 try {
-                    const saved = localStorage.getItem(STORAGE_KEY);
+                    // Пробуем загрузить из новой версии хранилища
+                    let saved = localStorage.getItem(STORAGE_KEY);
+                    // Если данных нет, пробуем старую версию
+                    if (!saved) {
+                        saved = localStorage.getItem('my_plans_v18');
+                        if (saved) {
+                            // Переносим данные в новое хранилище
+                            localStorage.setItem(STORAGE_KEY, saved);
+                        }
+                    }
                     if (saved) {
                         const parsed = JSON.parse(saved);
                         if (parsed && typeof parsed === 'object') data = parsed;
@@ -948,7 +903,6 @@
         // БИЗНЕС-ЛОГИКА (SERVICES)
         // ========================================
         const Services = (() => {
-            /** Возвращает задачи на сегодня */
             function getTodayTasks() {
                 const todayISO = Utils.getTodayISO();
                 const result = [];
@@ -980,7 +934,6 @@
                 return result;
             }
 
-            /** Возвращает просроченные задачи */
             function getOverdueTasks() {
                 const todayISO = Utils.getTodayISO();
                 const result = [];
@@ -1001,7 +954,6 @@
                 return [];
             }
 
-            /** Обрабатывает повторяющиеся задачи */
             function processRepeats() {
                 const now = new Date(); now.setHours(0, 0, 0, 0);
                 let hasChanges = false;
@@ -1041,7 +993,7 @@
                             const original = f.tasks.find(x => x.id === task.id);
                             if (original) { original.repeat = ''; original.repeatDays = 0; }
                             hasChanges = true;
-                        } catch (e) { /* ошибка в дате */ }
+                        } catch (e) {}
                     });
                 });
 
@@ -1323,7 +1275,7 @@
                 let bgStyle = '';
                 if (f.customImage) bgStyle = 'background-image:url(' + f.customImage + ');background-size:cover;background-position:center;';
                 else if (f.color) bgStyle = 'background:' + f.color + ';';
-                else if (f.opacity) bgStyle = 'background:rgba(255,255,255,' + f.opacity + ');';
+                else if (f.opacity) bgStyle = 'background:rgba(46,44,41,' + f.opacity + ');';
 
                 const iconHTML = '<span style="font-size:24px">' + (f.icon || '📁') + '</span>';
                 return '<div class="folder-card" style="' + bgStyle + '" data-action="' + A.OPEN_FOLDER +
@@ -1913,7 +1865,7 @@
                     '<button onclick="event.stopPropagation();App._applyPreset(\'ocean\')" style="width:70px;padding:8px;border-radius:12px;border:2px solid ' + (savedPreset === 'ocean' ? 'var(--accent)' : 'rgba(255,255,255,0.5)') + ';background:transparent;cursor:pointer;font-size:12px;position:relative;z-index:10;color:#ffffff;">Ocean</button>' +
                     '</div>' +
                     '<div style="padding:4px 0;font-size:13px;color:#ffffff;">Свой цвет (hex):</div>' +
-                    '<input type="text" id="customColorInput" placeholder="#7eb8c9" style="width:100%;padding:10px 14px;border-radius:24px;border:1.5px solid var(--border);font-size:14px;margin-bottom:8px;background:rgba(255,255,255,0.75);color:var(--text);outline:none;" onchange="App._applyCustomColor(this.value)">' +
+                    '<input type="text" id="customColorInput" placeholder="#7eb8c9" style="width:100%;padding:10px 14px;border-radius:24px;border:1.5px solid var(--border);font-size:14px;margin-bottom:8px;background:rgba(46,44,41,0.9);color:var(--text);outline:none;" onchange="App._applyCustomColor(this.value)">' +
                     '<div class="settings-divider"></div>' +
                     '<button class="action-panel-btn" onclick="App._pickPhoto()">🖼️ Выбрать фото для фона</button>' +
                     '<div class="settings-divider"></div>' +
@@ -2085,11 +2037,6 @@
                 });
                 inp.click();
             },
-            syncData() { Actions.exportData(); },
-            toggleTheme() {
-                document.body.classList.toggle('dark');
-                localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
-            },
             requestNotification() {
                 if (!('Notification' in window)) { UI.showToast('❌ Не поддерживаются'); return; }
                 if (Notification.permission === 'granted') { Actions.checkAndNotify(); }
@@ -2136,7 +2083,7 @@
                 if (!container) {
                     container = document.createElement('div');
                     container.id = 'weekViewTaskList';
-                    container.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--card);padding:20px;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.2);z-index:999;max-width:90%;max-height:80%;overflow-y:auto;';
+                    container.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--card);padding:20px;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.4);z-index:999;max-width:90%;max-height:80%;overflow-y:auto;';
                     document.body.appendChild(container);
                 }
                 container.innerHTML = list;
@@ -2144,11 +2091,10 @@
             }
         };
 
-        // Вспомогательная функция для получения элемента (для Actions и setup)
         function getEl(id) { return document.getElementById(id); }
 
         // ========================================
-        // WINDOW.APP (DRAG & DROP, ПАНЕЛЬ ДЕЙСТВИЙ)
+        // WINDOW.APP
         // ========================================
         window.App = {
             handleDragStart: function(e) {
@@ -2217,9 +2163,7 @@
                 getEl('actionOverlay').style.display = 'none';
             },
         
-            /** Показать всплывающую панель действий */
             showActionPanel: function(e, taskId, folderId, taskText, isTrash) {
-                // Пропускаем только клики по интерактивным элементам внутри задачи
                 if (e.target.closest('.task-checkbox') || e.target.closest('.subtask-item') || e.target.closest('[data-action]')) {
                     return;
                 }
@@ -2262,24 +2206,20 @@
                 panel.style.display = 'block';
             },
         
-            /** Выполнить действие из панели */
             doAction: function(action, taskId) {
                 getEl('actionPanel').style.display = 'none';
                 getEl('actionOverlay').style.display = 'none';
                 handleAction(action, { taskId: taskId });
                 UI.renderAll();
             },
-            /** Долгое нажатие на папку (начало) */
             folderTouchStart: function(e, folderId, folderName, active, completed) {
                 this._folderTouchTimer = setTimeout(() => {
                     this.showFolderPanel(e, folderId, folderName, active, completed);
                 }, 500);
             },
-            /** Долгое нажатие на папку (отмена) */
             folderTouchEnd: function(e) {
                 clearTimeout(this._folderTouchTimer);
             },
-            /** Показать панель управления папкой */
             showFolderPanel: function(e, folderId, folderName, active, completed) {
                 e.stopPropagation();
                 e.preventDefault();
@@ -2314,7 +2254,6 @@
                 overlay.style.display = 'block';
                 panel.style.display = 'block';
             },
-            /** Выполнить действие над папкой */
             doFolderAction: function(action, folderId) {
                 getEl('actionPanel').style.display = 'none';
                 getEl('actionOverlay').style.display = 'none';
@@ -2327,7 +2266,6 @@
                     Actions.deleteFolder(folderId);
                 }
             },
-            /** Показать панель управления клиентом */
             showClientPanel: function(e, clientId, clientName) {
                 e.stopPropagation();
                 e.preventDefault();
@@ -2361,7 +2299,6 @@
                 overlay.style.display = 'block';
                 panel.style.display = 'block';
             },
-            /** Выполнить действие над клиентом */
             doClientAction: function(action, clientId) {
                 getEl('actionPanel').style.display = 'none';
                 getEl('actionOverlay').style.display = 'none';
@@ -2374,7 +2311,6 @@
                     Actions.deleteClient(clientId);
                 }
             },
-            /** Показать панель для подзадачи */
             showSubtaskPanel: function(e, taskId, subtaskId) {
                 e.stopPropagation();
                 e.preventDefault();
@@ -2402,7 +2338,6 @@
                 overlay.style.display = 'block';
                 panel.style.display = 'block';
             },
-            /** Выполнить действие над подзадачей */
             doSubtaskAction: function(action, taskId, subtaskId) {
                 getEl('actionPanel').style.display = 'none';
                 getEl('actionOverlay').style.display = 'none';
@@ -2413,7 +2348,6 @@
                     Actions.deleteSubtask(taskId, subtaskId);
                 }
             },
-            /** Показать панель настроек */
             showSettingsPanel: function() {
                 const overlay = getEl('actionOverlay');
                 const panel = getEl('actionPanel');
@@ -2428,16 +2362,16 @@
                 const s = App._settings;
                 
                 buttons.innerHTML =
-                    '<div style="padding:4px 0;"><span style="font-size:13px;">✏️ Название приложения</span>' +
-                    '<input type="text" id="settingsAppName" value="' + Utils.escapeHtml(s.appName || 'День за днём') + '" onchange="App._updateSetting(\'appName\', this.value)" style="width:100%;padding:12px 16px;border-radius:24px;border:1.5px solid #e0d9d0;font-size:15px;font-family:var(--font);background:rgba(250,247,244,0.9);color:#2d2a26;outline:none;margin:4px 0 8px;box-sizing:border-box;"></div>' +
+                    '<div style="padding:4px 0;"><span style="font-size:13px;color:var(--text);">✏️ Название приложения</span>' +
+                    '<input type="text" id="settingsAppName" value="' + Utils.escapeHtml(s.appName || 'День за днём') + '" onchange="App._updateSetting(\'appName\', this.value)" style="width:100%;padding:12px 16px;border-radius:24px;border:1.5px solid var(--border);font-size:15px;font-family:var(--font);background:rgba(46,44,41,0.9);color:var(--text);outline:none;margin:4px 0 8px;box-sizing:border-box;"></div>' +
                     '<div class="settings-divider"></div>' +
-                    '<div class="settings-row"><span>📅 Календарь</span><button class="settings-toggle' + (s.showCalendar !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showCalendar\', this)" style="width:36px;height:20px;min-width:36px;min-height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;background:#c4b8ad;flex-shrink:0;"></button></div>' +
-                    '<div class="settings-row"><span>📊 Статистика</span><button class="settings-toggle' + (s.showStats !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showStats\', this)" style="width:36px;height:20px;min-width:36px;min-height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;background:#c4b8ad;flex-shrink:0;"></button></div>' +
-                    '<div class="settings-row"><span>🧠 ИИ</span><button class="settings-toggle' + (s.showAI !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showAI\', this)" style="width:36px;height:20px;min-width:36px;min-height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;background:#c4b8ad;flex-shrink:0;"></button></div>' +
-                    '<div class="settings-row"><span>👥 Дни рождения</span><button class="settings-toggle' + (s.showClients !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showClients\', this)" style="width:36px;height:20px;min-width:36px;min-height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;background:#c4b8ad;flex-shrink:0;"></button></div>' +
-                    '<div class="settings-row"><span>💡 Идеи</span><button class="settings-toggle' + (s.showIdeas !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showIdeas\', this)" style="width:36px;height:20px;min-width:36px;min-height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;background:#c4b8ad;flex-shrink:0;"></button></div>' +
+                    '<div class="settings-row"><span>📅 Календарь</span><button class="settings-toggle' + (s.showCalendar !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showCalendar\', this)"></button></div>' +
+                    '<div class="settings-row"><span>📊 Статистика</span><button class="settings-toggle' + (s.showStats !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showStats\', this)"></button></div>' +
+                    '<div class="settings-row"><span>🧠 ИИ</span><button class="settings-toggle' + (s.showAI !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showAI\', this)"></button></div>' +
+                    '<div class="settings-row"><span>👥 Дни рождения</span><button class="settings-toggle' + (s.showClients !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showClients\', this)"></button></div>' +
+                    '<div class="settings-row"><span>💡 Идеи</span><button class="settings-toggle' + (s.showIdeas !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showIdeas\', this)"></button></div>' +
                     '<div class="settings-divider"></div>' +
-                    '<div class="settings-row"><span>📅 Обзор недели</span><button class="settings-toggle' + (s.showWeekOverview !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showWeekOverview\', this)" style="width:36px;height:20px;min-width:36px;min-height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;background:#c4b8ad;flex-shrink:0;"></button></div>' +
+                    '<div class="settings-row"><span>📅 Обзор недели</span><button class="settings-toggle' + (s.showWeekOverview !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showWeekOverview\', this)"></button></div>' +
                     '<button class="settings-close" onclick="App._closePanel()">Закрыть</button>';
                 
                 panel.style.position = 'fixed';
@@ -2449,14 +2383,6 @@
                 
                 overlay.style.display = 'block';
                 panel.style.display = 'block';
-                
-                // Принудительно применяем фон к полю ввода
-                setTimeout(() => {
-                    const inp = document.getElementById('settingsAppName');
-                    if (inp) inp.style.background = 'rgba(250,247,244,0.9)';
-                    const toggles = buttons.querySelectorAll('.settings-toggle.on');
-                    toggles.forEach(t => { t.style.background = '#5c3d2e'; });
-                }, 50);
             },
             
             _applyPreset: function(name) {
@@ -2466,8 +2392,6 @@
                 localStorage.setItem('theme_preset', name);
                 localStorage.removeItem('custom_theme');
                 UI.showToast('🎨 Тема: ' + name);
-                // Убираем вызов changeTheme(), чтобы панель не пересоздавалась
-                // Вместо этого просто обновляем рамки кнопок
                 const buttons = getEl('actionPanelButtons');
                 if (buttons && buttons.style.display !== 'none') {
                     const btns = buttons.querySelectorAll('button[onclick*="_applyPreset"]');
@@ -2481,10 +2405,8 @@
             _applyCustomColor: function(color) {
                 if (!color || !color.startsWith('#')) return;
                 const root = document.documentElement;
-                ['--bg','--accent-light','--accent'].forEach(v => root.style.setProperty(v, color));
-                root.style.setProperty('--card', '#ffffff');
-                root.style.setProperty('--text', '#2d2a26');
-                root.style.setProperty('--text-secondary', '#7a756e');
+                root.style.setProperty('--accent', color);
+                root.style.setProperty('--accent-light', color + '33');
                 localStorage.setItem('custom_theme', color);
                 localStorage.removeItem('theme_preset');
                 UI.showToast('🎨 Цвет: ' + color);
@@ -2551,12 +2473,10 @@
             _applySettings: function() {
                 const s = this._settings;
                 
-                // Название
                 const titleEl = document.querySelector('.app-title');
                 if (titleEl) titleEl.textContent = s.appName || 'День за днём';
                 document.title = s.appName || 'Мои планы';
                 
-                // Вкладки
                 const tabMap = {
                     showCalendar: 'calendar',
                     showStats: 'stats',
@@ -2569,13 +2489,11 @@
                     if (tab) tab.style.display = (s[key] !== false) ? '' : 'none';
                 });
                 
-                // Обзор недели
                 const wo = document.getElementById('weekOverview');
                 if (wo) {
                     if (s.showWeekOverview === false) {
                         wo.style.display = 'none';
                     } else {
-                        // Если настройка включена — показываем
                         wo.style.display = 'flex';
                     }
                 }
@@ -2621,11 +2539,6 @@
                 UI.renderAll();
                 setTimeout(() => getEl('noteText').focus(), 200);
             });
-            getEl('btnThemeMenu').addEventListener('click', function() {
-                getEl('menuDropdown').classList.remove('show');
-                getEl('appearanceSubmenu').style.display = 'none';
-                Actions.toggleTheme();
-            });
             getEl('btnThemeCustom').addEventListener('click', function() {
                 getEl('menuDropdown').classList.remove('show');
                 getEl('appearanceSubmenu').style.display = 'none';
@@ -2641,17 +2554,11 @@
                 State.setFolderViewMode(newMode);
                 State.save();
                 UI.renderFolderList();
-                // Обновим текст кнопки
                 const btn = getEl('btnViewMenu');
                 const icon = newMode === 'list' ? '📋' : '🔲';
                 const label = newMode === 'list' ? 'Список' : 'Сетка';
                 btn.innerHTML = '<span class="menu-icon">' + icon + '</span> Вид: ' + label;
                 UI.showToast(newMode === 'list' ? '📋 Вид: Список' : '🔲 Вид: Сетка');
-            });
-
-            getEl('actionPanelClose').addEventListener('click', function() {
-                getEl('actionPanel').style.display = 'none';
-                getEl('actionOverlay').style.display = 'none';
             });
 
             getEl('btnOpacityMenu').addEventListener('click', function() {
@@ -2669,7 +2576,7 @@
                 title.style.display = 'block';
                 
                 buttons.innerHTML =
-                    '<div id="opacityValue" style="text-align:center;font-size:24px;margin:8px 0;">' + Math.round(currentOpacity * 100) + '%</div>' +
+                    '<div id="opacityValue" style="text-align:center;font-size:24px;margin:8px 0;color:var(--text);">' + Math.round(currentOpacity * 100) + '%</div>' +
                     '<input type="range" id="opacitySlider" min="10" max="100" value="' + Math.round(currentOpacity * 100) + '" style="width:100%;margin:8px 0;" oninput="App._updateOpacity(this.value)">' +
                     '<button class="settings-close" onclick="App._closePanel()">Закрыть</button>';
                 
@@ -2778,9 +2685,6 @@
                 }, 600);
             });
 
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') document.body.classList.add('dark');
-
             const stb = getEl('scrollTopBtn');
             window.addEventListener('scroll', function() { stb.classList.toggle('visible', window.scrollY > 300); });
             stb.addEventListener('click', function() { window.scrollTo({ top: 0, behavior: 'smooth' }); });
@@ -2852,9 +2756,8 @@
                 }
                 const savedColor = localStorage.getItem('custom_theme');
                 if (savedColor) {
-                    ['--bg','--card','--text','--text-secondary','--accent','--accent-light',
-                     '--danger','--danger-light','--success','--success-light','--warning','--warning-light','--border']
-                    .forEach(v => document.documentElement.style.setProperty(v, savedColor));
+                    document.documentElement.style.setProperty('--accent', savedColor);
+                    document.documentElement.style.setProperty('--accent-light', savedColor + '33');
                 }
                 const savedBg = localStorage.getItem('bg_image');
                 if (savedBg) {
@@ -2863,7 +2766,6 @@
                     } else {
                         document.body.style.backgroundImage = 'url(' + savedBg + ')';
                         document.body.classList.add('bg-image');
-                        if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark');
                     }
                 }
                 const savedOpacity = localStorage.getItem('opacity');
@@ -2873,10 +2775,12 @@
                     document.documentElement.style.setProperty('--opacity-btn', savedOpacity);
                 }
 
+                // Чистим старый ключ темы
+                localStorage.removeItem('theme');
+
                 State.load();
                 App._applySettings();
-                document.body.classList.add('dark');
-                // Обновим текст кнопки вида в меню
+                
                 const currentMode = State.getFolderViewMode();
                 const viewIcon = currentMode === 'list' ? '📋' : '🔲';
                 const viewLabel = currentMode === 'list' ? 'Список' : 'Сетка';
@@ -2895,7 +2799,7 @@
                 if (quoteEl) {
                     quoteEl.textContent = '«' + QUOTES[Math.floor(Math.random() * QUOTES.length)] + '»';
                     quoteEl.style.opacity = '1';
-                    quoteEl.style.color = document.body.classList.contains('dark') ? '#e8e4dd' : '#2d2a26';
+                    quoteEl.style.color = '#e8e4dd';
                     quoteEl.style.display = 'block';
                 }
                 setInterval(() => {
