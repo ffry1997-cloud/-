@@ -1870,7 +1870,7 @@
                     '<button onclick="event.stopPropagation();App._applyPreset(\'sunset\')" style="width:70px;padding:8px;border-radius:12px;border:2px solid ' + (savedPreset === 'sunset' ? 'var(--accent)' : 'rgba(255,255,255,0.5)') + ';background:transparent;cursor:pointer;font-size:12px;position:relative;z-index:10;color:#ffffff;">Sunset</button>' +
                     '<button onclick="event.stopPropagation();App._applyPreset(\'ocean\')" style="width:70px;padding:8px;border-radius:12px;border:2px solid ' + (savedPreset === 'ocean' ? 'var(--accent)' : 'rgba(255,255,255,0.5)') + ';background:transparent;cursor:pointer;font-size:12px;position:relative;z-index:10;color:#ffffff;">Ocean</button>' +
                     '</div>' +
-                    '<div style="padding:4px 0 8px;font-size:13px;color:#ffffff;">Свой тема</div>' +
+                    '<div style="padding:4px 0 8px;font-size:13px;color:#ffffff;">Своя тема</div>' +
                     '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">' +
                     '<input type="color" id="customColorInput" value="' + (localStorage.getItem('custom_theme') || '#6b4c3b') + '" style="width:44px;height:44px;border-radius:50%;border:1.5px solid var(--border);cursor:pointer;padding:0;overflow:hidden;background:transparent;-webkit-appearance:none;" onchange="App._applyCustomColor(this.value)">' +
                     '<span id="customColorLabel" style="font-size:14px;color:var(--text);font-weight:400;">Выбрать свою тему</span>' +
@@ -2414,16 +2414,25 @@
             _applyCustomColor: function(color) {
                 if (!color || !color.startsWith('#')) return;
                 const root = document.documentElement;
-                root.style.setProperty('--accent', color);
-                root.style.setProperty('--accent-light', color + '33');
+                
+                // Берём за основу basic и меняем акцент
+                const base = THEME_PRESETS['basic'];
+                Object.keys(base).forEach(key => {
+                    if (key === '--accent') {
+                        root.style.setProperty(key, color);
+                    } else if (key === '--accent-light') {
+                        root.style.setProperty(key, color + '33');
+                    } else {
+                        root.style.setProperty(key, base[key]);
+                    }
+                });
+                
                 localStorage.setItem('custom_theme', color);
-                UI.showToast('🎨 Цвет: ' + color);
+                UI.showToast('🎨 Своя тема: ' + color);
                 const picker = document.getElementById('customColorInput');
                 if (picker) picker.value = color;
-                // Жирная подпись
                 const label = document.getElementById('customColorLabel');
                 if (label) label.style.fontWeight = '700';
-                // Сбрасываем обводки всех кнопок тем
                 const buttons = getEl('actionPanelButtons');
                 if (buttons && buttons.style.display !== 'none') {
                     const btns = buttons.querySelectorAll('button[onclick*="_applyPreset"]');
