@@ -1127,22 +1127,38 @@
                     })
                     .filter(c => c !== null);
             }
-
+            
             function getTasksForNotification() {
                 const now = new Date();
                 const oneHourLater = new Date(now.getTime() + 3600000);
                 const result = [];
-
+                const todayISO = Utils.formatDateISO(new Date());
+                
                 State.getFolders().forEach(f => {
                     if (f.id === SMART_FOLDERS.TRASH) return;
                     Utils.getValidTasksArray(f.tasks).forEach(t => {
-                        if (!t || t.completed || !t.date || !t.time) return;
-                        const dt = new Date(t.date + 'T' + t.time);
-                        if (isNaN(dt.getTime())) return;
-                        if (dt > now && dt <= oneHourLater) result.push({ ...t, folderName: f.name });
+                        if (!t || t.completed || !t.date) return;
+                        
+                        // Задачи с временем — уведомление за час
+                        if (t.time) {
+                            const dt = new Date(t.date + 'T' + t.time);
+                            if (!isNaN(dt.getTime()) && dt > now && dt <= oneHourLater) {
+                                result.push({ ...t, folderName: f.name });
+                            }
+                        } 
+                        // Задачи без времени, но на сегодня — уведомление в 9:00
+                        else if (t.date === todayISO) {
+                            const nineAM = new Date();
+                            nineAM.setHours(9, 0, 0, 0);
+                            const nineTen = new Date();
+                            nineTen.setHours(9, 10, 0, 0);
+                            if (now >= nineAM && now <= nineTen) {
+                                result.push({ ...t, folderName: f.name });
+                            }
+                        }
                     });
                 });
-
+                
                 return result;
             }
 
