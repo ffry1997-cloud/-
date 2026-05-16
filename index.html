@@ -517,9 +517,9 @@
             box-shadow: 0 8px 32px rgba(0,0,0,0.15); border: 1px solid var(--border);
         }
         .settings-panel input[type="text"] {
-            width: 100%; padding: 10px 14px; border-radius: 12px;
+            width: 100%; padding: 10px 14px; border-radius: 24px;
             border: 1.5px solid var(--border); font-size: 14px;
-            font-family: var(--font); background: var(--bg);
+            font-family: var(--font); background: rgba(255,255,255,var(--opacity-card));
             color: var(--text); outline: none; margin: 4px 0 8px;
         }
         .settings-panel input[type="text"]:focus { border-color: var(--accent); }
@@ -533,17 +533,17 @@
             opacity: 0.5;
         }
         .settings-toggle {
-            width: 48px; height: 26px; border-radius: 13px; border: none;
+            width: 40px; height: 22px; border-radius: 11px; border: none;
             cursor: pointer; position: relative; transition: background 0.2s;
             background: #ccc; flex-shrink: 0;
         }
         .settings-toggle.on { background: var(--accent); }
         .settings-toggle::after {
-            content: ''; position: absolute; top: 3px; left: 3px;
-            width: 20px; height: 20px; border-radius: 50%;
+            content: ''; position: absolute; top: 2px; left: 2px;
+            width: 18px; height: 18px; border-radius: 50%;
             background: #fff; transition: transform 0.2s;
         }
-        .settings-toggle.on::after { transform: translateX(22px); }
+        .settings-toggle.on::after { transform: translateX(18px); }
         .settings-close {
             width: 100%; margin-top: 12px; padding: 10px; border-radius: 12px;
             border: 1px solid var(--border); background: transparent;
@@ -2492,16 +2492,19 @@
                 // Название
                 const titleEl = document.querySelector('.app-title');
                 if (titleEl) titleEl.textContent = s.appName || 'День за днём';
-                if (s.appName) document.title = s.appName;
+                document.title = s.appName || 'Мои планы';
                 
                 // Вкладки
-                const tabs = {
-                    calendar: 'calendar', stats: 'stats', ai: 'ai',
-                    clients: 'clients', ideas: 'ideas'
+                const tabMap = {
+                    showCalendar: 'calendar',
+                    showStats: 'stats',
+                    showAI: 'ai',
+                    showClients: 'clients',
+                    showIdeas: 'ideas'
                 };
-                Object.keys(tabs).forEach(k => {
-                    const tab = document.querySelector('#mainTabs .tab[data-tab="' + tabs[k] + '"]');
-                    if (tab) tab.style.display = (s['show' + k.charAt(0).toUpperCase() + k.slice(1)] !== false) ? '' : 'none';
+                Object.keys(tabMap).forEach(key => {
+                    const tab = document.querySelector('#mainTabs .tab[data-tab="' + tabMap[key] + '"]');
+                    if (tab) tab.style.display = (s[key] !== false) ? '' : 'none';
                 });
                 
                 // Цитаты
@@ -2512,10 +2515,12 @@
                 const customEl = document.querySelector('.custom-quotes');
                 if (customEl) customEl.style.display = (s.showCustomQuotes !== false) ? '' : 'none';
                 
-                // Обзор недели
-                if (s.showWeekOverview !== false) {
-                    const wo = document.getElementById('weekOverview');
-                    if (wo && wo.style.display === 'none') wo.style.display = 'flex';
+                // Обзор недели — если выключен, скрываем
+                const wo = document.getElementById('weekOverview');
+                if (wo) {
+                    if (s.showWeekOverview === false) {
+                        wo.style.display = 'none';
+                    }
                 }
             }
          };
