@@ -544,6 +544,8 @@
            ======================================== */
         button, [role="button"], .clickable, .icon-btn { min-height: 44px; min-width: 44px; }
         input, textarea, [contenteditable] { -webkit-user-select: text; user-select: text; }
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type="color"]::-webkit-color-swatch { border: none; border-radius: 50%; }
         .app-container { -webkit-backface-visibility: hidden; backface-visibility: hidden; }
     </style>
     <link rel="manifest" href="data:application/json;charset=utf-8,%7B%22name%22%3A%22%D0%9C%D0%BE%D0%B8%20%D0%BF%D0%BB%D0%B0%D0%BD%D1%8B%22%2C%22short_name%22%3A%22%D0%9F%D0%BB%D0%B0%D0%BD%D1%8B%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20100%20100'%3E%3Ctext%20y%3D'.9em'%20font-size%3D'90'%3E%F0%9F%93%85%3C%2Ftext%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22any%22%5D%7D%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23232220%22%2C%22theme_color%22%3A%22%236b4c3b%22%7D">
@@ -1870,7 +1872,7 @@
                     '</div>' +
                     '<div style="padding:4px 0;font-size:13px;color:#ffffff;">Свой цвет (hex):</div>' +
                     '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">' +
-                    '<input type="color" id="customColorInput" value="#6b4c3b" style="width:44px;height:44px;border-radius:50%;border:2px solid var(--border);cursor:pointer;padding:0;overflow:hidden;" onchange="App._applyCustomColor(this.value)">' +
+                    '<input type="color" id="customColorInput" value="' + (localStorage.getItem('custom_theme') || '#6b4c3b') + '" style="width:44px;height:44px;border-radius:50%;border:1.5px solid var(--border);cursor:pointer;padding:0;overflow:hidden;background:transparent;-webkit-appearance:none;" onchange="App._applyCustomColor(this.value)">' +
                     '<span id="customColorLabel" style="font-size:14px;color:var(--text);font-weight:400;">Выбрать свой цвет</span>' +
                     '</div>' +
                     '<div class="settings-divider"></div>' +
@@ -2396,7 +2398,6 @@
                 if (!preset) return;
                 Object.keys(preset).forEach(key => document.documentElement.style.setProperty(key, preset[key]));
                 localStorage.setItem('theme_preset', name);
-                localStorage.removeItem('custom_theme');
                 UI.showToast('🎨 Тема: ' + name);
                 const buttons = getEl('actionPanelButtons');
                 if (buttons && buttons.style.display !== 'none') {
