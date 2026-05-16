@@ -2406,6 +2406,8 @@
                         btn.style.border = '2px solid ' + (presetName === name ? 'var(--accent)' : 'rgba(255,255,255,0.5)');
                     });
                 }
+                const label = document.getElementById('customColorLabel');
+                if (label) label.style.fontWeight = '400';
             },
             
             _applyCustomColor: function(color) {
@@ -2416,9 +2418,19 @@
                 localStorage.setItem('custom_theme', color);
                 localStorage.removeItem('theme_preset');
                 UI.showToast('🎨 Цвет: ' + color);
-                // Обновим цвет пикера
                 const picker = document.getElementById('customColorInput');
                 if (picker) picker.value = color;
+                // Жирная подпись
+                const label = document.getElementById('customColorLabel');
+                if (label) label.style.fontWeight = '700';
+                // Сбрасываем обводки всех кнопок тем
+                const buttons = getEl('actionPanelButtons');
+                if (buttons && buttons.style.display !== 'none') {
+                    const btns = buttons.querySelectorAll('button[onclick*="_applyPreset"]');
+                    btns.forEach(btn => {
+                        btn.style.border = '2px solid rgba(255,255,255,0.5)';
+                    });
+                }
             },
             
             _pickPhoto: function() {
