@@ -510,6 +510,46 @@
         .action-panel-btn.delete { color: var(--danger); }
         .action-panel-btn.delete:hover { background: var(--danger-light); }
         .action-panel-close { display: none; }
+        .settings-panel {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: var(--card); border-radius: 18px; padding: 16px;
+            z-index: 1000; min-width: 280px; max-width: 360px; width: 90%;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15); border: 1px solid var(--border);
+        }
+        .settings-panel input[type="text"] {
+            width: 100%; padding: 10px 14px; border-radius: 12px;
+            border: 1.5px solid var(--border); font-size: 14px;
+            font-family: var(--font); background: var(--bg);
+            color: var(--text); outline: none; margin: 4px 0 8px;
+        }
+        .settings-panel input[type="text"]:focus { border-color: var(--accent); }
+        .settings-row {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 10px 4px; gap: 12px;
+        }
+        .settings-row span { font-size: 14px; }
+        .settings-divider {
+            height: 1px; background: var(--border); margin: 6px 0;
+            opacity: 0.5;
+        }
+        .settings-toggle {
+            width: 48px; height: 26px; border-radius: 13px; border: none;
+            cursor: pointer; position: relative; transition: background 0.2s;
+            background: #ccc; flex-shrink: 0;
+        }
+        .settings-toggle.on { background: var(--accent); }
+        .settings-toggle::after {
+            content: ''; position: absolute; top: 3px; left: 3px;
+            width: 20px; height: 20px; border-radius: 50%;
+            background: #fff; transition: transform 0.2s;
+        }
+        .settings-toggle.on::after { transform: translateX(22px); }
+        .settings-close {
+            width: 100%; margin-top: 12px; padding: 10px; border-radius: 12px;
+            border: 1px solid var(--border); background: transparent;
+            font-size: 14px; cursor: pointer; color: var(--text);
+            font-family: var(--font);
+        }
 
         /* ========================================
            ФОНОВОЕ ИЗОБРАЖЕНИЕ
@@ -570,6 +610,7 @@
                 <button class="menu-item" id="btnThemeCustom"><span class="menu-icon">🎨</span> Оформление</button>
                 <button class="menu-item" id="btnThemeMenu"><span class="menu-icon">🌓</span> Тема</button>
                 <button class="menu-item" id="btnOpacityMenu"><span class="menu-icon">🔲</span> Прозрачность</button>
+                <button class="menu-item" id="btnSettingsMenu"><span class="menu-icon">⚙️</span> Настройки интерфейса</button>
                 <button class="menu-item" id="btnExportMenu"><span class="menu-icon">📤</span> Экспорт</button>
                 <button class="menu-item" id="btnImportMenu"><span class="menu-icon">📥</span> Импорт</button>
                 <button class="menu-item" id="btnViewMenu"><span class="menu-icon">📋</span> Вид: Список</button>
@@ -2390,8 +2431,94 @@
                 } else if (action === 'delete') {
                     Actions.deleteSubtask(taskId, subtaskId);
                 }
+            },
+            /** Показать панель настроек */
+            showSettingsPanel: function() {
+                const overlay = getEl('actionOverlay');
+                const panel = getEl('actionPanel');
+                const title = getEl('actionPanelTitle');
+                const buttons = getEl('actionPanelButtons');
+                
+                getEl('menuDropdown').classList.remove('show');
+                
+                title.textContent = '⚙️ Настройки';
+                
+                const s = App._settings;
+                
+                buttons.innerHTML =
+                    '<div style="padding:4px 0;"><span style="font-size:13px;">✏️ Название приложения</span>' +
+                    '<input type="text" id="settingsAppName" value="' + Utils.escapeHtml(s.appName || 'День за днём') + '" onchange="App._updateSetting(\'appName\', this.value)"></div>' +
+                    '<div class="settings-divider"></div>' +
+                    '<div class="settings-row"><span>📅 Календарь</span><button class="settings-toggle' + (s.showCalendar !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showCalendar\', this)"></button></div>' +
+                    '<div class="settings-row"><span>📊 Статистика</span><button class="settings-toggle' + (s.showStats !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showStats\', this)"></button></div>' +
+                    '<div class="settings-row"><span>🧠 ИИ</span><button class="settings-toggle' + (s.showAI !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showAI\', this)"></button></div>' +
+                    '<div class="settings-row"><span>👥 Дни рождения</span><button class="settings-toggle' + (s.showClients !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showClients\', this)"></button></div>' +
+                    '<div class="settings-row"><span>💡 Идеи</span><button class="settings-toggle' + (s.showIdeas !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showIdeas\', this)"></button></div>' +
+                    '<div class="settings-divider"></div>' +
+                    '<div class="settings-row"><span>💬 Цитаты</span><button class="settings-toggle' + (s.showQuote !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showQuote\', this)"></button></div>' +
+                    '<div class="settings-row"><span>📝 Свои цитаты</span><button class="settings-toggle' + (s.showCustomQuotes !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showCustomQuotes\', this)"></button></div>' +
+                    '<div class="settings-row"><span>📅 Обзор недели</span><button class="settings-toggle' + (s.showWeekOverview !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showWeekOverview\', this)"></button></div>' +
+                    '<button class="settings-close" onclick="App._closePanel()">Закрыть</button>';
+                
+                panel.style.position = 'fixed';
+                panel.style.top = '50%';
+                panel.style.left = '50%';
+                panel.style.transform = 'translate(-50%, -50%)';
+                panel.style.maxWidth = '360px';
+                panel.style.width = '90%';
+                
+                overlay.style.display = 'block';
+                panel.style.display = 'block';
+            },
+            
+            _settings: JSON.parse(localStorage.getItem('app_settings') || '{}'),
+            
+            _toggleSetting: function(key, btn) {
+                this._settings[key] = !this._settings[key];
+                localStorage.setItem('app_settings', JSON.stringify(this._settings));
+                btn.classList.toggle('on');
+                this._applySettings();
+            },
+            
+            _updateSetting: function(key, value) {
+                this._settings[key] = value;
+                localStorage.setItem('app_settings', JSON.stringify(this._settings));
+                this._applySettings();
+            },
+            
+            _applySettings: function() {
+                const s = this._settings;
+                
+                // Название
+                const titleEl = document.querySelector('.app-title');
+                if (titleEl) titleEl.textContent = s.appName || 'День за днём';
+                if (s.appName) document.title = s.appName;
+                
+                // Вкладки
+                const tabs = {
+                    calendar: 'calendar', stats: 'stats', ai: 'ai',
+                    clients: 'clients', ideas: 'ideas'
+                };
+                Object.keys(tabs).forEach(k => {
+                    const tab = document.querySelector('#mainTabs .tab[data-tab="' + tabs[k] + '"]');
+                    if (tab) tab.style.display = (s['show' + k.charAt(0).toUpperCase() + k.slice(1)] !== false) ? '' : 'none';
+                });
+                
+                // Цитаты
+                const quoteEl = document.getElementById('bgQuote');
+                if (quoteEl) quoteEl.style.display = (s.showQuote !== false) ? '' : 'none';
+                
+                // Свои цитаты
+                const customEl = document.querySelector('.custom-quotes');
+                if (customEl) customEl.style.display = (s.showCustomQuotes !== false) ? '' : 'none';
+                
+                // Обзор недели
+                if (s.showWeekOverview !== false) {
+                    const wo = document.getElementById('weekOverview');
+                    if (wo && wo.style.display === 'none') wo.style.display = 'flex';
+                }
             }
-        };
+         };
        
 
         // ========================================
@@ -2471,7 +2598,11 @@
                 localStorage.setItem('opacity', num);
                 UI.showToast('🔲 Прозрачность: ' + num);
             });
-
+            
+            getEl('btnSettingsMenu').addEventListener('click', function() {
+                App.showSettingsPanel();
+            });
+            
             getEl('btnMenu').addEventListener('click', function(e) {
                 e.stopPropagation();
                 getEl('menuDropdown').classList.toggle('show');
@@ -2645,6 +2776,7 @@
                 }
 
                 State.load();
+                App._applySettings();
                 document.body.classList.add('dark');
                 // Обновим текст кнопки вида в меню
                 const currentMode = State.getFolderViewMode();
