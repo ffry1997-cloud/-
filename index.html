@@ -2467,7 +2467,6 @@
                     '<div class="settings-row"><span>💡 Идеи</span><button class="settings-toggle' + (s.showIdeas !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showIdeas\', this)" style="width:36px;height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;background:#ccc;flex-shrink:0;"></button></div>' +
                     '<div class="settings-divider"></div>' +
                     '<div class="settings-row"><span>💬 Цитаты</span><button class="settings-toggle' + (s.showQuote !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showQuote\', this)" style="width:36px;height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;background:#ccc;flex-shrink:0;"></button></div>' +
-                    '<div class="settings-row"><span>📝 Свои цитаты</span><button class="settings-toggle' + (s.showCustomQuotes !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showCustomQuotes\', this)" style="width:36px;height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;background:#ccc;flex-shrink:0;"></button></div>' +
                     '<div class="settings-row"><span>📅 Обзор недели</span><button class="settings-toggle' + (s.showWeekOverview !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showWeekOverview\', this)" style="width:36px;height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;background:#ccc;flex-shrink:0;"></button></div>' +
                     '<button class="settings-close" onclick="App._closePanel()">Закрыть</button>';
                 
@@ -2527,10 +2526,6 @@
                 // Цитаты
                 const quoteEl = document.getElementById('bgQuote');
                 if (quoteEl) quoteEl.style.display = (s.showQuote !== false) ? '' : 'none';
-                
-                // Свои цитаты
-                const customEl = document.querySelector('.custom-quotes');
-                if (customEl) customEl.style.display = (s.showCustomQuotes !== false) ? '' : 'none';
                 
                 // Обзор недели
                 const wo = document.getElementById('weekOverview');
