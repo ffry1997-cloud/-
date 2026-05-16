@@ -2458,16 +2458,16 @@
                 
                 buttons.innerHTML =
                     '<div style="padding:4px 0;"><span style="font-size:13px;">✏️ Название приложения</span>' +
-                    '<input type="text" id="settingsAppName" value="' + Utils.escapeHtml(s.appName || 'День за днём') + '" onchange="App._updateSetting(\'appName\', this.value)" style="width:100%;padding:12px 16px;border-radius:24px;border:1.5px solid var(--border);font-size:15px;font-family:var(--font);background:rgba(255,255,255,0.75);color:var(--text);outline:none;margin:4px 0 8px;box-sizing:border-box;"></div>' +
+                    '<input type="text" id="settingsAppName" value="' + Utils.escapeHtml(s.appName || 'День за днём') + '" onchange="App._updateSetting(\'appName\', this.value)" style="width:100%;padding:12px 16px;border-radius:24px;border:1.5px solid #e0d9d0;font-size:15px;font-family:var(--font);background:rgba(250,247,244,0.9);color:#2d2a26;outline:none;margin:4px 0 8px;box-sizing:border-box;"></div>' +
                     '<div class="settings-divider"></div>' +
-                    '<div class="settings-row"><span>📅 Календарь</span><button class="settings-toggle' + (s.showCalendar !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showCalendar\', this)" style="width:36px;height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;background:#ccc;flex-shrink:0;"></button></div>' +
-                    '<div class="settings-row"><span>📊 Статистика</span><button class="settings-toggle' + (s.showStats !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showStats\', this)" style="width:36px;height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;background:#ccc;flex-shrink:0;"></button></div>' +
-                    '<div class="settings-row"><span>🧠 ИИ</span><button class="settings-toggle' + (s.showAI !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showAI\', this)" style="width:36px;height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;background:#ccc;flex-shrink:0;"></button></div>' +
-                    '<div class="settings-row"><span>👥 Дни рождения</span><button class="settings-toggle' + (s.showClients !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showClients\', this)" style="width:36px;height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;background:#ccc;flex-shrink:0;"></button></div>' +
-                    '<div class="settings-row"><span>💡 Идеи</span><button class="settings-toggle' + (s.showIdeas !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showIdeas\', this)" style="width:36px;height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;background:#ccc;flex-shrink:0;"></button></div>' +
+                    '<div class="settings-row"><span>📅 Календарь</span><button class="settings-toggle' + (s.showCalendar !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showCalendar\', this)" style="width:36px;height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;background:#c4b8ad;flex-shrink:0;"></button></div>' +
+                    '<div class="settings-row"><span>📊 Статистика</span><button class="settings-toggle' + (s.showStats !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showStats\', this)" style="width:36px;height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;background:#c4b8ad;flex-shrink:0;"></button></div>' +
+                    '<div class="settings-row"><span>🧠 ИИ</span><button class="settings-toggle' + (s.showAI !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showAI\', this)" style="width:36px;height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;background:#c4b8ad;flex-shrink:0;"></button></div>' +
+                    '<div class="settings-row"><span>👥 Дни рождения</span><button class="settings-toggle' + (s.showClients !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showClients\', this)" style="width:36px;height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;background:#c4b8ad;flex-shrink:0;"></button></div>' +
+                    '<div class="settings-row"><span>💡 Идеи</span><button class="settings-toggle' + (s.showIdeas !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showIdeas\', this)" style="width:36px;height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;background:#c4b8ad;flex-shrink:0;"></button></div>' +
                     '<div class="settings-divider"></div>' +
-                    '<div class="settings-row"><span>💬 Цитаты</span><button class="settings-toggle' + (s.showQuote !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showQuote\', this)" style="width:36px;height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;background:#ccc;flex-shrink:0;"></button></div>' +
-                    '<div class="settings-row"><span>📅 Обзор недели</span><button class="settings-toggle' + (s.showWeekOverview !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showWeekOverview\', this)" style="width:36px;height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;background:#ccc;flex-shrink:0;"></button></div>' +
+                    '<div class="settings-row"><span>💬 Цитаты</span><button class="settings-toggle' + (s.showQuote !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showQuote\', this)" style="width:36px;height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;background:#c4b8ad;flex-shrink:0;"></button></div>' +
+                    '<div class="settings-row"><span>📅 Обзор недели</span><button class="settings-toggle' + (s.showWeekOverview !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showWeekOverview\', this)" style="width:36px;height:20px;border-radius:10px;border:none;cursor:pointer;position:relative;background:#c4b8ad;flex-shrink:0;"></button></div>' +
                     '<button class="settings-close" onclick="App._closePanel()">Закрыть</button>';
                 
                 panel.style.position = 'fixed';
@@ -2483,7 +2483,9 @@
                 // Принудительно применяем фон к полю ввода
                 setTimeout(() => {
                     const inp = document.getElementById('settingsAppName');
-                    if (inp) inp.style.background = 'rgba(255,255,255,0.75)';
+                    if (inp) inp.style.background = 'rgba(250,247,244,0.9)';
+                    const toggles = buttons.querySelectorAll('.settings-toggle.on');
+                    toggles.forEach(t => { t.style.background = '#5c3d2e'; });
                 }, 50);
             },
             
