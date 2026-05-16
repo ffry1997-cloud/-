@@ -1234,10 +1234,7 @@
                 if (searchResults !== null) { renderSearchResults(c, searchResults); return; }
 
                 const vm = State.getFolderViewMode();
-                let h = '<div class="view-toggle">' +
-                    '<button class="view-toggle-btn ' + (vm === 'list' ? 'active' : '') + '" data-view="list">📋 Список</button>' +
-                    '<button class="view-toggle-btn ' + (vm === 'grid' ? 'active' : '') + '" data-view="grid">🔲 Сетка</button></div>';
-
+                let h = '';
                 const todayTasks = Services.getTodayTasks();
                 h += buildSmartFolderHTML(SMART_FOLDERS.TODAY, '📅', 'Сегодня', todayTasks.length);
 
@@ -2540,7 +2537,7 @@
                 State.save();
                 UI.renderFolderList();
                 this.style.display = 'none';
-                UI.showToast(newMode === 'list' ? '📋 Список' : '🔲 Сетка');
+                UI.showToast(newMode === 'list' ? 'Список' : 'Сетка');
             });
             getEl('btnEditFolder').addEventListener('click', Actions.editFolder);
             getEl('btnAddClient').addEventListener('click', Actions.addClient);
