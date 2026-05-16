@@ -613,18 +613,22 @@
             <button class="icon-btn" id="btnMenu" aria-label="Меню">☰</button>
             <div class="menu-dropdown" id="menuDropdown">
                 <button class="menu-item" id="btnSearchMenu"><span class="menu-icon">🔍</span> Поиск</button>
-                <button class="menu-item" id="btnWeekViewMenu"><span class="menu-icon">🗓️</span> Обзор недели</button>
-                <button class="menu-item" id="btnNotifyMenu"><span class="menu-icon">🔔</span> Уведомления</button>
                 <div style="height:1px;background:var(--border);margin:4px 0;"></div>
                 <button class="menu-item" id="btnNewFolderMenu"><span class="menu-icon">📁</span> Новая папка</button>
                 <button class="menu-item" id="btnNewNoteMenu"><span class="menu-icon">💡</span> Новая заметка</button>
-                <button class="menu-item" id="btnThemeCustom"><span class="menu-icon">🎨</span> Оформление</button>
-                <button class="menu-item" id="btnThemeMenu"><span class="menu-icon">🌓</span> Тема</button>
-                <button class="menu-item" id="btnOpacityMenu"><span class="menu-icon">🔲</span> Прозрачность</button>
+                <div style="height:1px;background:var(--border);margin:4px 0;"></div>
+                <button class="menu-item" id="btnNotifyMenu"><span class="menu-icon">🔔</span> Уведомления</button>
                 <button class="menu-item" id="btnSettingsMenu"><span class="menu-icon">⚙️</span> Настройки интерфейса</button>
+                <button class="menu-item" id="btnAppearanceMenu"><span class="menu-icon">🖌️</span> Внешний вид <span style="margin-left:auto;font-size:12px;">▼</span></button>
+                <div id="appearanceSubmenu" style="display:none;">
+                    <button class="menu-item" id="btnThemeCustom" style="padding-left:34px;"><span class="menu-icon">🎨</span> Оформление</button>
+                    <button class="menu-item" id="btnThemeMenu" style="padding-left:34px;"><span class="menu-icon">🌓</span> Тема</button>
+                    <button class="menu-item" id="btnOpacityMenu" style="padding-left:34px;"><span class="menu-icon">🔲</span> Прозрачность</button>
+                    <button class="menu-item" id="btnViewMenu" style="padding-left:34px;"><span class="menu-icon">📋</span> Вид: Список</button>
+                </div>
+                <div style="height:1px;background:var(--border);margin:4px 0;"></div>
                 <button class="menu-item" id="btnExportMenu"><span class="menu-icon">📤</span> Экспорт</button>
                 <button class="menu-item" id="btnImportMenu"><span class="menu-icon">📥</span> Импорт</button>
-                <button class="menu-item" id="btnViewMenu"><span class="menu-icon">📋</span> Вид: Список</button>
             </div>
         </div>
     
@@ -2563,10 +2567,6 @@
                 getEl('menuDropdown').classList.remove('show');
                 Actions.toggleSearch();
             });
-            getEl('btnWeekViewMenu').addEventListener('click', function() {
-                getEl('menuDropdown').classList.remove('show');
-                Actions.toggleWeekView();
-            });
             getEl('btnNotifyMenu').addEventListener('click', function() {
                 getEl('menuDropdown').classList.remove('show');
                 Actions.requestNotification();
@@ -2581,11 +2581,21 @@
                 UI.renderAll();
                 setTimeout(() => getEl('noteText').focus(), 200);
             });
-            getEl('btnThemeMenu').addEventListener('click', Actions.toggleTheme);
-            getEl('btnThemeCustom').addEventListener('click', Actions.changeTheme);
+            getEl('btnThemeMenu').addEventListener('click', function() {
+                getEl('menuDropdown').classList.remove('show');
+                getEl('appearanceSubmenu').style.display = 'none';
+                Actions.toggleTheme();
+            });
+            getEl('btnThemeCustom').addEventListener('click', function() {
+                getEl('menuDropdown').classList.remove('show');
+                getEl('appearanceSubmenu').style.display = 'none';
+                Actions.changeTheme();
+            });
             getEl('btnExportMenu').addEventListener('click', Actions.exportData);
             getEl('btnImportMenu').addEventListener('click', Actions.importData);
             getEl('btnViewMenu').addEventListener('click', function() {
+                getEl('menuDropdown').classList.remove('show');
+                getEl('appearanceSubmenu').style.display = 'none';
                 const currentMode = State.getFolderViewMode();
                 const newMode = currentMode === 'list' ? 'grid' : 'list';
                 State.setFolderViewMode(newMode);
@@ -2605,6 +2615,8 @@
             });
 
             getEl('btnOpacityMenu').addEventListener('click', function() {
+                getEl('menuDropdown').classList.remove('show');
+                getEl('appearanceSubmenu').style.display = 'none';
                 const val = prompt('Прозрачность (0.1 - 1.0):',
                     getComputedStyle(document.documentElement).getPropertyValue('--opacity-card').trim() || '0.75');
                 if (!val) return;
@@ -2619,6 +2631,19 @@
             
             getEl('btnSettingsMenu').addEventListener('click', function() {
                 App.showSettingsPanel();
+            });
+            
+            getEl('btnAppearanceMenu').addEventListener('click', function(e) {
+                e.stopPropagation();
+                const sub = getEl('appearanceSubmenu');
+                const arrow = this.querySelector('span:last-child');
+                if (sub.style.display === 'none' || sub.style.display === '') {
+                    sub.style.display = 'block';
+                    arrow.textContent = '▲';
+                } else {
+                    sub.style.display = 'none';
+                    arrow.textContent = '▼';
+                }
             });
             
             getEl('btnMenu').addEventListener('click', function(e) {
