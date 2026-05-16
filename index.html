@@ -1907,10 +1907,10 @@
                 buttons.innerHTML =
                     '<div style="padding:4px 0;text-align:center;font-size:13px;margin-bottom:8px;color:#ffffff;">🎨 Тема</div>' +
                     '<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px;">' +
-                    '<button onclick="App._applyPreset(\'pastel\')" style="width:70px;padding:8px;border-radius:12px;border:2px solid ' + (savedPreset === 'pastel' ? 'var(--accent)' : 'rgba(255,255,255,0.5)') + ';background:transparent;cursor:pointer;font-size:12px;position:relative;z-index:1;color:#ffffff;">Pastel</button>' +
-                    '<button onclick="App._applyPreset(\'forest\')" style="width:70px;padding:8px;border-radius:12px;border:2px solid ' + (savedPreset === 'forest' ? 'var(--accent)' : 'rgba(255,255,255,0.5)') + ';background:transparent;cursor:pointer;font-size:12px;position:relative;z-index:1;color:#ffffff;">Forest</button>' +
-                    '<button onclick="App._applyPreset(\'sunset\')" style="width:70px;padding:8px;border-radius:12px;border:2px solid ' + (savedPreset === 'sunset' ? 'var(--accent)' : 'rgba(255,255,255,0.5)') + ';background:transparent;cursor:pointer;font-size:12px;position:relative;z-index:1;color:#ffffff;">Sunset</button>' +
-                    '<button onclick="App._applyPreset(\'ocean\')" style="width:70px;padding:8px;border-radius:12px;border:2px solid ' + (savedPreset === 'ocean' ? 'var(--accent)' : 'rgba(255,255,255,0.5)') + ';background:transparent;cursor:pointer;font-size:12px;position:relative;z-index:1;color:#ffffff;">Ocean</button>' +
+                    '<button onclick="event.stopPropagation();App._applyPreset(\'pastel\')" style="width:70px;padding:8px;border-radius:12px;border:2px solid ' + (savedPreset === 'pastel' ? 'var(--accent)' : 'rgba(255,255,255,0.5)') + ';background:transparent;cursor:pointer;font-size:12px;position:relative;z-index:10;color:#ffffff;">Pastel</button>' +
+                    '<button onclick="event.stopPropagation();App._applyPreset(\'forest\')" style="width:70px;padding:8px;border-radius:12px;border:2px solid ' + (savedPreset === 'forest' ? 'var(--accent)' : 'rgba(255,255,255,0.5)') + ';background:transparent;cursor:pointer;font-size:12px;position:relative;z-index:10;color:#ffffff;">Forest</button>' +
+                    '<button onclick="event.stopPropagation();App._applyPreset(\'sunset\')" style="width:70px;padding:8px;border-radius:12px;border:2px solid ' + (savedPreset === 'sunset' ? 'var(--accent)' : 'rgba(255,255,255,0.5)') + ';background:transparent;cursor:pointer;font-size:12px;position:relative;z-index:10;color:#ffffff;">Sunset</button>' +
+                    '<button onclick="event.stopPropagation();App._applyPreset(\'ocean\')" style="width:70px;padding:8px;border-radius:12px;border:2px solid ' + (savedPreset === 'ocean' ? 'var(--accent)' : 'rgba(255,255,255,0.5)') + ';background:transparent;cursor:pointer;font-size:12px;position:relative;z-index:10;color:#ffffff;">Ocean</button>' +
                     '</div>' +
                     '<div style="padding:4px 0;font-size:13px;color:#ffffff;">Свой цвет (hex):</div>' +
                     '<input type="text" id="customColorInput" placeholder="#7eb8c9" style="width:100%;padding:10px 14px;border-radius:24px;border:1.5px solid var(--border);font-size:14px;margin-bottom:8px;background:rgba(255,255,255,0.75);color:var(--text);outline:none;" onchange="App._applyCustomColor(this.value)">' +
@@ -1926,14 +1926,10 @@
                 panel.style.transform = 'translate(-50%, -50%)';
                 panel.style.maxWidth = '360px';
                 panel.style.width = '90%';
+                panel.style.pointerEvents = 'auto';
                 
                 overlay.style.display = 'block';
                 panel.style.display = 'block';
-                
-                setTimeout(() => {
-                    const inp = document.getElementById('customColorInput');
-                    if (inp) inp.style.background = 'rgba(255,255,255,0.75)';
-                }, 50);
             },
             setTaskFilter(filter) { State.setCurrentTaskFilter(filter); State.save(); UI.renderTasks(); },
             addClient() {
@@ -2470,7 +2466,16 @@
                 localStorage.setItem('theme_preset', name);
                 localStorage.removeItem('custom_theme');
                 UI.showToast('🎨 Тема: ' + name);
-                this.changeTheme();
+                // Убираем вызов changeTheme(), чтобы панель не пересоздавалась
+                // Вместо этого просто обновляем рамки кнопок
+                const buttons = getEl('actionPanelButtons');
+                if (buttons && buttons.style.display !== 'none') {
+                    const btns = buttons.querySelectorAll('button[onclick*="_applyPreset"]');
+                    btns.forEach(btn => {
+                        const presetName = btn.textContent.toLowerCase();
+                        btn.style.border = '2px solid ' + (presetName === name ? 'var(--accent)' : 'rgba(255,255,255,0.5)');
+                    });
+                }
             },
             
             _applyCustomColor: function(color) {
