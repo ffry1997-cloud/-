@@ -602,7 +602,7 @@
             </div>
             <div class="week-overview" id="weekOverview" style="display:none;"></div>
             <div id="folderList"></div>
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+            <div id="folderActions" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
                 <button class="btn-sm btn-add" id="btnAddFolder">+ Новая папка</button>
                 <div style="position:relative;">
                     <button class="btn-sm" id="btnToggleView" style="background:rgba(107, 76, 59, 0.15);color:var(--accent);font-size:14px;padding:6px 10px;border-radius:50%;width:36px;height:36px;min-width:36px;">⋮</button>
@@ -1330,9 +1330,16 @@
 
             function renderTasks() {
                 const tc = getEl('taskContainer'), fl = getEl('folderList');
+                const folderActions = getEl('folderActions');
                 if (!tc || !fl) return;
                 const cid = State.getCurrentFolderId();
-                if (!cid) { tc.style.display = 'none'; fl.style.display = 'block'; return; }
+                if (!cid) { 
+                    tc.style.display = 'none'; 
+                    fl.style.display = 'block'; 
+                    if (folderActions) folderActions.style.display = 'flex';
+                    return; 
+                }
+                if (folderActions) folderActions.style.display = 'none';
                 if (Utils.isSmartFolder(cid)) renderSmartFolderTasks(tc, fl, cid);
                 else renderRegularFolderTasks(tc, fl, cid);
             }
@@ -2012,6 +2019,8 @@
             goBackToFolders() {
                 State.setCurrentFolderId(null);
                 getEl('searchContainer').style.display = 'none';
+                const folderActions = getEl('folderActions');
+                if (folderActions) folderActions.style.display = 'flex';
                 State.save(); UI.renderAll();
             },
             exportData() {
