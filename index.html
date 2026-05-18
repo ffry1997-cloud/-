@@ -399,7 +399,8 @@
         .scroll-top-btn {
             position: fixed; bottom: 70px; right: 16px; z-index: 999; width: 36px;
             height: 36px; border-radius: 50%; background: var(--accent); color: #fff;
-            border: none; font-size: 16px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            border: none; font-size: 20px; font-weight: 700; cursor: pointer; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
             opacity: 0; pointer-events: none; transition: opacity 0.3s;
         }
         .scroll-top-btn.visible { opacity: 1; pointer-events: auto; }
@@ -642,9 +643,9 @@
         <div class="section" id="section-calendar">
             <div class="card">
                 <div style="display:flex;justify-content:space-between;align-items:center;">
-                    <button class="btn-sm" id="btnPrevMonth">←</button>
+                    <button class="btn-sm" id="btnPrevMonth" style="background:var(--accent-light);color:var(--accent);">←</button>
                     <h3 id="calendarTitle"></h3>
-                    <button class="btn-sm" id="btnNextMonth">→</button>
+                    <button class="btn-sm" id="btnNextMonth" style="background:var(--accent-light);color:var(--accent);">→</button>
                 </div>
                 <div class="calendar-grid" id="calendarGrid"></div>
                 <div id="calendarTasks" style="margin-top:8px;"></div>
@@ -690,7 +691,7 @@
         </div>
     </div>
     <div class="toast" id="toast"></div>
-    <button class="scroll-top-btn" id="scrollTopBtn" title="Наверх">⬆</button>
+    <button class="scroll-top-btn" id="scrollTopBtn" title="Наверх">↑</button>
 
     <script>
     (function() {
@@ -2232,8 +2233,12 @@
                 }
         
                 panel.style.position = 'fixed';
-                panel.style.top = topPosition + 'px';
-                panel.style.left = leftPosition + 'px';
+                panel.style.top = '50%';
+                panel.style.left = '50%';
+                panel.style.transform = 'translate(-50%, -50%)';
+                panel.style.maxWidth = '90vw';
+                panel.style.maxHeight = '80vh';
+                panel.style.overflowY = 'auto';
         
                 overlay.style.display = 'block';
                 panel.style.display = 'block';
@@ -2281,8 +2286,12 @@
                 }
         
                 panel.style.position = 'fixed';
-                panel.style.top = topPosition + 'px';
-                panel.style.left = leftPosition + 'px';
+                panel.style.top = '50%';
+                panel.style.left = '50%';
+                panel.style.transform = 'translate(-50%, -50%)';
+                panel.style.maxWidth = '90vw';
+                panel.style.maxHeight = '80vh';
+                panel.style.overflowY = 'auto';
         
                 overlay.style.display = 'block';
                 panel.style.display = 'block';
@@ -2326,8 +2335,12 @@
                 }
         
                 panel.style.position = 'fixed';
-                panel.style.top = topPosition + 'px';
-                panel.style.left = leftPosition + 'px';
+                panel.style.top = '50%';
+                panel.style.left = '50%';
+                panel.style.transform = 'translate(-50%, -50%)';
+                panel.style.maxWidth = '90vw';
+                panel.style.maxHeight = '80vh';
+                panel.style.overflowY = 'auto';
         
                 overlay.style.display = 'block';
                 panel.style.display = 'block';
@@ -2365,8 +2378,12 @@
                 const leftPosition = Math.min(rect.left, window.innerWidth - 180);
                 
                 panel.style.position = 'fixed';
-                panel.style.top = topPosition + 'px';
-                panel.style.left = leftPosition + 'px';
+                panel.style.top = '50%';
+                panel.style.left = '50%';
+                panel.style.transform = 'translate(-50%, -50%)';
+                panel.style.maxWidth = '90vw';
+                panel.style.maxHeight = '80vh';
+                panel.style.overflowY = 'auto';
                 
                 overlay.style.display = 'block';
                 panel.style.display = 'block';
