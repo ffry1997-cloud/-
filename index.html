@@ -2819,7 +2819,8 @@
                     msg += '/today — задачи на сегодня\n';
                     msg += '/week — задачи на неделю\n';
                     msg += '/stats — статистика\n';
-                    msg += '/add Текст задачи — добавить задачу\n';
+                    msg += '/add Текст — быстро добавить задачу на сегодня\n';
+                    msg += '/addto Текст — добавить задачу с выбором папки\n';
                     msg += '/help — список команд';
                     sendToTelegram(msg);
                 }
@@ -2861,7 +2862,6 @@
                 else if (cmd.startsWith('/add ')) {
                     const taskText = text.substring(5).trim();
                     if (taskText) {
-                        // Добавляем в первую обычную папку
                         const folders = State.getFolders().filter(f => f.id !== SMART_FOLDERS.TRASH && !Utils.isSmartFolder(f.id));
                         if (folders.length > 0) {
                             const todayISO = Utils.formatDateISO(new Date());
@@ -2877,9 +2877,54 @@
                                 priority: 0
                             });
                             State.save();
-                            sendToTelegram('✅ Задача добавлена: ' + taskText);
+                            sendToTelegram('✅ Задача добавлена в «' + folders[0].name + '»: ' + taskText);
                         } else {
                             sendToTelegram('❌ Нет папок. Создайте папку в приложении.');
+                        }
+                    }
+                }
+                else if (cmd.startsWith('/addto ')) {
+                    const taskText = text.substring(7).trim();
+                    if (taskText) {
+                        const folders = State.getFolders().filter(f => f.id !== SMART_FOLDERS.TRASH && !Utils.isSmartFolder(f.id));
+                        if (folders.length === 0) {
+                            sendToTelegram('❌ Нет папок. Создайте папку в приложении.');
+                        } else if (folders.length === 1) {
+                            // Одна папка — сразу добавляем
+                            const todayISO = Utils.formatDateISO(new Date());
+                            folders[0].tasks.push({
+                                id: Utils.generateId(),
+                                text: taskText,
+                                date: todayISO,
+                                time: '',
+                                completed: false,
+                                subtasks: [],
+                                repeat: '',
+                                repeatDays: 0,
+                                priority: 0
+                            });
+                            State.save();
+                            sendToTelegram('✅ Задача добавлена в «' + folders[0].name + '»: ' + taskText);
+                        } else {
+                            // Несколько папок — показываем кнопки выбора
+                            const keyboard = { inline_keyboard: [] };
+                            folders.forEach(f => {
+                                keyboard.inline_keyboard.push([{
+                                    text: f.icon + ' ' + f.name,
+                                    callback_data: 'addto_' + f.id + '_' + encodeURIComponent(taskText)
+                                }]);
+                            });
+                            
+                            fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    chat_id: chatId,
+                                    text: '<b>📁 Выберите папку для:</b>\n«' + taskText + '»',
+                                    parse_mode: 'HTML',
+                                    reply_markup: JSON.stringify(keyboard)
+                                })
+                            }).catch(() => {});
                         }
                     }
                 }
@@ -2888,7 +2933,7 @@
                 }
             }
             
-            // Обработка нажатия кнопки "Выполнено"
+            // Обработка нажатия кнопки
             function processCallback(callbackId, callbackData) {
                 if (callbackData.startsWith('done_')) {
                     const taskId = callbackData.substring(5);
@@ -2896,7 +2941,6 @@
                     if (found && !found.task.completed) {
                         found.task.completed = true;
                         State.save();
-                        // Отвечаем на callback
                         fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/answerCallbackQuery`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -2906,6 +2950,38 @@
                             })
                         }).catch(() => {});
                         sendToTelegram('✅ Задача выполнена: ' + found.task.text);
+                    }
+                }
+                else if (callbackData.startsWith('addto_')) {
+                    // Формат: addto_папкаId_текстЗадачи
+                    const parts = callbackData.substring(6).split('_');
+                    const folderId = parts[0];
+                    const taskText = decodeURIComponent(parts.slice(1).join('_'));
+                    
+                    const folder = State.getFolderById(folderId);
+                    if (folder && taskText) {
+                        const todayISO = Utils.formatDateISO(new Date());
+                        folder.tasks.push({
+                            id: Utils.generateId(),
+                            text: taskText,
+                            date: todayISO,
+                            time: '',
+                            completed: false,
+                            subtasks: [],
+                            repeat: '',
+                            repeatDays: 0,
+                            priority: 0
+                        });
+                        State.save();
+                        fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/answerCallbackQuery`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                callback_query_id: callbackId,
+                                text: '✅ Добавлено в «' + folder.name + '»'
+                            })
+                        }).catch(() => {});
+                        sendToTelegram('✅ Задача добавлена в «' + folder.name + '»: ' + taskText);
                     }
                 }
             }
