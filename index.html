@@ -2929,11 +2929,11 @@
                         }).catch(() => {});
                     }
                 }
-                }
-                else {
-                    sendToTelegram('Неизвестная команда. Напишите /help для списка команд.');
-                }
             }
+            else {
+                sendToTelegram('Неизвестная команда. Напишите /help для списка команд.');
+            }
+        }
             
             // Обработка нажатия кнопки
             function processCallback(callbackId, callbackData) {
