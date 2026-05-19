@@ -2910,9 +2910,8 @@
                 }
             }
             
-            // Проверка входящих сообщений и отправка уведомлений
+            // Проверка команд — каждые 15 секунд
             setInterval(function() {
-                // 1. Проверяем входящие сообщения
                 fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/getUpdates?offset=${lastUpdateId + 1}&timeout=1`)
                     .then(r => r.json())
                     .then(data => {
@@ -2921,26 +2920,25 @@
                                 lastUpdateId = update.update_id;
                                 localStorage.setItem('tg_last_update', lastUpdateId);
                                 
-                                // Текстовое сообщение
                                 if (update.message && update.message.text) {
                                     processCommand(update.message.chat.id, update.message.text);
                                 }
-                                // Нажатие кнопки
                                 if (update.callback_query) {
                                     processCallback(update.callback_query.id, update.callback_query.data);
                                 }
                             });
                         }
                     }).catch(() => {});
-                
-                // 2. Отправляем уведомления по расписанию
+            }, 15000);
+            
+            // Отправка уведомлений — каждые 5 минут
+            setInterval(function() {
                 const tasks = Services.getTasksForNotification();
                 if (tasks.length > 0) {
                     const now = new Date();
                     const hours = now.getHours();
                     const mins = now.getMinutes();
                     
-                    // Утренний дайджест в 8:00
                     if (hours === 8 && mins >= 0 && mins <= 10) {
                         const todayTasks = Services.getTasksForSmartFolder(SMART_FOLDERS.TODAY);
                         const stats = Services.getStats();
@@ -2967,13 +2965,7 @@
                         msg += '\n<b>📊 Прогресс:</b> ' + stats.completed + '/' + stats.total + ' (' + stats.percent + '%)';
                         sendToTelegram(msg);
                     }
-                    // Обычное уведомление в другое время
                     else if (hours !== 8) {
-                        let message = '<b>⏰ Напоминания:</b>\n';
-                        tasks.forEach(t => {
-                            const timeStr = t.time ? ' в ' + t.time : '';
-                            message += '• ' + t.text + timeStr + '\n';
-                        });
                         answerWithKeyboard(TELEGRAM_CHAT_ID, tasks, '⏰ Напоминания (' + tasks.length + '):');
                     }
                 }
