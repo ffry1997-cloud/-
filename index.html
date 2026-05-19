@@ -1675,7 +1675,6 @@
                 UI.showToast('✅ Задача добавлена!');
             },
             editTask(tid) {
-                if (Utils.isSmartFolder(State.getCurrentFolderId())) { UI.showToast('❌ Нельзя редактировать'); return; }
                 const found = Utils.findTaskById(tid);
                 if (!found) return;
                 const { task } = found;
