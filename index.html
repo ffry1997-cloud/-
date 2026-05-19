@@ -2913,7 +2913,7 @@
                         folders.forEach(f => {
                             keyboard.inline_keyboard.push([{
                                 text: f.icon + ' ' + f.name,
-                                callback_data: 'addto_' + f.id + '_' + tempId
+                                callback_data: 'addto_' + f.id + '_temp_' + tempId
                             }]);
                         });
                         
@@ -2955,11 +2955,17 @@
                     }
                 }
                 else if (callbackData.startsWith('addto_')) {
-                    const data = callbackData.substring(6); // folderId_tempId
-                    const underscoreIndex = data.indexOf('_');
-                    const folderId = data.substring(0, underscoreIndex);
-                    const tempId = data.substring(underscoreIndex + 1);
+                // callbackData = addto_папкаId_temp_временныйId
+                const afterPrefix = callbackData.substring(6); // убираем 'addto_'
+                const tempMarker = '_temp_';
+                const tempIndex = afterPrefix.lastIndexOf(tempMarker);
+                
+                if (tempIndex !== -1) {
+                    const folderId = afterPrefix.substring(0, tempIndex);
+                    const tempId = afterPrefix.substring(tempIndex + tempMarker.length);
                     const taskText = localStorage.getItem('tg_task_' + tempId);
+                    
+                    console.log('FolderId:', folderId, 'TempId:', tempId, 'Task:', taskText);
                     
                     const folder = State.getFolderById(folderId);
                     if (folder && taskText) {
@@ -2986,15 +2992,6 @@
                             })
                         }).catch(() => {});
                         sendToTelegram('✅ Задача добавлена в «' + folder.name + '»: ' + taskText);
-                    } else {
-                        fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/answerCallbackQuery`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                callback_query_id: callbackId,
-                                text: '❌ Ошибка'
-                            })
-                        }).catch(() => {});
                     }
                 }
             }
