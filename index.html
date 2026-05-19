@@ -2758,19 +2758,39 @@
             window.addEventListener('scroll', function() { stb.classList.toggle('visible', window.scrollY > 300); });
             stb.addEventListener('click', function() { window.scrollTo({ top: 0, behavior: 'smooth' }); });
 
-            if ('Notification' in window && Notification.permission === 'granted') {
-                setInterval(function() {
-                    Services.getTasksForNotification().forEach(function(t) {
-                        const min = Math.ceil((new Date(t.date + 'T' + t.time) - new Date()) / 60000);
-                        new Notification('⏰ Напоминание', { body: '«' + t.text + '» через ' + min + ' мин.', tag: t.id });
-                    });
-                }, 300000);
+            // Отправка уведомлений в Telegram
+            const TELEGRAM_TOKEN = localStorage.getItem('tg_token') || '8952829623:AAF6CCTR00M4t2ZfYOHZAAnx2op3zw0T8n4';
+            const TELEGRAM_CHAT_ID = localStorage.getItem('tg_chat_id') || '423241461';
+            
+            // Сохраняем в localStorage
+            if (!localStorage.getItem('tg_token')) localStorage.setItem('tg_token', TELEGRAM_TOKEN);
+            if (!localStorage.getItem('tg_chat_id')) localStorage.setItem('tg_chat_id', TELEGRAM_CHAT_ID);
+            
+            function sendToTelegram(text) {
+                const url = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
+                fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: TELEGRAM_CHAT_ID,
+                        text: text,
+                        parse_mode: 'HTML'
+                    })
+                }).catch(() => {}); // Молча игнорируем ошибки
             }
-
-            getEl('actionPanel').addEventListener('click', function(e) {
-                if (e.target === this) { this.style.display = 'none'; getEl('actionOverlay').style.display = 'none'; }
-            });
-        }
+            
+            // Проверяем уведомления каждые 5 минут
+            setInterval(function() {
+                const tasks = Services.getTasksForNotification();
+                if (tasks.length > 0) {
+                    let message = '<b>⏰ Напоминания:</b>\n';
+                    tasks.forEach(t => {
+                        const timeStr = t.time ? ' в ' + t.time : '';
+                        message += `• ${t.text}${timeStr}\n`;
+                    });
+                    sendToTelegram(message);
+                }
+            }, 300000);
 
         // ========================================
         // МАРШРУТИЗАЦИЯ ДЕЙСТВИЙ
