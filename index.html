@@ -2758,37 +2758,224 @@
             window.addEventListener('scroll', function() { stb.classList.toggle('visible', window.scrollY > 300); });
             stb.addEventListener('click', function() { window.scrollTo({ top: 0, behavior: 'smooth' }); });
 
-            // Отправка уведомлений в Telegram
+            // ============ TELEGRAM BOT ============
             const TELEGRAM_TOKEN = localStorage.getItem('tg_token') || '8952829623:AAF6CCTR00M4t2ZfYOHZAAnx2op3zw0T8n4';
             const TELEGRAM_CHAT_ID = localStorage.getItem('tg_chat_id') || '423241461';
             
-            // Сохраняем в localStorage
             if (!localStorage.getItem('tg_token')) localStorage.setItem('tg_token', TELEGRAM_TOKEN);
             if (!localStorage.getItem('tg_chat_id')) localStorage.setItem('tg_chat_id', TELEGRAM_CHAT_ID);
             
-            function sendToTelegram(text) {
-                const url = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
-                fetch(url, {
+            let lastUpdateId = parseInt(localStorage.getItem('tg_last_update') || '0');
+            
+            function sendToTelegram(text, replyMarkup = null) {
+                const body = {
+                    chat_id: TELEGRAM_CHAT_ID,
+                    text: text,
+                    parse_mode: 'HTML'
+                };
+                if (replyMarkup) body.reply_markup = JSON.stringify(replyMarkup);
+                
+                fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                }).catch(() => {});
+            }
+            
+            // Ответ на команду с кнопкой "Выполнено" для каждой задачи
+            function answerWithKeyboard(chatId, tasks, title) {
+                const keyboard = { inline_keyboard: [] };
+                tasks.forEach((t, i) => {
+                    keyboard.inline_keyboard.push([{
+                        text: '✅ ' + (i + 1) + '. ' + t.text.substring(0, 30),
+                        callback_data: 'done_' + t.id
+                    }]);
+                });
+                
+                let message = '<b>' + title + '</b>\n';
+                tasks.forEach((t, i) => {
+                    const timeStr = t.time ? ' в ' + t.time : '';
+                    message += (i + 1) + '. ' + t.text + timeStr + '\n';
+                });
+                
+                fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        chat_id: TELEGRAM_CHAT_ID,
-                        text: text,
-                        parse_mode: 'HTML'
+                        chat_id: chatId,
+                        text: message,
+                        parse_mode: 'HTML',
+                        reply_markup: JSON.stringify(keyboard)
                     })
-                }).catch(() => {}); // Молча игнорируем ошибки
+                }).catch(() => {});
             }
             
-            // Проверяем уведомления каждые 5 минут
+            // Обработка команд
+            function processCommand(chatId, text) {
+                const cmd = text.trim().toLowerCase();
+                
+                if (cmd === '/start' || cmd === '/help') {
+                    let msg = '<b>📋 Команды:</b>\n';
+                    msg += '/today — задачи на сегодня\n';
+                    msg += '/week — задачи на неделю\n';
+                    msg += '/stats — статистика\n';
+                    msg += '/add Текст задачи — добавить задачу\n';
+                    msg += '/help — список команд';
+                    sendToTelegram(msg);
+                }
+                else if (cmd === '/today') {
+                    const tasks = Services.getTasksForSmartFolder(SMART_FOLDERS.TODAY);
+                    if (tasks.length === 0) {
+                        sendToTelegram('🎉 На сегодня задач нет!');
+                    } else {
+                        answerWithKeyboard(chatId, tasks, '📅 Задачи на сегодня (' + tasks.length + '):');
+                    }
+                }
+                else if (cmd === '/week') {
+                    const weekData = Services.getWeekData();
+                    let msg = '<b>📅 Задачи на неделю:</b>\n';
+                    weekData.forEach(d => {
+                        msg += '\n<b>' + d.dayName + ' ' + d.dayOfMonth + '</b> (' + d.count + ' задач)\n';
+                        const tasks = Services.getTasksForDate(d.dateStr);
+                        tasks.slice(0, 5).forEach(t => {
+                            msg += '• ' + t.text + '\n';
+                        });
+                        if (tasks.length > 5) msg += '  ... и ещё ' + (tasks.length - 5) + '\n';
+                    });
+                    sendToTelegram(msg);
+                }
+                else if (cmd === '/stats') {
+                    const stats = Services.getStats();
+                    let msg = '<b>📊 Статистика:</b>\n';
+                    msg += 'Всего задач: ' + stats.total + '\n';
+                    msg += 'Выполнено: ' + stats.completed + '\n';
+                    msg += 'Прогресс: ' + stats.percent + '%\n';
+                    if (stats.folderStats.length > 0) {
+                        msg += '\n<b>По папкам:</b>\n';
+                        stats.folderStats.forEach(fs => {
+                            msg += fs.icon + ' ' + fs.name + ': ' + fs.completed + '/' + fs.total + '\n';
+                        });
+                    }
+                    sendToTelegram(msg);
+                }
+                else if (cmd.startsWith('/add ')) {
+                    const taskText = text.substring(5).trim();
+                    if (taskText) {
+                        // Добавляем в первую обычную папку
+                        const folders = State.getFolders().filter(f => f.id !== SMART_FOLDERS.TRASH && !Utils.isSmartFolder(f.id));
+                        if (folders.length > 0) {
+                            const todayISO = Utils.formatDateISO(new Date());
+                            folders[0].tasks.push({
+                                id: Utils.generateId(),
+                                text: taskText,
+                                date: todayISO,
+                                time: '',
+                                completed: false,
+                                subtasks: [],
+                                repeat: '',
+                                repeatDays: 0,
+                                priority: 0
+                            });
+                            State.save();
+                            sendToTelegram('✅ Задача добавлена: ' + taskText);
+                        } else {
+                            sendToTelegram('❌ Нет папок. Создайте папку в приложении.');
+                        }
+                    }
+                }
+                else {
+                    sendToTelegram('Неизвестная команда. Напишите /help для списка команд.');
+                }
+            }
+            
+            // Обработка нажатия кнопки "Выполнено"
+            function processCallback(callbackId, callbackData) {
+                if (callbackData.startsWith('done_')) {
+                    const taskId = callbackData.substring(5);
+                    const found = Utils.findTaskById(taskId);
+                    if (found && !found.task.completed) {
+                        found.task.completed = true;
+                        State.save();
+                        // Отвечаем на callback
+                        fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/answerCallbackQuery`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                callback_query_id: callbackId,
+                                text: '✅ Выполнено!'
+                            })
+                        }).catch(() => {});
+                        sendToTelegram('✅ Задача выполнена: ' + found.task.text);
+                    }
+                }
+            }
+            
+            // Проверка входящих сообщений и отправка уведомлений
             setInterval(function() {
+                // 1. Проверяем входящие сообщения
+                fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/getUpdates?offset=${lastUpdateId + 1}&timeout=1`)
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.ok && data.result) {
+                            data.result.forEach(update => {
+                                lastUpdateId = update.update_id;
+                                localStorage.setItem('tg_last_update', lastUpdateId);
+                                
+                                // Текстовое сообщение
+                                if (update.message && update.message.text) {
+                                    processCommand(update.message.chat.id, update.message.text);
+                                }
+                                // Нажатие кнопки
+                                if (update.callback_query) {
+                                    processCallback(update.callback_query.id, update.callback_query.data);
+                                }
+                            });
+                        }
+                    }).catch(() => {});
+                
+                // 2. Отправляем уведомления по расписанию
                 const tasks = Services.getTasksForNotification();
                 if (tasks.length > 0) {
-                    let message = '<b>⏰ Напоминания:</b>\n';
-                    tasks.forEach(t => {
-                        const timeStr = t.time ? ' в ' + t.time : '';
-                        message += `• ${t.text}${timeStr}\n`;
-                    });
-                    sendToTelegram(message);
+                    const now = new Date();
+                    const hours = now.getHours();
+                    const mins = now.getMinutes();
+                    
+                    // Утренний дайджест в 8:00
+                    if (hours === 8 && mins >= 0 && mins <= 10) {
+                        const todayTasks = Services.getTasksForSmartFolder(SMART_FOLDERS.TODAY);
+                        const stats = Services.getStats();
+                        const birthdays = Services.getUpcomingBirthdays(0);
+                        
+                        let msg = '<b>🌅 Доброе утро, Алиса!</b>\n\n';
+                        msg += '<b>📋 Сегодня ' + todayTasks.length + ' задач:</b>\n';
+                        if (todayTasks.length > 0) {
+                            todayTasks.forEach(t => {
+                                const timeStr = t.time ? ' в ' + t.time : '';
+                                msg += '• ' + t.text + timeStr + '\n';
+                            });
+                        } else {
+                            msg += '🎉 Задач нет!\n';
+                        }
+                        
+                        if (birthdays.length > 0) {
+                            msg += '\n<b>🎂 Дни рождения:</b>\n';
+                            birthdays.forEach(b => {
+                                msg += '• ' + b.name + ' (' + b.age + ' ' + Utils.getAgeWord(b.age) + ')\n';
+                            });
+                        }
+                        
+                        msg += '\n<b>📊 Прогресс:</b> ' + stats.completed + '/' + stats.total + ' (' + stats.percent + '%)';
+                        sendToTelegram(msg);
+                    }
+                    // Обычное уведомление в другое время
+                    else if (hours !== 8) {
+                        let message = '<b>⏰ Напоминания:</b>\n';
+                        tasks.forEach(t => {
+                            const timeStr = t.time ? ' в ' + t.time : '';
+                            message += '• ' + t.text + timeStr + '\n';
+                        });
+                        answerWithKeyboard(TELEGRAM_CHAT_ID, tasks, '⏰ Напоминания (' + tasks.length + '):');
+                    }
                 }
             }, 300000);
         }
