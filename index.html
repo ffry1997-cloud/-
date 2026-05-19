@@ -2883,51 +2883,53 @@
                         }
                     }
                 }
-                else if (cmd.startsWith('/addto ')) {
-                    const taskText = text.substring(7).trim();
-                    if (taskText) {
-                        const folders = State.getFolders().filter(f => f.id !== SMART_FOLDERS.TRASH && !Utils.isSmartFolder(f.id));
-                        if (folders.length === 0) {
-                            sendToTelegram('❌ Нет папок. Создайте папку в приложении.');
-                        } else if (folders.length === 1) {
-                            // Одна папка — сразу добавляем
-                            const todayISO = Utils.formatDateISO(new Date());
-                            folders[0].tasks.push({
-                                id: Utils.generateId(),
-                                text: taskText,
-                                date: todayISO,
-                                time: '',
-                                completed: false,
-                                subtasks: [],
-                                repeat: '',
-                                repeatDays: 0,
-                                priority: 0
-                            });
-                            State.save();
-                            sendToTelegram('✅ Задача добавлена в «' + folders[0].name + '»: ' + taskText);
-                        } else {
-                            // Несколько папок — показываем кнопки выбора
-                            const keyboard = { inline_keyboard: [] };
-                            folders.forEach(f => {
-                                keyboard.inline_keyboard.push([{
-                                    text: f.icon + ' ' + f.name,
-                                    callback_data: 'addto_' + f.id + '_' + encodeURIComponent(taskText)
-                                }]);
-                            });
-                            
-                            fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                    chat_id: chatId,
-                                    text: '<b>📁 Выберите папку для:</b>\n«' + taskText + '»',
-                                    parse_mode: 'HTML',
-                                    reply_markup: JSON.stringify(keyboard)
-                                })
-                            }).catch(() => {});
-                        }
+               else if (cmd.startsWith('/addto ')) {
+                const taskText = text.substring(7).trim();
+                if (taskText) {
+                    const folders = State.getFolders().filter(f => f.id !== SMART_FOLDERS.TRASH && !Utils.isSmartFolder(f.id));
+                    if (folders.length === 0) {
+                        sendToTelegram('❌ Нет папок. Создайте папку в приложении.');
+                    } else if (folders.length === 1) {
+                        const todayISO = Utils.formatDateISO(new Date());
+                        folders[0].tasks.push({
+                            id: Utils.generateId(),
+                            text: taskText,
+                            date: todayISO,
+                            time: '',
+                            completed: false,
+                            subtasks: [],
+                            repeat: '',
+                            repeatDays: 0,
+                            priority: 0
+                        });
+                        State.save();
+                        sendToTelegram('✅ Задача добавлена в «' + folders[0].name + '»: ' + taskText);
+                    } else {
+                        // Сохраняем текст задачи временно
+                        const tempId = 'temp_' + Date.now();
+                        localStorage.setItem('tg_task_' + tempId, taskText);
+                        
+                        const keyboard = { inline_keyboard: [] };
+                        folders.forEach(f => {
+                            keyboard.inline_keyboard.push([{
+                                text: f.icon + ' ' + f.name,
+                                callback_data: 'addto_' + f.id + '_' + tempId
+                            }]);
+                        });
+                        
+                        fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                chat_id: chatId,
+                                text: '<b>📁 Выберите папку для:</b>\n«' + taskText + '»',
+                                parse_mode: 'HTML',
+                                reply_markup: JSON.stringify(keyboard)
+                            })
+                        }).catch(() => {});
                     }
                 }
+            }
                 else {
                     sendToTelegram('Неизвестная команда. Напишите /help для списка команд.');
                 }
@@ -2953,10 +2955,11 @@
                     }
                 }
                 else if (callbackData.startsWith('addto_')) {
-                    // Формат: addto_папкаId_текстЗадачи
-                    const parts = callbackData.substring(6).split('_');
-                    const folderId = parts[0];
-                    const taskText = decodeURIComponent(parts.slice(1).join('_'));
+                    const data = callbackData.substring(6); // folderId_tempId
+                    const underscoreIndex = data.indexOf('_');
+                    const folderId = data.substring(0, underscoreIndex);
+                    const tempId = data.substring(underscoreIndex + 1);
+                    const taskText = localStorage.getItem('tg_task_' + tempId);
                     
                     const folder = State.getFolderById(folderId);
                     if (folder && taskText) {
@@ -2973,6 +2976,7 @@
                             priority: 0
                         });
                         State.save();
+                        localStorage.removeItem('tg_task_' + tempId);
                         fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/answerCallbackQuery`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -2982,6 +2986,15 @@
                             })
                         }).catch(() => {});
                         sendToTelegram('✅ Задача добавлена в «' + folder.name + '»: ' + taskText);
+                    } else {
+                        fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/answerCallbackQuery`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                callback_query_id: callbackId,
+                                text: '❌ Ошибка'
+                            })
+                        }).catch(() => {});
                     }
                 }
             }
