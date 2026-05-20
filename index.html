@@ -290,10 +290,19 @@
         .task-item > div:nth-child(2) { flex: 1 1 auto; min-width: 100%; }
         .task-item .btn-sm { order: 99; }
         .task-checkbox {
-            width: 22px; height: 22px; border-radius: 50%; border: 2px solid #5a5550;
+             width: 28px; height: 28px; border-radius: 50%; border: 2px solid #5a5550;
             flex-shrink: 0; cursor: pointer; display: flex; align-items: center;
-            justify-content: center; font-size: 12px;
+            justify-content: center; font-size: 14px;
             transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1) !important;
+            position: relative;
+        }
+        .task-checkbox::after {
+            content: '';
+            position: absolute;
+            top: -10px; left: -10px;
+            width: 48px; height: 48px;
+            background: transparent;
+            border-radius: 50%;
         }
         .task-item.completed .task-checkbox {
             background: var(--success) !important; border-color: var(--success) !important;
@@ -318,9 +327,18 @@
         .subtask-item { display: flex; align-items: center; gap: 6px; font-size: 13px; padding: 3px 0; color: var(--text-secondary); -webkit-user-select: none; user-select: none; }
         .subtask-item.completed .subtask-text { text-decoration: line-through; opacity: 0.5; }
         .subtask-checkbox {
-            width: 22px; height: 22px; border-radius: 50%; border: 2px solid #5a5550;
+            width: 24px; height: 24px; border-radius: 50%; border: 2px solid #5a5550;
             flex-shrink: 0; cursor: pointer; font-size: 12px; display: flex; align-items: center;
             justify-content: center; transition: all 0.2s;
+            position: relative;
+        }
+        .subtask-checkbox::after {
+            content: '';
+            position: absolute;
+            top: -8px; left: -8px;
+            width: 40px; height: 40px;
+            background: transparent;
+            border-radius: 50%;
         }
         .subtask-item.completed .subtask-checkbox { background: var(--accent); border-color: var(--accent); color: #fff; }
         .subtask-actions { display: flex; gap: 2px; margin-left: auto; }
