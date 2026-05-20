@@ -1011,11 +1011,20 @@
                             const nextISO = Utils.formatDateISO(next);
                             if (f.tasks.some(x => x && x.text === task.text && x.date === nextISO && !x.completed)) return;
 
+                            // Сохранять ли выполненные подзадачи
+                            const keepSubtasksDone = task.keepSubtasksDone === true;
                             f.tasks.push({
                                 id: Utils.generateId(), text: task.text, date: nextISO, time: task.time,
                                 completed: false,
-                                subtasks: Utils.getValidTasksArray(task.subtasks).map(st => ({ id: Utils.generateId(), text: st.text, completed: false })),
-                                repeat: task.repeat, repeatDays: task.repeatDays, priority: task.priority || 0
+                                subtasks: Utils.getValidTasksArray(task.subtasks).map(st => ({ 
+                                    id: Utils.generateId(), 
+                                    text: st.text, 
+                                    completed: keepSubtasksDone ? st.completed : false
+                                })),
+                                repeat: task.repeat, 
+                                repeatDays: task.repeatDays, 
+                                priority: task.priority || 0,
+                                keepSubtasksDone: keepSubtasksDone  // передаём настройку дальше
                             });
 
                             const original = f.tasks.find(x => x.id === task.id);
@@ -1683,7 +1692,8 @@
                 f.tasks.push({
                     id: Utils.generateId(), text, date: td.value, time: tt.value,
                     completed: false, subtasks: [], repeat: repeat || undefined,
-                    repeatDays: repeatDays || undefined, priority: 0
+                    repeatDays: repeatDays || undefined, priority: 0,
+                    keepSubtasksDone: false
                 });
 
                 ti.value = ''; tr.value = ''; trd.style.display = 'none';
@@ -2128,13 +2138,13 @@
                         list += '<div class="task-item"><span>' + (t.icon || '📌') + '</span> <span>' + Utils.escapeHtml(t.text) + '</span></div>';
                     }
                 });
-                list += '<br><button class="btn-sm" onclick="document.getElementById(\'weekViewTaskList\').style.display=\'none\'">← Закрыть</button></div>';
+                list += '<br><button class="btn-sm" style="background:var(--accent-light);color:var(--accent);" onclick="document.getElementById(\'weekViewTaskList\').style.display=\'none\'">← Закрыть</button></div>';
 
                 let container = getEl('weekViewTaskList');
                 if (!container) {
                     container = document.createElement('div');
                     container.id = 'weekViewTaskList';
-                    container.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--card);padding:20px;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.4);z-index:999;max-width:90%;max-height:80%;overflow-y:auto;';
+                    container.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--card);padding:20px;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.4);z-index:999;max-width:90%;max-height:80%;overflow-y:auto;color:var(--text);font-family:var(--font);';
                     document.body.appendChild(container);
                 }
                 container.innerHTML = list;
@@ -2227,7 +2237,11 @@
                 const overlay = getEl('actionOverlay');
         
                 title.textContent = taskText;
-        
+
+                // Найти задачу и проверить состояние (до условий!)
+                const found = Utils.findTaskById(taskId);
+                const keepSubtasks = found?.task.keepSubtasksDone || false;
+
                 if (isTrash) {
                     buttons.innerHTML =
                         '<button class="action-panel-btn" onclick="App.doAction(\'restore-task\',\'' + taskId + '\')">↩️ Восстановить</button>' +
@@ -2238,6 +2252,8 @@
                         '<button class="action-panel-btn" onclick="App.doAction(\'duplicate-task\',\'' + taskId + '\')">📋 Копия</button>' +
                         '<button class="action-panel-btn" onclick="App.doAction(\'add-subtask\',\'' + taskId + '\')">➕ Подзадача</button>' +
                         '<button class="action-panel-btn" onclick="App.doAction(\'move-to-tomorrow\',\'' + taskId + '\')">📅 На завтра</button>' +
+                        '<button class="action-panel-btn" onclick="App.doAction(\'toggle-keep-subtasks\',\'' + taskId + '\')">' + 
+                        (keepSubtasks ? '🔓 Открепить подзадачи' : '🔒 Закрепить подзадачи') + '</button>' +
                         '<button class="action-panel-btn delete" onclick="App.doAction(\'delete-task\',\'' + taskId + '\')">✕ Удалить</button>';
                 }
         
@@ -2809,6 +2825,15 @@
                 case A.DELETE_SUBTASK: Actions.deleteSubtask(ds.taskId, ds.subtaskId); break;
                 case A.TOGGLE_SUBTASK: Actions.toggleSubtask(ds.taskId, ds.subtaskId); break;
                 case A.SET_PRIORITY: Actions.setPriority(ds.taskId, parseInt(ds.priority)); break;
+                case 'toggle-keep-subtasks':
+                    const ft = Utils.findTaskById(ds.taskId);
+                    if (ft) {
+                        ft.task.keepSubtasksDone = !ft.task.keepSubtasksDone;
+                        State.save();
+                        UI.renderAll();
+                        UI.showToast(ft.task.keepSubtasksDone ? '🔒 Подзадачи закреплены' : '🔓 Подзадачи откреплены');
+                    }
+                    break;  
                 case A.EDIT_CLIENT: Actions.editClient(ds.clientId); break;
                 case A.EMAIL_CLIENT: Actions.emailClient(ds.clientId); break;
                 case A.DELETE_CLIENT: Actions.deleteClient(ds.clientId); break;
