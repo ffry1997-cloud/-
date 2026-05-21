@@ -1731,43 +1731,59 @@
             editTask(tid) {
                 const found = Utils.findTaskById(tid);
                 if (!found) return;
-                const { task } = found;
-
-                const nt = prompt('Текст:', task.text);
-                if (nt === null) return;
-                const nd = prompt('Дата (ГГГГ-ММ-ДД):', task.date || '');
-                if (nd === null) return;
-                const nti = prompt('Время (ЧЧ:ММ):', task.time || '');
-                if (nti === null) return;
-
-                const opts = Object.entries(REPEAT_LABELS).map(([v, l], i) => (i + 1) + '. ' + l).join('\n');
-                const currentLabel = REPEAT_LABELS[task.repeat] || 'Без повтора';
-                const ch = prompt('Период:\n' + opts + '\n\nТекущий: ' + currentLabel + '\nВведите номер:', '');
-                if (ch === null) return;
-
-                let nr = '', nrd = 0;
-                const keys = Object.keys(REPEAT_LABELS);
-                const cn = parseInt(ch);
-                if (!isNaN(cn) && cn >= 1 && cn <= keys.length) {
-                    nr = keys[cn - 1];
-                    if (nr === 'custom') {
-                        const ds = prompt('Дней:', task.repeatDays || '7');
-                        if (ds === null) return;
-                        const d = parseInt(ds);
-                        if (isNaN(d) || d < 1) { UI.showToast('❌ Некорректно'); return; }
-                        nrd = d;
-                    }
-                }
-
-                task.text = nt.trim();
-                task.date = nd.trim();
-                task.time = nti.trim();
-                task.repeat = nr || undefined;
-                task.repeatDays = nrd || undefined;
-
-                State.save();
-                UI.renderAll();
-                UI.showToast('✅ Обновлена!');
+                const task = found.task;
+                
+                const overlay = getEl('actionOverlay');
+                const panel = getEl('actionPanel');
+                const title = getEl('actionPanelTitle');
+                const buttons = getEl('actionPanelButtons');
+                
+                title.textContent = '✏️ Редактировать задачу';
+                title.style.display = 'block';
+                
+                buttons.innerHTML = 
+                    '<label style="font-size:12px;color:var(--text-secondary);margin-bottom:2px;">Текст задачи</label>' +
+                    '<textarea id="editTaskText" style="width:100%;min-height:60px;padding:12px;border-radius:14px;border:1.5px solid var(--border);background:rgba(46,44,41,0.9);color:var(--text);font-size:15px;font-family:var(--font);resize:vertical;outline:none;box-sizing:border-box;margin-bottom:8px;">' + Utils.escapeHtml(task.text) + '</textarea>' +
+                    '<label style="font-size:12px;color:var(--text-secondary);margin-bottom:2px;">Дата</label>' +
+                    '<input type="date" id="editTaskDate" value="' + (task.date || '') + '" style="width:100%;padding:12px;border-radius:14px;border:1.5px solid var(--border);background:rgba(46,44,41,0.9);color:var(--text);font-size:15px;font-family:var(--font);outline:none;box-sizing:border-box;margin-bottom:8px;">' +
+                    '<label style="font-size:12px;color:var(--text-secondary);margin-bottom:2px;">Время</label>' +
+                    '<input type="time" id="editTaskTime" value="' + (task.time || '') + '" style="width:100%;padding:12px;border-radius:14px;border:1.5px solid var(--border);background:rgba(46,44,41,0.9);color:var(--text);font-size:15px;font-family:var(--font);outline:none;box-sizing:border-box;margin-bottom:8px;">' +
+                    '<button class="action-panel-btn" id="btnSaveTask" style="margin-top:8px;">✅ Сохранить</button>' +
+                    '<button class="settings-close" onclick="App._closePanel()">Отмена</button>';
+                
+                panel.style.position = 'fixed';
+                panel.style.top = '50%';
+                panel.style.left = '50%';
+                panel.style.transform = 'translate(-50%, -50%)';
+                panel.style.maxWidth = '400px';
+                panel.style.width = '90%';
+                panel.style.maxHeight = '85vh';
+                panel.style.overflowY = 'auto';
+                
+                overlay.style.display = 'block';
+                panel.style.display = 'block';
+                
+                setTimeout(() => {
+                    const inp = document.getElementById('editTaskText');
+                    if (inp) inp.focus();
+                }, 100);
+                
+                document.getElementById('btnSaveTask').onclick = function() {
+                    const text = document.getElementById('editTaskText').value.trim();
+                    const date = document.getElementById('editTaskDate').value;
+                    const time = document.getElementById('editTaskTime').value;
+                    
+                    if (!text) return;
+                    
+                    task.text = text;
+                    task.date = date;
+                    task.time = time;
+                    
+                    State.save();
+                    UI.renderAll();
+                    App._closePanel();
+                    UI.showToast('✅ Задача обновлена');
+                };
             },
             deleteTask(tid) {
                 const found = Utils.findTaskById(tid);
