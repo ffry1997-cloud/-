@@ -546,13 +546,7 @@
            ФОНОВОЕ ИЗОБРАЖЕНИЕ
            ======================================== */
         body.bg-image {
-            background-size: cover; 
-            background-position: center; 
-            background-attachment: scroll; 
-            position: relative;
-            /* Фикс для iOS */
-            -webkit-background-size: cover;
-            background-repeat: no-repeat;
+            /* фон теперь в #bgLayer */
         }
         body.bg-image::before {
             content: ''; 
@@ -606,6 +600,7 @@
     </script>
 </head>
 <body>
+    <div id="bgLayer" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;background-size:cover;background-position:center;background-repeat:no-repeat;pointer-events:none;"></div>
         <!-- Кнопка-бургер -->
         <div class="menu-wrapper" style="position:fixed;top:16px;right:max(16px, calc((100vw - 680px) / 2 + 4px));z-index:150;">
             <button class="icon-btn" id="btnMenu" aria-label="Меню">☰</button>
@@ -2559,7 +2554,8 @@
                     if (file.size > 500000) { UI.showToast('❌ Фото слишком большое (макс 500 КБ)'); return; }
                     const reader = new FileReader();
                     reader.onload = function(ev) {
-                        document.body.style.backgroundImage = 'url(' + ev.target.result + ')';
+                        const bgLayer = document.getElementById('bgLayer');
+                        if (bgLayer) bgLayer.style.backgroundImage = 'url(' + ev.target.result + ')';
                         document.body.classList.add('bg-image');
                         localStorage.setItem('bg_image', ev.target.result);
                         UI.showToast('🖼️ Фон обновлён');
@@ -2907,7 +2903,8 @@
                     if (savedBg.length > 500000) {
                         localStorage.removeItem('bg_image');
                     } else {
-                        document.body.style.backgroundImage = 'url(' + savedBg + ')';
+                        const bgLayer = document.getElementById('bgLayer');
+                        if (bgLayer) bgLayer.style.backgroundImage = 'url(' + savedBg + ')';
                         document.body.classList.add('bg-image');
                     }
                 }
@@ -2938,15 +2935,7 @@
             } catch (e) { console.error('Init error:', e); }
 
             function fixIOSBackground() {
-                const body = document.body;
-                if (!body.classList.contains('bg-image')) return;
-                
-                const vh = window.innerHeight;
-                document.documentElement.style.setProperty('--vh', vh + 'px');
-                
-                body.style.backgroundSize = 'cover';
-                body.style.backgroundPosition = 'center';
-                body.style.backgroundRepeat = 'no-repeat';
+            // фон теперь в #bgLayer с position:fixed, корректировка не нужна
             }
             
             window.addEventListener('resize', fixIOSBackground);
