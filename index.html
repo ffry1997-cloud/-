@@ -1840,12 +1840,49 @@
             addSubtask(tid) {
                 const found = Utils.findTaskById(tid);
                 if (!found) return;
-                const text = prompt('Подзадача:');
-                if (!text) return;
-                if (!Array.isArray(found.task.subtasks)) found.task.subtasks = [];
-                found.task.subtasks.push({ id: Utils.generateId(), text: text.trim(), completed: false });
-                State.save();
-                UI.renderAll();
+                
+                // Открываем кастомное окно ввода
+                const overlay = getEl('actionOverlay');
+                const panel = getEl('actionPanel');
+                const title = getEl('actionPanelTitle');
+                const buttons = getEl('actionPanelButtons');
+                
+                title.textContent = '➕ Новая подзадача';
+                title.style.display = 'block';
+                
+                buttons.innerHTML = 
+                    '<textarea id="subtaskInput" style="width:100%;min-height:80px;padding:12px;border-radius:14px;border:1.5px solid var(--border);background:rgba(46,44,41,0.9);color:var(--text);font-size:15px;font-family:var(--font);resize:vertical;outline:none;box-sizing:border-box;" placeholder="Текст подзадачи..."></textarea>' +
+                    '<button class="action-panel-btn" id="btnSaveSubtask" style="margin-top:8px;">✅ Сохранить</button>' +
+                    '<button class="settings-close" onclick="App._closePanel()">Отмена</button>';
+                
+                panel.style.position = 'fixed';
+                panel.style.top = '50%';
+                panel.style.left = '50%';
+                panel.style.transform = 'translate(-50%, -50%)';
+                panel.style.maxWidth = '360px';
+                panel.style.width = '90%';
+                
+                overlay.style.display = 'block';
+                panel.style.display = 'block';
+                
+                // Фокус на поле ввода
+                setTimeout(() => {
+                    const inp = document.getElementById('subtaskInput');
+                    if (inp) inp.focus();
+                }, 100);
+                
+                // Сохранение по кнопке
+                document.getElementById('btnSaveSubtask').onclick = function() {
+                    const text = document.getElementById('subtaskInput').value.trim();
+                    if (!text) return;
+                    
+                    if (!Array.isArray(found.task.subtasks)) found.task.subtasks = [];
+                    found.task.subtasks.push({ id: Utils.generateId(), text: text, completed: false });
+                    State.save();
+                    UI.renderAll();
+                    App._closePanel();
+                    UI.showToast('✅ Подзадача добавлена');
+                };
             },
             toggleSubtask(tid, sid) {
                 const found = Utils.findTaskById(tid);
@@ -1861,11 +1898,45 @@
                 if (!found) return;
                 const st = found.task.subtasks?.find(s => s.id === sid);
                 if (!st) return;
-                const text = prompt('Текст:', st.text);
-                if (!text) return;
-                st.text = text.trim();
-                State.save();
-                UI.renderAll();
+                
+                const overlay = getEl('actionOverlay');
+                const panel = getEl('actionPanel');
+                const title = getEl('actionPanelTitle');
+                const buttons = getEl('actionPanelButtons');
+                
+                title.textContent = '✏️ Подзадача';
+                title.style.display = 'block';
+                
+                buttons.innerHTML = 
+                    '<textarea id="subtaskInput" style="width:100%;min-height:80px;padding:12px;border-radius:14px;border:1.5px solid var(--border);background:rgba(46,44,41,0.9);color:var(--text);font-size:15px;font-family:var(--font);resize:vertical;outline:none;box-sizing:border-box;">' + Utils.escapeHtml(st.text) + '</textarea>' +
+                    '<button class="action-panel-btn" id="btnSaveSubtask" style="margin-top:8px;">✅ Сохранить</button>' +
+                    '<button class="settings-close" onclick="App._closePanel()">Отмена</button>';
+                
+                panel.style.position = 'fixed';
+                panel.style.top = '50%';
+                panel.style.left = '50%';
+                panel.style.transform = 'translate(-50%, -50%)';
+                panel.style.maxWidth = '360px';
+                panel.style.width = '90%';
+                
+                overlay.style.display = 'block';
+                panel.style.display = 'block';
+                
+                setTimeout(() => {
+                    const inp = document.getElementById('subtaskInput');
+                    if (inp) inp.focus();
+                }, 100);
+                
+                document.getElementById('btnSaveSubtask').onclick = function() {
+                    const text = document.getElementById('subtaskInput').value.trim();
+                    if (!text) return;
+                    
+                    st.text = text;
+                    State.save();
+                    UI.renderAll();
+                    App._closePanel();
+                    UI.showToast('✅ Обновлено');
+                };
             },
             deleteSubtask(tid, sid) {
                 if (!confirm('Удалить?')) return;
