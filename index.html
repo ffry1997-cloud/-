@@ -1751,14 +1751,7 @@
                     '<button class="action-panel-btn" id="btnSaveTask" style="margin-top:8px;">✅ Сохранить</button>' +
                     '<button class="settings-close" onclick="App._closePanel()">Отмена</button>';
                 
-                panel.style.position = 'fixed';
-                panel.style.top = '50%';
-                panel.style.left = '50%';
-                panel.style.transform = 'translate(-50%, -50%)';
-                panel.style.maxWidth = '400px';
-                panel.style.width = '90%';
-                panel.style.maxHeight = '85vh';
-                panel.style.overflowY = 'auto';
+                panel.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);max-width:360px;width:90%;max-height:80vh;overflow-y:auto;';
                 
                 overlay.style.display = 'block';
                 panel.style.display = 'block';
@@ -1871,12 +1864,7 @@
                     '<button class="action-panel-btn" id="btnSaveSubtask" style="margin-top:8px;">✅ Сохранить</button>' +
                     '<button class="settings-close" onclick="App._closePanel()">Отмена</button>';
                 
-                panel.style.position = 'fixed';
-                panel.style.top = '50%';
-                panel.style.left = '50%';
-                panel.style.transform = 'translate(-50%, -50%)';
-                panel.style.maxWidth = '360px';
-                panel.style.width = '90%';
+                panel.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);max-width:360px;width:90%;max-height:80vh;overflow-y:auto;';
                 
                 overlay.style.display = 'block';
                 panel.style.display = 'block';
@@ -1928,12 +1916,7 @@
                     '<button class="action-panel-btn" id="btnSaveSubtask" style="margin-top:8px;">✅ Сохранить</button>' +
                     '<button class="settings-close" onclick="App._closePanel()">Отмена</button>';
                 
-                panel.style.position = 'fixed';
-                panel.style.top = '50%';
-                panel.style.left = '50%';
-                panel.style.transform = 'translate(-50%, -50%)';
-                panel.style.maxWidth = '360px';
-                panel.style.width = '90%';
+                panel.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);max-width:360px;width:90%;max-height:80vh;overflow-y:auto;';
                 
                 overlay.style.display = 'block';
                 panel.style.display = 'block';
@@ -2044,13 +2027,7 @@
                     '<div class="settings-divider"></div>' +
                     '<button class="settings-close" onclick="App._closePanel()">Закрыть</button>';
                 
-                panel.style.position = 'fixed';
-                panel.style.top = '50%';
-                panel.style.left = '50%';
-                panel.style.transform = 'translate(-50%, -50%)';
-                panel.style.maxWidth = '360px';
-                panel.style.width = '90%';
-                panel.style.pointerEvents = 'auto';
+                panel.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);max-width:360px;width:90%;max-height:80vh;overflow-y:auto;pointer-events:auto;';
                 
                 overlay.style.display = 'block';
                 panel.style.display = 'block';
@@ -2378,13 +2355,7 @@
                     topPosition = rect.top - 220;
                 }
         
-                panel.style.position = 'fixed';
-                panel.style.top = '50%';
-                panel.style.left = '50%';
-                panel.style.transform = 'translate(-50%, -50%)';
-                panel.style.maxWidth = '90vw';
-                panel.style.maxHeight = '80vh';
-                panel.style.overflowY = 'auto';
+                panel.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);max-width:360px;width:90%;max-height:80vh;overflow-y:auto;';
         
                 overlay.style.display = 'block';
                 panel.style.display = 'block';
@@ -2431,13 +2402,7 @@
                     topPosition = rect.top - 200;
                 }
         
-                panel.style.position = 'fixed';
-                panel.style.top = '50%';
-                panel.style.left = '50%';
-                panel.style.transform = 'translate(-50%, -50%)';
-                panel.style.maxWidth = '90vw';
-                panel.style.maxHeight = '80vh';
-                panel.style.overflowY = 'auto';
+                panel.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);max-width:360px;width:90%;max-height:80vh;overflow-y:auto;';
         
                 overlay.style.display = 'block';
                 panel.style.display = 'block';
@@ -2480,13 +2445,7 @@
                     topPosition = rect.top - 180;
                 }
         
-                panel.style.position = 'fixed';
-                panel.style.top = '50%';
-                panel.style.left = '50%';
-                panel.style.transform = 'translate(-50%, -50%)';
-                panel.style.maxWidth = '90vw';
-                panel.style.maxHeight = '80vh';
-                panel.style.overflowY = 'auto';
+                panel.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);max-width:360px;width:90%;max-height:80vh;overflow-y:auto;';
         
                 overlay.style.display = 'block';
                 panel.style.display = 'block';
@@ -2523,13 +2482,7 @@
                 if (topPosition < 10) topPosition = rect.bottom + 4;
                 const leftPosition = Math.min(rect.left, window.innerWidth - 180);
                 
-                panel.style.position = 'fixed';
-                panel.style.top = '50%';
-                panel.style.left = '50%';
-                panel.style.transform = 'translate(-50%, -50%)';
-                panel.style.maxWidth = '90vw';
-                panel.style.maxHeight = '80vh';
-                panel.style.overflowY = 'auto';
+                panel.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);max-width:360px;width:90%;max-height:80vh;overflow-y:auto;';
                 
                 overlay.style.display = 'block';
                 panel.style.display = 'block';
@@ -2570,12 +2523,7 @@
                     '<div class="settings-row"><span>📅 Обзор недели</span><button class="settings-toggle' + (s.showWeekOverview !== false ? ' on' : '') + '" onclick="App._toggleSetting(\'showWeekOverview\', this)"></button></div>' +
                     '<button class="settings-close" onclick="App._closePanel()">Закрыть</button>';
                 
-                panel.style.position = 'fixed';
-                panel.style.top = '50%';
-                panel.style.left = '50%';
-                panel.style.transform = 'translate(-50%, -50%)';
-                panel.style.maxWidth = '360px';
-                panel.style.width = '90%';
+                panel.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);max-width:360px;width:90%;max-height:80vh;overflow-y:auto;';
                 
                 overlay.style.display = 'block';
                 panel.style.display = 'block';
@@ -2797,12 +2745,7 @@
                     '<input type="range" id="opacitySlider" min="10" max="100" value="' + Math.round(currentOpacity * 100) + '" style="width:100%;margin:8px 0;" oninput="App._updateOpacity(this.value)">' +
                     '<button class="settings-close" onclick="App._closePanel()">Закрыть</button>';
                 
-                panel.style.position = 'fixed';
-                panel.style.top = '50%';
-                panel.style.left = '50%';
-                panel.style.transform = 'translate(-50%, -50%)';
-                panel.style.maxWidth = '360px';
-                panel.style.width = '90%';
+                panel.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);max-width:360px;width:90%;max-height:80vh;overflow-y:auto;';
                 
                 overlay.style.display = 'block';
                 panel.style.display = 'block';
