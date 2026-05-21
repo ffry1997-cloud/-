@@ -350,7 +350,14 @@
         }
         .subtask-item.completed .subtask-checkbox { background: var(--accent); border-color: var(--accent); color: #fff; }
         .subtask-actions { display: flex; gap: 2px; margin-left: auto; }
-        .subtask-text { flex: 1; min-width: 40px; word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; }
+        .subtask-text { 
+            flex: 1; 
+            min-width: 40px; 
+            word-wrap: break-word; 
+            overflow-wrap: break-word; 
+            word-break: break-word; 
+            white-space: pre-wrap; 
+        }
         .no-tasks { text-align: center; padding: 28px; color: var(--text-secondary); font-style: italic; font-size: 15px; opacity: 0.7; }
 
         /* ========================================
